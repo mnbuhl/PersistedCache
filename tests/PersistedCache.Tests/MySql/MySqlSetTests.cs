@@ -5,9 +5,14 @@ using PersistedCache.Tests.Helpers;
 namespace PersistedCache.Tests.MySql;
 
 [Collection(nameof(MySqlFixture))]
-public class MySqlSetTests(MySqlFixture fixture)
+public class MySqlSetTests
 {
-    private readonly IPersistedCache _cache = fixture.PersistedCache;
+    private readonly IPersistedCache _cache;
+
+    public MySqlSetTests(MySqlFixture fixture)
+    {
+        _cache = fixture.PersistedCache;
+    }
 
     [Fact]
     public void Set_WithKeyAndValue_SetsValue()
