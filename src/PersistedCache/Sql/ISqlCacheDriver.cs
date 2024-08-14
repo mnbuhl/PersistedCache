@@ -35,6 +35,11 @@ namespace PersistedCache.Sql
         string FlushPatternScript { get; }
         
         /// <summary>
+        /// The script to purge the storage for expired entries
+        /// </summary>
+        string PurgeScript { get; }
+        
+        /// <summary>
         /// The wildcard character for the storage
         /// </summary>
         char Wildcard { get; }

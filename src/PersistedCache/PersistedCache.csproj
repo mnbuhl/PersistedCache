@@ -6,7 +6,8 @@
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.35" />
-      <PackageReference Include="System.Text.Json" Version="8.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+      <PackageReference Include="System.Text.Json" Version="6.0.9" />
     </ItemGroup>
 
 </Project>

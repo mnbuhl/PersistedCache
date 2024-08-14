@@ -29,6 +29,11 @@ namespace PersistedCache.MySql
             services.AddSingleton<ISqlCacheDriver, MySqlPersistedSqlCacheDriver>();
             services.AddSingleton<IPersistedCache, SqlPersistedCache>();
 
+            if (options.PurgeExpiredEntries)
+            {
+                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+            }
+
             return services;
         }
     }

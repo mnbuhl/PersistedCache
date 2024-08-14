@@ -154,5 +154,7 @@ namespace PersistedCache
         /// <param name="cancellationToken">The cancellation token</param>
         /// <example>await FlushAsync("users.*")</example>
         Task FlushAsync(string pattern, CancellationToken cancellationToken = default);
+        
+        void Purge();
     }
 }

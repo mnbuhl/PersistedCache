@@ -95,7 +95,7 @@ namespace PersistedCache.Sql
             {
                 var res = connection.QueryFirstOrDefault<string>(
                     _driver.GetScript,
-                    new { Key = key },
+                    new { Key = key, Expiry = DateTimeOffset.UtcNow },
                     transaction
                 );
 
@@ -113,7 +113,7 @@ namespace PersistedCache.Sql
                 var res = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
                         _driver.GetScript,
-                        new { Key = key },
+                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
                         transaction,
                         cancellationToken: cancellationToken
                     )
@@ -132,7 +132,7 @@ namespace PersistedCache.Sql
             {
                 var value = connection.QueryFirstOrDefault<string>(
                     _driver.GetScript,
-                    new { Key = key },
+                    new { Key = key, Expiry = DateTimeOffset.UtcNow },
                     transaction
                 );
 
@@ -175,7 +175,7 @@ namespace PersistedCache.Sql
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
                         _driver.GetScript,
-                        new { Key = key },
+                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
                         transaction,
                         cancellationToken: cancellationToken
                     )
@@ -251,7 +251,7 @@ namespace PersistedCache.Sql
                 var value = connection.QueryFirstOrDefault<string>(
                     new CommandDefinition(
                         _driver.GetScript,
-                        new { Key = key },
+                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
                         transaction
                     )
                 );
@@ -276,7 +276,7 @@ namespace PersistedCache.Sql
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
                         _driver.GetScript,
-                        new { Key = key },
+                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
                         transaction,
                         cancellationToken: cancellationToken
                     )
@@ -356,7 +356,22 @@ namespace PersistedCache.Sql
                 );
             }, cancellationToken);
         }
-        
+
+        /// <summary>
+        /// Purge the cache of expired entries
+        /// </summary>
+        public void Purge()
+        {
+            _connectionFactory.RunInTransaction((connection, transaction) =>
+            {
+                connection.Execute(
+                    _driver.PurgeScript,
+                    new { Expiry = DateTimeOffset.UtcNow },
+                    transaction
+                );
+            });
+        }
+
         private string ValidatePattern(string pattern)
         {
             if (string.IsNullOrWhiteSpace(pattern))

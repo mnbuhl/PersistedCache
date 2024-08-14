@@ -28,7 +28,7 @@ namespace PersistedCache.MySql
             SELECT `value`
             FROM {_options.TableName}
             WHERE `key` = @Key
-              AND `expiry` > UTC_TIMESTAMP();";
+              AND `expiry` > @Expiry;";
         
         public string SetScript => $@"
             INSERT INTO {_options.TableName} (`key`, `value`, `expiry`)
@@ -45,6 +45,10 @@ namespace PersistedCache.MySql
         public string FlushPatternScript => $@"
             DELETE FROM {_options.TableName}
             WHERE `key` LIKE @Pattern;";
+
+        public string PurgeScript => $@"
+            DELETE FROM {_options.TableName}
+            WHERE `expiry` <= @Expiry;";
 
         public char Wildcard => '%';
 
