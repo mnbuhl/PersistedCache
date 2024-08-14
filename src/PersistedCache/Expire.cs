@@ -22,4 +22,5 @@ public struct Expire
     
     public static implicit operator DateTimeOffset(Expire expire) => expire._value;
     public static implicit operator Expire(DateTimeOffset dateTimeOffset) => new Expire(dateTimeOffset);
+    public static explicit operator Expire(TimeSpan timeSpan) => new Expire(DateTimeOffset.UtcNow.Add(timeSpan));
 }

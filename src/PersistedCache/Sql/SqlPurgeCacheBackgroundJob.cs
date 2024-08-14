@@ -4,7 +4,7 @@ namespace PersistedCache.Sql
 {
     public class SqlPurgeCacheBackgroundJob : IHostedService, IDisposable
     {
-        private Timer _timer;
+        private Timer? _timer;
         private readonly IPersistedCache _cache;
         private readonly SqlPersistedCacheOptions _options;
         

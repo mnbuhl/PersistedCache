@@ -3,7 +3,7 @@ using PersistedCache.MySql;
 using PersistedCache.Sql;
 using Testcontainers.MySql;
 
-namespace PersistedCache.Tests.MySql;
+namespace PersistedCache.Tests.Fixtures;
 
 [CollectionDefinition(nameof(MySqlFixture))]
 public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime
@@ -33,6 +33,11 @@ public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime
         PersistedCache = new SqlPersistedCache(driver, options);
     }
 
+    public async Task DisposeAsync()
+    {
+        await _container.DisposeAsync();
+    }
+    
     private static void SetupStorage(ISqlCacheDriver driver)
     {
         var connectionFactory = new SqlConnectionFactory(driver);
@@ -41,10 +46,5 @@ public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime
         {
             connection.Execute(driver.SetupStorageScript, transaction: transaction);
         });
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _container.DisposeAsync();
     }
 }

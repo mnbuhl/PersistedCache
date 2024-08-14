@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
 namespace PersistedCache.Tests.MySql;
