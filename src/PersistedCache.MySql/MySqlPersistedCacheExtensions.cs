@@ -6,17 +6,14 @@ namespace PersistedCache.MySql
     {
         public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services, string connectionString)
         {
-            var options = new MySqlCacheOptions(connectionString)
-            {
-                TableName = "test"
-            };
+            var options = new PersistedCacheOptions(connectionString);
             return services.AddMySqlPersistedCache(options);
         }
         
-        public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services, MySqlCacheOptions options)
+        public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services, PersistedCacheOptions options)
         {
             services.AddSingleton(options);
-            services.AddSingleton<ICacheDriver, MySqlCacheDriver>();
+            services.AddSingleton<ICacheDriver, MySqlPersistedCacheDriver>();
             services.AddSingleton<IPersistedCache, PersistedCache>();
 
             return services;

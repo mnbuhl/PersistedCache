@@ -1,4 +1,6 @@
-﻿namespace PersistedCache
+﻿using System.Data.Common;
+
+namespace PersistedCache
 {
     public interface ICacheDriver
     {
@@ -7,5 +9,6 @@
         string SetScript { get; }
         string ForgetScript { get; }
         string FlushScript { get; }
+        DbConnection CreateConnection();
     }
 }

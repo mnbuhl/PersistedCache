@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace PersistedCache
 {
-    public abstract class PersistedCacheOptions
+    public class PersistedCacheOptions
     {
         private string _tableName = "persisted_cache";
         private TimeSpan _purgeInterval = TimeSpan.FromHours(24);
 
-        protected PersistedCacheOptions(string connectionString)
+        public PersistedCacheOptions(string connectionString)
         {
             ConnectionString = !string.IsNullOrWhiteSpace(connectionString) 
                 ? connectionString 
                 : throw new ArgumentException("Connection string cannot be null or empty.");
         }
         
-        public virtual string ConnectionString { get; }
-        public virtual bool PurgeExpiredEntries { get; set; } = true;
+        public string ConnectionString { get; }
+        public bool PurgeExpiredEntries { get; set; } = true;
+        public bool CreateTableIfNotExists { get; set; } = true;
+        public JsonSerializerOptions JsonOptions { get; set; } = new JsonSerializerOptions();
 
-        public virtual string TableName
+        public string TableName
         {
             get => _tableName; 
             set => _tableName = !string.IsNullOrWhiteSpace(value) 
@@ -25,7 +28,7 @@ namespace PersistedCache
                 : throw new ArgumentException("Table name cannot be null or empty.");
         }
 
-        public virtual TimeSpan PurgeInterval
+        public TimeSpan PurgeInterval
         {
             get => _purgeInterval; 
             set => _purgeInterval = value < TimeSpan.Zero 

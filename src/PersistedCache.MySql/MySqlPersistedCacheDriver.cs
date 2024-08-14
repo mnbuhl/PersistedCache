@@ -1,10 +1,13 @@
-﻿namespace PersistedCache.MySql
-{
-    public class MySqlCacheDriver : ICacheDriver
-    {
-        private readonly MySqlCacheOptions _options;
+﻿using System.Data.Common;
+using MySql.Data.MySqlClient;
 
-        public MySqlCacheDriver(MySqlCacheOptions options)
+namespace PersistedCache.MySql
+{
+    public class MySqlPersistedCacheDriver : ICacheDriver
+    {
+        private readonly PersistedCacheOptions _options;
+
+        public MySqlPersistedCacheDriver(PersistedCacheOptions options)
         {
             _options = options;
         }
@@ -14,7 +17,7 @@
                 `key` VARCHAR(255) NOT NULL PRIMARY KEY,
                 `value` JSON NOT NULL,
                 `expiry` DATETIME(6) NOT NULL,
-                INDEX `idx_key_expiry` (`key`, `expiry`)
+                INDEX `idx_key_expiry` (`key`, `expiry`),
                 INDEX `idx_expiry` (`expiry`)
             ) ENGINE=InnoDB
               DEFAULT CHARSET=utf8
@@ -37,5 +40,10 @@
         
         public string FlushScript => $@"
             DELETE FROM {_options.TableName};";
+
+        public DbConnection CreateConnection()
+        {
+            return new MySqlConnection(_options.ConnectionString);
+        }
     }
 }
