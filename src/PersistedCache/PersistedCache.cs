@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,19 +10,20 @@ namespace PersistedCache
     {
         private readonly ICacheDriver _driver;
         private readonly PersistedCacheOptions _options;
+        private readonly ConnectionFactory _connectionFactory;
 
         public PersistedCache(ICacheDriver driver, PersistedCacheOptions options)
         {
             _driver = driver;
             _options = options;
+            _connectionFactory = new ConnectionFactory(_driver);
 
             if (options.CreateTableIfNotExists)
             {
-                RunInTransaction((connection, transaction) =>
+                _connectionFactory.RunInConnection((connection) =>
                 {
                     connection.Execute(
-                        _driver.SetupStorageScript,
-                        transaction
+                        _driver.SetupStorageScript
                     );
                 });
 
@@ -33,14 +33,18 @@ namespace PersistedCache
 
         public void Set<T>(string key, T value, TimeSpan expiry)
         {
+            var expiryDate = expiry == TimeSpan.MaxValue
+                ? DateTimeOffset.MaxValue
+                : DateTimeOffset.UtcNow.Add(expiry);
+            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = DateTimeOffset.UtcNow.Add(expiry)
+                Expiry = expiryDate
             };
 
-            RunInTransaction((connection, transaction) =>
+            _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
                     _driver.SetScript,
@@ -50,17 +54,26 @@ namespace PersistedCache
             });
         }
 
+        public void SetForever<T>(string key, T value)
+        {
+            Set(key, value, TimeSpan.MaxValue);
+        }
+
         public async Task SetAsync<T>(string key, T value, TimeSpan expiry,
             CancellationToken cancellationToken = default)
         {
+            var expiryDate = expiry == TimeSpan.MaxValue
+                ? DateTimeOffset.MaxValue
+                : DateTimeOffset.UtcNow.Add(expiry);
+            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = DateTimeOffset.UtcNow.Add(expiry)
+                Expiry = expiryDate
             };
 
-            await RunInTransactionAsync(async (connection, transaction) =>
+            await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 await connection.ExecuteAsync(
                     new CommandDefinition(
@@ -73,14 +86,18 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
+        public Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
+        {
+            return SetAsync(key, value, TimeSpan.MaxValue, cancellationToken);
+        }
+
         public T Get<T>(string key)
         {
-            return RunInTransaction((connection, transaction) =>
+            return _connectionFactory.RunInConnection(connection =>
             {
                 var res = connection.QueryFirstOrDefault<string>(
                     _driver.GetScript,
-                    new { Key = key },
-                    transaction
+                    new { Key = key }
                 );
 
                 return !string.IsNullOrWhiteSpace(res)
@@ -91,13 +108,12 @@ namespace PersistedCache
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            return await RunInTransactionAsync(async (connection, transaction) =>
+            return await _connectionFactory.RunInConnectionAsync(async connection =>
             {
                 var res = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
                         _driver.GetScript,
                         new { Key = key },
-                        transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -108,61 +124,45 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
-        private void RunInTransaction(Action<IDbConnection, IDbTransaction> action)
+        public T GetOrSet<T>(string key, Func<T> valueFactory, TimeSpan expiry)
         {
-            var connection = _driver.CreateConnection();
-            connection.Open();
+            var value = Get<T>(key);
 
-            using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+            if (value != null)
+            {
+                return value;
+            }
 
-            action(connection, transaction);
+            value = valueFactory();
+            Set(key, value, expiry);
 
-            transaction.Commit();
+            return value;
         }
 
-        private T RunInTransaction<T>(Func<IDbConnection, IDbTransaction, T> action)
+        public T GetOrSetForever<T>(string key, Func<T> valueFactory)
         {
-            var connection = _driver.CreateConnection();
-            connection.Open();
-
-            using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            var result = action(connection, transaction);
-
-            transaction.Commit();
-
-            return result;
+            return GetOrSet(key, valueFactory, TimeSpan.MaxValue);
         }
 
-        private async Task RunInTransactionAsync(Func<IDbConnection, IDbTransaction, Task> action,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry,
             CancellationToken cancellationToken = default)
         {
-            var connection = _driver.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
+            var value = await GetAsync<T>(key, cancellationToken);
 
-            await using var transaction =
-                await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+            if (value != null)
+            {
+                return value;
+            }
 
-            await action(connection, transaction);
+            value = await valueFactory();
+            await SetAsync(key, value, expiry, cancellationToken);
 
-            await transaction.CommitAsync(cancellationToken);
+            return value;
         }
 
-        private async Task<T> RunInTransactionAsync<T>(
-            Func<IDbConnection, IDbTransaction, Task<T>> action,
-            CancellationToken cancellationToken = default)
+        public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default)
         {
-            var connection = _driver.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
-
-            await using var transaction =
-                await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-            
-            var result = await action(connection, transaction);
-
-            await transaction.CommitAsync(cancellationToken);
-
-            return result;
+            return GetOrSetAsync(key, valueFactory, TimeSpan.MaxValue, cancellationToken);
         }
     }
 }

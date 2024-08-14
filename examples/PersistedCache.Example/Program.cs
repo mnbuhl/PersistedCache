@@ -40,7 +40,7 @@ app.MapPost("/weatherforecast", (IPersistedCache cache) =>
                 ))
             .ToArray();
         
-        cache.Set("weather_forecast", forecast, TimeSpan.FromMinutes(1));
+        cache.Set("weather_forecast", forecast, TimeSpan.MaxValue);
         
         return forecast;
     })
