@@ -1,8 +1,9 @@
 ﻿using Dapper;
+using PersistedCache.MySql;
 using PersistedCache.Sql;
 using Testcontainers.MySql;
 
-namespace PersistedCache.MySql.Tests.Helpers;
+namespace PersistedCache.Tests.MySql;
 
 [CollectionDefinition(nameof(MySqlFixture))]
 public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime

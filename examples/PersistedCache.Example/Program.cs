@@ -28,7 +28,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
+app.MapGet("/weatherforecast", (IPersistedCache cache) => cache.Get<int>("weather_forecast"))
     .WithName("GetWeatherForecast")
     .WithOpenApi();
 

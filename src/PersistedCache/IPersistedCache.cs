@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace PersistedCache
+﻿namespace PersistedCache
 {
     public interface IPersistedCache
     {
@@ -41,14 +37,14 @@ namespace PersistedCache
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
         Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default);
-        
+
         /// <summary>
         /// Get a value from the cache
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
         /// <typeparam name="T">The type of the value to get</typeparam>
         /// <returns>The value from the cache</returns>
-        T Get<T>(string key);
+        T? Get<T>(string key);
         
         /// <summary>
         /// Get a value from the cache asynchronously
@@ -57,7 +53,7 @@ namespace PersistedCache
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
         /// <returns>The value from the cache</returns>
-        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Get a value from the cache or set it if it doesn't exist
@@ -118,7 +114,7 @@ namespace PersistedCache
         /// <param name="key">The key of the cached entry</param>
         /// <typeparam name="T">The type of the value to get</typeparam>
         /// <returns>The value from the cache</returns>
-        T Pull<T>(string key);
+        T? Pull<T>(string key);
         
         /// <summary>
         /// Gets a value from the cache and removes it asynchronously
@@ -127,7 +123,7 @@ namespace PersistedCache
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
         /// <returns>The value from the cache</returns>
-        Task<T> PullAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Flush all values from the cache

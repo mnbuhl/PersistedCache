@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Dapper;
 
 namespace PersistedCache.Sql
@@ -89,7 +86,7 @@ namespace PersistedCache.Sql
         }
 
         /// <inheritdoc />
-        public T Get<T>(string key)
+        public T? Get<T>(string key)
         {
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
@@ -100,13 +97,13 @@ namespace PersistedCache.Sql
                 );
 
                 return !string.IsNullOrWhiteSpace(res)
-                    ? JsonSerializer.Deserialize<T>(res, _options.JsonOptions)
+                    ? JsonSerializer.Deserialize<T>(res!, _options.JsonOptions)
                     : default;
             });
         }
 
         /// <inheritdoc />
-        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
             return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
@@ -120,7 +117,7 @@ namespace PersistedCache.Sql
                 );
 
                 return !string.IsNullOrWhiteSpace(res)
-                    ? JsonSerializer.Deserialize<T>(res, _options.JsonOptions)
+                    ? JsonSerializer.Deserialize<T>(res!, _options.JsonOptions)
                     : default;
             }, cancellationToken);
         }
@@ -138,7 +135,7 @@ namespace PersistedCache.Sql
 
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    return JsonSerializer.Deserialize<T>(value, _options.JsonOptions);
+                    return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
                 }
 
                 var result = valueFactory();
@@ -157,7 +154,7 @@ namespace PersistedCache.Sql
                 );
 
                 return result;
-            });
+            })!;
         }
 
         /// <inheritdoc />
@@ -170,7 +167,7 @@ namespace PersistedCache.Sql
         public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry,
             CancellationToken cancellationToken = default)
         {
-            return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+            var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
@@ -183,7 +180,7 @@ namespace PersistedCache.Sql
 
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    return JsonSerializer.Deserialize<T>(value, _options.JsonOptions);
+                    return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
                 }
 
                 var result = await valueFactory();
@@ -206,6 +203,8 @@ namespace PersistedCache.Sql
 
                 return result;
             }, cancellationToken);
+            
+            return result!;
         }
 
         /// <inheritdoc />
@@ -244,7 +243,7 @@ namespace PersistedCache.Sql
         }
 
         /// <inheritdoc />
-        public T Pull<T>(string key)
+        public T? Pull<T>(string key)
         {
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
@@ -263,13 +262,13 @@ namespace PersistedCache.Sql
                 );
 
                 return !string.IsNullOrWhiteSpace(value)
-                    ? JsonSerializer.Deserialize<T>(value, _options.JsonOptions)
+                    ? JsonSerializer.Deserialize<T>(value!, _options.JsonOptions)
                     : default;
             });
         }
 
         /// <inheritdoc />
-        public async Task<T> PullAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default)
         {
             return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
@@ -292,7 +291,7 @@ namespace PersistedCache.Sql
                 );
 
                 return !string.IsNullOrWhiteSpace(value)
-                    ? JsonSerializer.Deserialize<T>(value, _options.JsonOptions)
+                    ? JsonSerializer.Deserialize<T>(value!, _options.JsonOptions)
                     : default;
             }, cancellationToken);
         }
