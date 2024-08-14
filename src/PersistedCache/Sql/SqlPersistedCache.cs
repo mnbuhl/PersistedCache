@@ -30,13 +30,16 @@ namespace PersistedCache.Sql
         }
 
         /// <inheritdoc />
-        public void Set<T>(string key, T value, TimeSpan expiry)
+        public void Set<T>(string key, T value, Expire expiry)
         {
+            ValidateKey(key);
+            ValidateValue(value);
+            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = GetExpiryDate(expiry)
+                Expiry = expiry
             };
 
             _connectionFactory.RunInTransaction((connection, transaction) =>
@@ -52,18 +55,21 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public void SetForever<T>(string key, T value)
         {
-            Set(key, value, TimeSpan.MaxValue);
+            Set(key, value, Expire.Never);
         }
 
         /// <inheritdoc />
-        public async Task SetAsync<T>(string key, T value, TimeSpan expiry,
+        public async Task SetAsync<T>(string key, T value, Expire expiry,
             CancellationToken cancellationToken = default)
         {
+            ValidateKey(key);
+            ValidateValue(value);
+            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = GetExpiryDate(expiry)
+                Expiry = expiry
             };
 
             await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
@@ -82,12 +88,13 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
         {
-            return SetAsync(key, value, TimeSpan.MaxValue, cancellationToken);
+            return SetAsync(key, value, Expire.Never, cancellationToken);
         }
 
         /// <inheritdoc />
         public T? Get<T>(string key)
         {
+            ValidateKey(key);
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var res = connection.QueryFirstOrDefault<string>(
@@ -105,6 +112,7 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
+            ValidateKey(key);
             return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 var res = await connection.QueryFirstOrDefaultAsync<string>(
@@ -123,8 +131,9 @@ namespace PersistedCache.Sql
         }
 
         /// <inheritdoc />
-        public T GetOrSet<T>(string key, Func<T> valueFactory, TimeSpan expiry)
+        public T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)
         {
+            ValidateKey(key);
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var value = connection.QueryFirstOrDefault<string>(
@@ -139,12 +148,14 @@ namespace PersistedCache.Sql
                 }
 
                 var result = valueFactory();
+                
+                ValidateValue(result);
 
                 var entry = new PersistedCacheEntry
                 {
                     Key = key,
                     Value = JsonSerializer.Serialize(result, _options.JsonOptions),
-                    Expiry = GetExpiryDate(expiry)
+                    Expiry = expiry
                 };
 
                 connection.Execute(
@@ -160,13 +171,14 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public T GetOrSetForever<T>(string key, Func<T> valueFactory)
         {
-            return GetOrSet(key, valueFactory, TimeSpan.MaxValue);
+            return GetOrSet(key, valueFactory, Expire.Never);
         }
 
         /// <inheritdoc />
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
             CancellationToken cancellationToken = default)
         {
+            ValidateKey(key);
             var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
@@ -184,12 +196,14 @@ namespace PersistedCache.Sql
                 }
 
                 var result = await valueFactory();
+                
+                ValidateValue(result);
 
                 var entry = new PersistedCacheEntry
                 {
                     Key = key,
                     Value = JsonSerializer.Serialize(result, _options.JsonOptions),
-                    Expiry = GetExpiryDate(expiry)
+                    Expiry = expiry
                 };
 
                 await connection.ExecuteAsync(
@@ -210,12 +224,13 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default)
         {
-            return GetOrSetAsync(key, valueFactory, TimeSpan.MaxValue, cancellationToken);
+            return GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
         }
 
         /// <inheritdoc />
         public void Forget(string key)
         {
+            ValidateKey(key);
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
@@ -229,6 +244,7 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public Task ForgetAsync(string key, CancellationToken cancellationToken = default)
         {
+            ValidateKey(key);
             return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 await connection.ExecuteAsync(
@@ -245,6 +261,7 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public T? Pull<T>(string key)
         {
+            ValidateKey(key);
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var value = connection.QueryFirstOrDefault<string>(
@@ -270,6 +287,7 @@ namespace PersistedCache.Sql
         /// <inheritdoc />
         public async Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default)
         {
+            ValidateKey(key);
             return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
@@ -368,6 +386,27 @@ namespace PersistedCache.Sql
                 );
             });
         }
+        
+        private static void ValidateKey(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentException("Key cannot be empty", nameof(key));
+            }
+            
+            if (key.Length > 255)
+            {
+                throw new ArgumentException("Key length cannot exceed 255 characters", nameof(key));
+            }
+        }
+        
+        private static void ValidateValue<T>(T value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value), "Value cannot be null");
+            }
+        }
 
         private string ValidatePattern(string pattern)
         {
@@ -382,13 +421,6 @@ namespace PersistedCache.Sql
             }
             
             return pattern.Replace('*', _driver.Wildcard);
-        }
-        
-        private static DateTimeOffset GetExpiryDate(TimeSpan expiry)
-        {
-            return expiry == TimeSpan.MaxValue
-                ? DateTimeOffset.MaxValue
-                : DateTimeOffset.UtcNow.Add(expiry);
         }
     }
 }

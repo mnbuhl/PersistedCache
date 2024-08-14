@@ -9,7 +9,7 @@
         /// <param name="value">The value to cache</param>
         /// <param name="expiry">The expiry time of the cached entry</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
-        void Set<T>(string key, T value, TimeSpan expiry);
+        void Set<T>(string key, T value, Expire expiry);
         
         /// <summary>
         /// Set a value in the cache forever
@@ -27,7 +27,7 @@
         /// <param name="expiry">The expiry time of the cached entry</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
-        Task SetAsync<T>(string key, T value, TimeSpan expiry, CancellationToken cancellationToken = default);
+        Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Set a value in the cache forever asynchronously
@@ -63,7 +63,7 @@
         /// <param name="expiry">The expiry time of the cached entry</param>
         /// <typeparam name="T">The type of the value to get/cache</typeparam>
         /// <returns>The value from the cache or the value created by the factory</returns>
-        T GetOrSet<T>(string key, Func<T> valueFactory, TimeSpan expiry);
+        T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry);
         
         /// <summary>
         /// Get a value from the cache or set it if it doesn't exist forever
@@ -83,7 +83,7 @@
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to get/cache</typeparam>
         /// <returns>The value from the cache or the value created by the factory</returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry, CancellationToken cancellationToken = default);
+        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Get a value from the cache or set it if it doesn't exist forever asynchronously

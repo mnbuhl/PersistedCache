@@ -16,7 +16,7 @@ public class MySqlSetTests(MySqlFixture fixture)
         const string value = "value";
         
         // Act
-        _cache.Set(key, value, TimeSpan.FromMinutes(5));
+        _cache.Set(key, value, Expire.InMinutes(5));
         
         // Assert
         var result = _cache.Get<string>(key);
@@ -31,7 +31,7 @@ public class MySqlSetTests(MySqlFixture fixture)
         var value = new RandomObject();
 
         // Act
-        _cache.Set(key, value, TimeSpan.FromMinutes(5));
+        _cache.Set(key, value, Expire.InMinutes(5));
 
         // Assert
         var result = _cache.Get<RandomObject>(key);
