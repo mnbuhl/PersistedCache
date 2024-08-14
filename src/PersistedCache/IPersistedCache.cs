@@ -16,5 +16,13 @@ namespace PersistedCache
         T GetOrSetForever<T>(string key, Func<T> valueFactory);
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry, CancellationToken cancellationToken = default);
         Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default);
+        void Forget(string key);
+        Task ForgetAsync(string key, CancellationToken cancellationToken = default);
+        T Pull<T>(string key);
+        Task<T> PullAsync<T>(string key, CancellationToken cancellationToken = default);
+        void Flush();
+        Task FlushAsync(CancellationToken cancellationToken = default);
+        void Flush(string pattern);
+        Task FlushAsync(string pattern, CancellationToken cancellationToken = default);
     }
 }

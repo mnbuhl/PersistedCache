@@ -41,6 +41,10 @@ namespace PersistedCache.MySql
         public string FlushScript => $@"
             DELETE FROM {_options.TableName};";
 
+        public string FlushPatternScript => $@"
+            DELETE FROM {_options.TableName}
+            WHERE `key` LIKE @Pattern;";
+
         public DbConnection CreateConnection()
         {
             return new MySqlConnection(_options.ConnectionString);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PersistedCache
 {
-    public class ConnectionFactory
+    internal class ConnectionFactory
     {
         private readonly ICacheDriver _driver;
 

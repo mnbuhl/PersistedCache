@@ -39,12 +39,26 @@ app.MapPost("/weatherforecast", (IPersistedCache cache) =>
                     summaries[Random.Shared.Next(summaries.Length)]
                 ))
             .ToArray();
-        
-        cache.Set("weather_forecast", forecast, TimeSpan.MaxValue);
+
+        cache.SetForever("weather_forecast", forecast);
         
         return forecast;
     })
     .WithName("PostWeatherForecast")
+    .WithOpenApi();
+
+app.MapDelete("/weatherforecast", (IPersistedCache cache) =>
+    {
+        cache.Forget("weather_forecast");
+    })
+    .WithName("DeleteWeatherForecast")
+    .WithOpenApi();
+
+app.MapDelete("/flush", (IPersistedCache cache) =>
+    {
+        cache.Flush();
+    })
+    .WithName("FlushCache")
     .WithOpenApi();
 
 app.Run();

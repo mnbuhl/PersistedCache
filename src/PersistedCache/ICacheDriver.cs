@@ -9,6 +9,7 @@ namespace PersistedCache
         string SetScript { get; }
         string ForgetScript { get; }
         string FlushScript { get; }
+        string FlushPatternScript { get; }
         DbConnection CreateConnection();
     }
 }

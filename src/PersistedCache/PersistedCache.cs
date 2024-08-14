@@ -164,5 +164,117 @@ namespace PersistedCache
         {
             return GetOrSetAsync(key, valueFactory, TimeSpan.MaxValue, cancellationToken);
         }
+
+        public void Forget(string key)
+        {
+            _connectionFactory.RunInTransaction((connection, transaction) =>
+            {
+                connection.Execute(
+                    _driver.ForgetScript,
+                    new { Key = key },
+                    transaction
+                );
+            });
+        }
+
+        public Task ForgetAsync(string key, CancellationToken cancellationToken = default)
+        {
+            return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+            {
+                await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _driver.ForgetScript,
+                        new { Key = key },
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+            }, cancellationToken);
+        }
+
+        public T Pull<T>(string key)
+        {
+            var value = Get<T>(key);
+            Forget(key);
+
+            return value;
+        }
+
+        public async Task<T> PullAsync<T>(string key, CancellationToken cancellationToken = default)
+        {
+            var value = await GetAsync<T>(key, cancellationToken);
+            await ForgetAsync(key, cancellationToken);
+            
+            return value;
+        }
+
+        public void Flush()
+        {
+            _connectionFactory.RunInTransaction((connection, transaction) =>
+            {
+                connection.Execute(
+                    _driver.FlushScript,
+                    transaction
+                );
+            });
+        }
+
+        public Task FlushAsync(CancellationToken cancellationToken = default)
+        {
+            return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+            {
+                await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _driver.FlushScript,
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+            }, cancellationToken);
+        }
+
+        public void Flush(string pattern)
+        {
+            ValidatePattern(pattern);
+            
+            _connectionFactory.RunInTransaction((connection, transaction) =>
+            {
+                connection.Execute(
+                    _driver.FlushPatternScript,
+                    new { Pattern = pattern },
+                    transaction
+                );
+            });
+        }
+
+        public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ValidatePattern(pattern);
+            
+            return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+            {
+                await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _driver.FlushPatternScript,
+                        new { Pattern = pattern },
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+            }, cancellationToken);
+        }
+        
+        private static void ValidatePattern(string pattern)
+        {
+            if (string.IsNullOrWhiteSpace(pattern))
+            {
+                throw new ArgumentException("Pattern cannot be empty", nameof(pattern));
+            }
+            
+            if (!pattern.Contains("*"))
+            {
+                throw new ArgumentException("Pattern must begin or end with a '*'", nameof(pattern));
+            }
+        }
     }
 }
