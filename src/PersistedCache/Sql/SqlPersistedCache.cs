@@ -377,7 +377,7 @@ namespace PersistedCache.Sql
                 throw new ArgumentException("Pattern cannot be empty", nameof(pattern));
             }
             
-            if (!pattern.StartsWith('*') && !pattern.EndsWith('*'))
+            if (!pattern.StartsWith("*") && !pattern.EndsWith("*"))
             {
                 throw new ArgumentException("Pattern must begin or end with a '*'", nameof(pattern));
             }

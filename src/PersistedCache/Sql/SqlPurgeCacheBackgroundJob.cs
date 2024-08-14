@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace PersistedCache.Sql
 {
-    public class SqlPurgeCacheBackgroundJob : IHostedService, IDisposable, IAsyncDisposable
+    public class SqlPurgeCacheBackgroundJob : IHostedService, IDisposable
     {
         private Timer _timer;
         private readonly IPersistedCache _cache;
@@ -39,11 +39,6 @@ namespace PersistedCache.Sql
         public void Dispose()
         {
             _timer?.Dispose();
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            if (_timer != null) await _timer.DisposeAsync();
         }
     }
 }

@@ -19,11 +19,11 @@ namespace PersistedCache.Sql
             var connection = _driver.CreateConnection();
             connection.Open();
 
-            using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            action(connection, transaction);
-
-            transaction.Commit();
+            using (var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                action(connection, transaction);
+                transaction.Commit();
+            }
         }
 
         public T RunInTransaction<T>(Func<IDbConnection, IDbTransaction, T> action)
@@ -31,13 +31,14 @@ namespace PersistedCache.Sql
             var connection = _driver.CreateConnection();
             connection.Open();
 
-            using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+            using (var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                var result = action(connection, transaction);
 
-            var result = action(connection, transaction);
+                transaction.Commit();
 
-            transaction.Commit();
-
-            return result;
+                return result;
+            }
         }
 
         public async Task RunInTransactionAsync(Func<IDbConnection, IDbTransaction, Task> action,
@@ -46,12 +47,11 @@ namespace PersistedCache.Sql
             var connection = _driver.CreateConnection();
             await connection.OpenAsync(cancellationToken);
 
-            await using var transaction =
-                await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-
-            await action(connection, transaction);
-
-            await transaction.CommitAsync(cancellationToken);
+            using (var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                await action(connection, transaction);
+                transaction.Commit();
+            }
         }
 
         public async Task<T> RunInTransactionAsync<T>(
@@ -61,14 +61,13 @@ namespace PersistedCache.Sql
             var connection = _driver.CreateConnection();
             await connection.OpenAsync(cancellationToken);
 
-            await using var transaction =
-                await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
-            
-            var result = await action(connection, transaction);
+            using (var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                var result = await action(connection, transaction);
+                transaction.Commit();
 
-            await transaction.CommitAsync(cancellationToken);
-
-            return result;
+                return result;
+            }
         }
     }
 }
