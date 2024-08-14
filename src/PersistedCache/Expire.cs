@@ -6,6 +6,11 @@ public struct Expire
     
     private Expire(DateTimeOffset value)
     {
+        if (value < DateTimeOffset.UtcNow)
+        {
+            throw new ArgumentException("The expire value must be in the future.", nameof(value));
+        }
+        
         _value = value;
     }
     
