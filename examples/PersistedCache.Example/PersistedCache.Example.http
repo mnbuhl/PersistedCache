@@ -1,0 +1,6 @@
+@PersistedCache.Example_HostAddress = http://localhost:5082
+
+GET {{PersistedCache.Example_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

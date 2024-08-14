@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BD906076-617D-44E5-AF27-D23543868D21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache", "src\PersistedCache\PersistedCache.csproj", "{8A9F2660-8E83-416E-919B-02243E2E0E6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.MySql", "src\PersistedCache.MySql\PersistedCache.MySql.csproj", "{F9DB67A9-06B8-4431-A870-F2AAF2A10096}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{BB31D9B5-D15B-4FA1-B4CF-9F4DE99EBF0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{B0F17FEC-8E2A-4254-BC80-41C73168D427}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.Example", "examples\PersistedCache.Example\PersistedCache.Example.csproj", "{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A9F2660-8E83-416E-919B-02243E2E0E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A9F2660-8E83-416E-919B-02243E2E0E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A9F2660-8E83-416E-919B-02243E2E0E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A9F2660-8E83-416E-919B-02243E2E0E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9DB67A9-06B8-4431-A870-F2AAF2A10096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9DB67A9-06B8-4431-A870-F2AAF2A10096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9DB67A9-06B8-4431-A870-F2AAF2A10096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9DB67A9-06B8-4431-A870-F2AAF2A10096}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8A9F2660-8E83-416E-919B-02243E2E0E6D} = {BD906076-617D-44E5-AF27-D23543868D21}
+		{F9DB67A9-06B8-4431-A870-F2AAF2A10096} = {BD906076-617D-44E5-AF27-D23543868D21}
+		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA} = {BB31D9B5-D15B-4FA1-B4CF-9F4DE99EBF0E}
+	EndGlobalSection
+EndGlobal
