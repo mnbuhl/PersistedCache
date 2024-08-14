@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 
-namespace PersistedCache
+namespace PersistedCache.Sql
 {
     public class SqlPersistedCacheOptions
     {

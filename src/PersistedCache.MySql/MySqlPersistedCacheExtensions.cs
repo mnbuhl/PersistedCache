@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using PersistedCache.Sql;
 
 namespace PersistedCache.MySql
 {
@@ -25,7 +26,7 @@ namespace PersistedCache.MySql
             SqlPersistedCacheOptions options)
         {
             services.AddSingleton(options);
-            services.AddSingleton<ICacheDriver, MySqlPersistedCacheDriver>();
+            services.AddSingleton<ISqlCacheDriver, MySqlPersistedSqlCacheDriver>();
             services.AddSingleton<IPersistedCache, SqlPersistedCache>();
 
             return services;

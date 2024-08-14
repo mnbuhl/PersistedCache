@@ -3,13 +3,13 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PersistedCache.Internals
+namespace PersistedCache.Sql
 {
     internal class SqlConnectionFactory
     {
-        private readonly ICacheDriver _driver;
+        private readonly ISqlCacheDriver _driver;
 
-        public SqlConnectionFactory(ICacheDriver driver)
+        public SqlConnectionFactory(ISqlCacheDriver driver)
         {
             _driver = driver;
         }

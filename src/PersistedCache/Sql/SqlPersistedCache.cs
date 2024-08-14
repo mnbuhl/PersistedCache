@@ -3,17 +3,16 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using PersistedCache.Internals;
 
-namespace PersistedCache
+namespace PersistedCache.Sql
 {
     public class SqlPersistedCache : IPersistedCache
     {
-        private readonly ICacheDriver _driver;
+        private readonly ISqlCacheDriver _driver;
         private readonly SqlPersistedCacheOptions _options;
         private readonly SqlConnectionFactory _connectionFactory;
 
-        public SqlPersistedCache(ICacheDriver driver, SqlPersistedCacheOptions options)
+        public SqlPersistedCache(ISqlCacheDriver driver, SqlPersistedCacheOptions options)
         {
             _driver = driver;
             _options = options;

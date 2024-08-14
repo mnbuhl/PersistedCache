@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PersistedCache.Internals
+namespace PersistedCache
 {
     internal class PersistedCacheEntry
     {

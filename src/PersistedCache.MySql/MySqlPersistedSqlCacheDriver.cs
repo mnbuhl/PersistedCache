@@ -1,13 +1,14 @@
 ﻿using System.Data.Common;
 using MySql.Data.MySqlClient;
+using PersistedCache.Sql;
 
 namespace PersistedCache.MySql
 {
-    public class MySqlPersistedCacheDriver : ICacheDriver
+    public class MySqlPersistedSqlCacheDriver : ISqlCacheDriver
     {
         private readonly SqlPersistedCacheOptions _options;
 
-        public MySqlPersistedCacheDriver(SqlPersistedCacheOptions options)
+        public MySqlPersistedSqlCacheDriver(SqlPersistedCacheOptions options)
         {
             _options = options;
         }
