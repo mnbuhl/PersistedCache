@@ -7,7 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql"));
+builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql"), options =>
+{
+    options.TableName = "persisted_cache";
+});
 
 var app = builder.Build();
 

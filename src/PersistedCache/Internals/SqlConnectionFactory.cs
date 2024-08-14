@@ -3,50 +3,15 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PersistedCache
+namespace PersistedCache.Internals
 {
-    internal class ConnectionFactory
+    internal class SqlConnectionFactory
     {
         private readonly ICacheDriver _driver;
 
-        public ConnectionFactory(ICacheDriver driver)
+        public SqlConnectionFactory(ICacheDriver driver)
         {
             _driver = driver;
-        }
-        
-        public void RunInConnection(Action<IDbConnection> action)
-        {
-            using var connection = _driver.CreateConnection();
-            connection.Open();
-
-            action(connection);
-        }
-        
-        public T RunInConnection<T>(Func<IDbConnection, T> action)
-        {
-            using var connection = _driver.CreateConnection();
-            connection.Open();
-
-            return action(connection);
-        }
-        
-        public async Task RunInConnectionAsync(Func<IDbConnection, Task> action,
-            CancellationToken cancellationToken = default)
-        {
-            await using var connection = _driver.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
-
-            await action(connection);
-        }
-        
-        public async Task<T> RunInConnectionAsync<T>(
-            Func<IDbConnection, Task<T>> action,
-            CancellationToken cancellationToken = default)
-        {
-            await using var connection = _driver.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
-
-            return await action(connection);
         }
 
         public void RunInTransaction(Action<IDbConnection, IDbTransaction> action)

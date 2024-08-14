@@ -3,23 +3,18 @@ using System.Text.Json;
 
 namespace PersistedCache
 {
-    public class PersistedCacheOptions
+    public class SqlPersistedCacheOptions
     {
-        private string _tableName = "persisted_cache";
         private TimeSpan _purgeInterval = TimeSpan.FromHours(24);
+        private string _tableName = "persisted_cache";
 
-        public PersistedCacheOptions(string connectionString)
+        public SqlPersistedCacheOptions(string connectionString)
         {
             ConnectionString = !string.IsNullOrWhiteSpace(connectionString) 
                 ? connectionString 
                 : throw new ArgumentException("Connection string cannot be null or empty.");
         }
         
-        public string ConnectionString { get; }
-        public bool PurgeExpiredEntries { get; set; } = true;
-        public bool CreateTableIfNotExists { get; set; } = true;
-        public JsonSerializerOptions JsonOptions { get; set; } = new JsonSerializerOptions();
-
         public string TableName
         {
             get => _tableName; 
@@ -27,6 +22,11 @@ namespace PersistedCache
                 ? value 
                 : throw new ArgumentException("Table name cannot be null or empty.");
         }
+        
+        public bool CreateTableIfNotExists { get; set; } = true;
+        public string ConnectionString { get; }
+        public bool PurgeExpiredEntries { get; set; } = true;
+        public JsonSerializerOptions JsonOptions { get; set; } = new JsonSerializerOptions();
 
         public TimeSpan PurgeInterval
         {

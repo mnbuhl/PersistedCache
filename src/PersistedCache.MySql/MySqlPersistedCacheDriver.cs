@@ -5,9 +5,9 @@ namespace PersistedCache.MySql
 {
     public class MySqlPersistedCacheDriver : ICacheDriver
     {
-        private readonly PersistedCacheOptions _options;
+        private readonly SqlPersistedCacheOptions _options;
 
-        public MySqlPersistedCacheDriver(PersistedCacheOptions options)
+        public MySqlPersistedCacheDriver(SqlPersistedCacheOptions options)
         {
             _options = options;
         }
@@ -37,13 +37,15 @@ namespace PersistedCache.MySql
         public string ForgetScript => $@"
             DELETE FROM {_options.TableName}
             WHERE `key` = @Key;";
-        
+
         public string FlushScript => $@"
             DELETE FROM {_options.TableName};";
 
         public string FlushPatternScript => $@"
             DELETE FROM {_options.TableName}
             WHERE `key` LIKE @Pattern;";
+
+        public char Wildcard => '%';
 
         public DbConnection CreateConnection()
         {

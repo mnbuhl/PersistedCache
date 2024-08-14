@@ -3,27 +3,29 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using PersistedCache.Internals;
 
 namespace PersistedCache
 {
-    public class PersistedCache : IPersistedCache
+    public class SqlPersistedCache : IPersistedCache
     {
         private readonly ICacheDriver _driver;
-        private readonly PersistedCacheOptions _options;
-        private readonly ConnectionFactory _connectionFactory;
+        private readonly SqlPersistedCacheOptions _options;
+        private readonly SqlConnectionFactory _connectionFactory;
 
-        public PersistedCache(ICacheDriver driver, PersistedCacheOptions options)
+        public SqlPersistedCache(ICacheDriver driver, SqlPersistedCacheOptions options)
         {
             _driver = driver;
             _options = options;
-            _connectionFactory = new ConnectionFactory(_driver);
+            _connectionFactory = new SqlConnectionFactory(_driver);
 
             if (options.CreateTableIfNotExists)
             {
-                _connectionFactory.RunInConnection((connection) =>
+                _connectionFactory.RunInTransaction((connection, transaction) =>
                 {
                     connection.Execute(
-                        _driver.SetupStorageScript
+                        _driver.SetupStorageScript,
+                        transaction: transaction
                     );
                 });
 
@@ -31,17 +33,14 @@ namespace PersistedCache
             }
         }
 
+        /// <inheritdoc />
         public void Set<T>(string key, T value, TimeSpan expiry)
         {
-            var expiryDate = expiry == TimeSpan.MaxValue
-                ? DateTimeOffset.MaxValue
-                : DateTimeOffset.UtcNow.Add(expiry);
-            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = expiryDate
+                Expiry = GetExpiryDate(expiry)
             };
 
             _connectionFactory.RunInTransaction((connection, transaction) =>
@@ -54,23 +53,21 @@ namespace PersistedCache
             });
         }
 
+        /// <inheritdoc />
         public void SetForever<T>(string key, T value)
         {
             Set(key, value, TimeSpan.MaxValue);
         }
 
+        /// <inheritdoc />
         public async Task SetAsync<T>(string key, T value, TimeSpan expiry,
             CancellationToken cancellationToken = default)
         {
-            var expiryDate = expiry == TimeSpan.MaxValue
-                ? DateTimeOffset.MaxValue
-                : DateTimeOffset.UtcNow.Add(expiry);
-            
             var entry = new PersistedCacheEntry
             {
                 Key = key,
                 Value = JsonSerializer.Serialize(value, _options.JsonOptions),
-                Expiry = expiryDate
+                Expiry = GetExpiryDate(expiry)
             };
 
             await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
@@ -86,18 +83,21 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
         {
             return SetAsync(key, value, TimeSpan.MaxValue, cancellationToken);
         }
 
+        /// <inheritdoc />
         public T Get<T>(string key)
         {
-            return _connectionFactory.RunInConnection(connection =>
+            return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var res = connection.QueryFirstOrDefault<string>(
                     _driver.GetScript,
-                    new { Key = key }
+                    new { Key = key },
+                    transaction
                 );
 
                 return !string.IsNullOrWhiteSpace(res)
@@ -106,14 +106,16 @@ namespace PersistedCache
             });
         }
 
+        /// <inheritdoc />
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            return await _connectionFactory.RunInConnectionAsync(async connection =>
+            return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 var res = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
                         _driver.GetScript,
                         new { Key = key },
+                        transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -124,47 +126,96 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public T GetOrSet<T>(string key, Func<T> valueFactory, TimeSpan expiry)
         {
-            var value = Get<T>(key);
-
-            if (value != null)
+            return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
-                return value;
-            }
+                var value = connection.QueryFirstOrDefault<string>(
+                    _driver.GetScript,
+                    new { Key = key },
+                    transaction
+                );
 
-            value = valueFactory();
-            Set(key, value, expiry);
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return JsonSerializer.Deserialize<T>(value, _options.JsonOptions);
+                }
 
-            return value;
+                var result = valueFactory();
+
+                var entry = new PersistedCacheEntry
+                {
+                    Key = key,
+                    Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                    Expiry = GetExpiryDate(expiry)
+                };
+
+                connection.Execute(
+                    _driver.SetScript,
+                    entry,
+                    transaction
+                );
+
+                return result;
+            });
         }
 
+        /// <inheritdoc />
         public T GetOrSetForever<T>(string key, Func<T> valueFactory)
         {
             return GetOrSet(key, valueFactory, TimeSpan.MaxValue);
         }
 
+        /// <inheritdoc />
         public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, TimeSpan expiry,
             CancellationToken cancellationToken = default)
         {
-            var value = await GetAsync<T>(key, cancellationToken);
-
-            if (value != null)
+            return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
-                return value;
-            }
+                var value = await connection.QueryFirstOrDefaultAsync<string>(
+                    new CommandDefinition(
+                        _driver.GetScript,
+                        new { Key = key },
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
 
-            value = await valueFactory();
-            await SetAsync(key, value, expiry, cancellationToken);
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return JsonSerializer.Deserialize<T>(value, _options.JsonOptions);
+                }
 
-            return value;
+                var result = await valueFactory();
+
+                var entry = new PersistedCacheEntry
+                {
+                    Key = key,
+                    Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                    Expiry = GetExpiryDate(expiry)
+                };
+
+                await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _driver.SetScript,
+                        entry,
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+
+                return result;
+            }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default)
         {
             return GetOrSetAsync(key, valueFactory, TimeSpan.MaxValue, cancellationToken);
         }
 
+        /// <inheritdoc />
         public void Forget(string key)
         {
             _connectionFactory.RunInTransaction((connection, transaction) =>
@@ -177,6 +228,7 @@ namespace PersistedCache
             });
         }
 
+        /// <inheritdoc />
         public Task ForgetAsync(string key, CancellationToken cancellationToken = default)
         {
             return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
@@ -192,22 +244,61 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public T Pull<T>(string key)
         {
-            var value = Get<T>(key);
-            Forget(key);
+            return _connectionFactory.RunInTransaction((connection, transaction) =>
+            {
+                var value = connection.QueryFirstOrDefault<string>(
+                    new CommandDefinition(
+                        _driver.GetScript,
+                        new { Key = key },
+                        transaction
+                    )
+                );
 
-            return value;
+                connection.Execute(
+                    _driver.ForgetScript,
+                    new { Key = key },
+                    transaction
+                );
+
+                return !string.IsNullOrWhiteSpace(value)
+                    ? JsonSerializer.Deserialize<T>(value, _options.JsonOptions)
+                    : default;
+            });
         }
 
+        /// <inheritdoc />
         public async Task<T> PullAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            var value = await GetAsync<T>(key, cancellationToken);
-            await ForgetAsync(key, cancellationToken);
-            
-            return value;
+            return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+            {
+                var value = await connection.QueryFirstOrDefaultAsync<string>(
+                    new CommandDefinition(
+                        _driver.GetScript,
+                        new { Key = key },
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+
+                await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _driver.ForgetScript,
+                        new { Key = key },
+                        transaction,
+                        cancellationToken: cancellationToken
+                    )
+                );
+
+                return !string.IsNullOrWhiteSpace(value)
+                    ? JsonSerializer.Deserialize<T>(value, _options.JsonOptions)
+                    : default;
+            }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public void Flush()
         {
             _connectionFactory.RunInTransaction((connection, transaction) =>
@@ -219,6 +310,7 @@ namespace PersistedCache
             });
         }
 
+        /// <inheritdoc />
         public Task FlushAsync(CancellationToken cancellationToken = default)
         {
             return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
@@ -233,9 +325,10 @@ namespace PersistedCache
             }, cancellationToken);
         }
 
+        /// <inheritdoc />
         public void Flush(string pattern)
         {
-            ValidatePattern(pattern);
+            pattern = ValidatePattern(pattern);
             
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
@@ -247,9 +340,10 @@ namespace PersistedCache
             });
         }
 
+        /// <inheritdoc />
         public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
         {
-            ValidatePattern(pattern);
+            pattern = ValidatePattern(pattern);
             
             return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
@@ -264,17 +358,26 @@ namespace PersistedCache
             }, cancellationToken);
         }
         
-        private static void ValidatePattern(string pattern)
+        private string ValidatePattern(string pattern)
         {
             if (string.IsNullOrWhiteSpace(pattern))
             {
                 throw new ArgumentException("Pattern cannot be empty", nameof(pattern));
             }
             
-            if (!pattern.Contains("*"))
+            if (!pattern.StartsWith('*') && !pattern.EndsWith('*'))
             {
                 throw new ArgumentException("Pattern must begin or end with a '*'", nameof(pattern));
             }
+            
+            return pattern.Replace('*', _driver.Wildcard);
+        }
+        
+        private static DateTimeOffset GetExpiryDate(TimeSpan expiry)
+        {
+            return expiry == TimeSpan.MaxValue
+                ? DateTimeOffset.MaxValue
+                : DateTimeOffset.UtcNow.Add(expiry);
         }
     }
 }
