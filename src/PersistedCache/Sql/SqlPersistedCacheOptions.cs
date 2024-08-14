@@ -15,6 +15,10 @@ namespace PersistedCache.Sql
                 : throw new ArgumentException("Connection string cannot be null or empty.");
         }
         
+        /// <summary>
+        /// The name of the table to use for the cache.
+        /// </summary>
+        /// <exception cref="ArgumentException">Thrown when the table name is null or empty.</exception>
         public string TableName
         {
             get => _tableName; 
@@ -23,11 +27,24 @@ namespace PersistedCache.Sql
                 : throw new ArgumentException("Table name cannot be null or empty.");
         }
         
+        /// <summary>
+        /// Whether to create the table if it does not exist.
+        /// </summary>
         public bool CreateTableIfNotExists { get; set; } = true;
+        
+        /// <summary>
+        /// The connection string to use for the cache.
+        /// </summary>
         public string ConnectionString { get; }
+        
+        /// <summary>
+        /// Whether to purge expired entries.
+        /// </summary>
         public bool PurgeExpiredEntries { get; set; } = true;
-        public JsonSerializerOptions JsonOptions { get; set; } = new JsonSerializerOptions();
-
+        
+        /// <summary>
+        /// The interval at which to purge expired entries.
+        /// </summary>
         public TimeSpan PurgeInterval
         {
             get => _purgeInterval; 
@@ -35,5 +52,12 @@ namespace PersistedCache.Sql
                 ? throw new ArgumentException("Purge interval must be positive.") 
                 : value;
         }
+        
+        /// <summary>
+        /// The options to use for JSON serialization.
+        /// </summary>
+        public JsonSerializerOptions JsonOptions { get; set; } = new JsonSerializerOptions();
+
+        
     }
 }

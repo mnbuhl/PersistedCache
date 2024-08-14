@@ -357,9 +357,7 @@ namespace PersistedCache.Sql
             }, cancellationToken);
         }
 
-        /// <summary>
-        /// Purge the cache of expired entries
-        /// </summary>
+        /// <inheritdoc />
         public void Purge()
         {
             _connectionFactory.RunInTransaction((connection, transaction) =>

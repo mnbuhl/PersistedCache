@@ -155,6 +155,9 @@ namespace PersistedCache
         /// <example>await FlushAsync("users.*")</example>
         Task FlushAsync(string pattern, CancellationToken cancellationToken = default);
         
+        /// <summary>
+        /// Purge the cache of expired entries
+        /// </summary>
         void Purge();
     }
 }
