@@ -29,12 +29,12 @@ namespace PersistedCache.Tests
         public void Purge_RemovesExpiredKeys()
         {
             // Arrange
-            _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
-            _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
+            _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
+            _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
             _cache.SetForever("key3", _fixture.Create<RandomObject>());
             _cache.SetForever("key4", _fixture.Create<RandomObject>());
         
-            Thread.Sleep(2);
+            Thread.Sleep(2000);
         
             // Act
             _cache.Purge();
