@@ -7,5 +7,5 @@ jobs:
     name: Publish PersistedCache.MySql package to NuGet
     uses: ./.github/workflows/publish-reuse.yml
     with:
-      PACKAGE_ID: 'PersistedCache'
+      PACKAGE_ID: 'PersistedCache.MySql'
     secrets: inherit
