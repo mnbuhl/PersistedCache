@@ -19,6 +19,8 @@ namespace PersistedCache.Sql
             using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
             action(connection, transaction);
             transaction.Commit();
+            
+            connection.Close();
         }
 
         public T? RunInTransaction<T>(Func<IDbConnection, IDbTransaction, T> action)
@@ -30,6 +32,8 @@ namespace PersistedCache.Sql
             var result = action(connection, transaction);
 
             transaction.Commit();
+            
+            connection.Close();
 
             return result;
         }
@@ -43,6 +47,8 @@ namespace PersistedCache.Sql
             using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
             await action(connection, transaction);
             transaction.Commit();
+            
+            connection.Close();
         }
 
         public async Task<T?> RunInTransactionAsync<T>(
@@ -56,6 +62,8 @@ namespace PersistedCache.Sql
             var result = await action(connection, transaction);
             transaction.Commit();
 
+            connection.Close();
+            
             return result;
         }
     }
