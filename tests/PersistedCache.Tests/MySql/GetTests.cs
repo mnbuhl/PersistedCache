@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
@@ -8,6 +8,8 @@ namespace PersistedCache.Tests.MySql;
 public class GetTests : BaseTest
 {
     private readonly IPersistedCache _cache;
+    private readonly Fixture _fixture = new();
+    
     public GetTests(MySqlFixture fixture) : base(fixture.PersistedCache)
     {
         _cache = fixture.PersistedCache;
@@ -34,7 +36,7 @@ public class GetTests : BaseTest
     {
         // Arrange
         const string key = "random_object";
-        var value = new RandomObject();
+        var value = _fixture.Create<RandomObject>();
         Arrange(key, value);
         
         // Act

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
@@ -8,6 +8,7 @@ namespace PersistedCache.Tests.MySql;
 public class SetTests
 {
     private readonly IPersistedCache _cache;
+    private readonly Fixture _fixture = new();
 
     public SetTests(MySqlFixture fixture)
     {
@@ -34,7 +35,7 @@ public class SetTests
     {
         // Arrange
         const string key = "random_object";
-        var value = new RandomObject();
+        var value = _fixture.Create<RandomObject>();
 
         // Act
         _cache.Set(key, value, Expire.InMinutes(5));
@@ -53,7 +54,7 @@ public class SetTests
         
         for (var i = 0; i < 100; i++)
         {
-            value.Add(new RandomObject());
+            value.Add(_fixture.Create<RandomObject>());
         }
         
         // Act
