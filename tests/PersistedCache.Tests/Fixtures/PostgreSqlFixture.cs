@@ -1,21 +1,23 @@
 ﻿using PersistedCache.PostgreSql;
 using PersistedCache.Tests.Common;
 using Testcontainers.PostgreSql;
+using Xunit;
 
-namespace PersistedCache.Tests.Fixtures;
-
-[CollectionDefinition(nameof(PostgreSqlFixture))]
-public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlCacheDriver>, ICollectionFixture<PostgreSqlFixture>
+namespace PersistedCache.Tests.Fixtures
 {
-    public PostgreSqlFixture()
+    [CollectionDefinition(nameof(PostgreSqlFixture))]
+    public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlCacheDriver>, ICollectionFixture<PostgreSqlFixture>
     {
-        Container = new PostgreSqlBuilder()
-            .WithDatabase("PersistedCache")
-            .WithUsername("postgres")
-            .WithPassword("postgres")
-            .Build();
-    }
+        public PostgreSqlFixture()
+        {
+            Container = new PostgreSqlBuilder()
+                .WithDatabase("PersistedCache")
+                .WithUsername("postgres")
+                .WithPassword("postgres")
+                .Build();
+        }
 
-    protected override char LeftEscapeCharacter => '"';
-    protected override char RightEscapeCharacter => '"';
+        protected override char LeftEscapeCharacter => '"';
+        protected override char RightEscapeCharacter => '"';
+    }
 }
