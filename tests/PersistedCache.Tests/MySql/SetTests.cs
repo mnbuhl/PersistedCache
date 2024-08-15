@@ -45,6 +45,26 @@ public class SetTests
     }
 
     [Fact]
+    public void Set_WithKeyAndArrayValue_SetsValue()
+    {
+        // Arrange
+        const string key = "array";
+        var value = new List<RandomObject>();
+        
+        for (var i = 0; i < 100; i++)
+        {
+            value.Add(new RandomObject());
+        }
+        
+        // Act
+        _cache.Set(key, value, Expire.InMinutes(5));
+        
+        // Assert
+        var result = _cache.Get<List<RandomObject>>(key);
+        result.Should().BeEquivalentTo(value);
+    }
+
+    [Fact]
     public void Set_ForExistingKeyWithNewValue_UpdatesValue()
     {
         // Arrange
@@ -69,7 +89,35 @@ public class SetTests
         const string value = "value";
 
         // Act
-        Action act = () => _cache.Set(key, value, Expire.InMinutes(-5));
+        var act = () => _cache.Set(key, value, Expire.InMinutes(-5));
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
+    }
+    
+    [Fact]
+    public void Set_WithInvalidKey_ThrowsArgumentException()
+    {
+        // Arrange
+        const string? key = null;
+        const string value = "value";
+
+        // Act
+        var act = () => _cache.Set(key!, value, Expire.InMinutes(5));
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
+    }
+    
+    [Fact]
+    public void Set_WithTooLongKey_ThrowsArgumentException()
+    {
+        // Arrange
+        var key = "a".PadRight(256, 'a');
+        const string value = "value";
+
+        // Act
+        var act = () => _cache.Set(key, value, Expire.InMinutes(5));
 
         // Assert
         act.Should().Throw<ArgumentException>();
