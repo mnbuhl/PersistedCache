@@ -23,12 +23,15 @@ Or simply add it from the NuGet package gallery.
 Currently supported and planned resources are:
 * [x] `MySQL` - [PersistedCache.MySql](https://www.nuget.org/packages/PersistedCache.MySql)
 * [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
-* [ ] `SQL Server`
+* [x] `SQL Server` - [PersistedCache.SqlServer](https://www.nuget.org/packages/PersistedCache.SqlServer)
 * [ ] `SQLite`
 * [ ] `MongoDB`
 * [ ] `File System`
 * [ ] `AWS S3` (maybe)
 * [ ] `Azure Blob Storage` (maybe)
+
+The reason that the version does not match is due to semantic versioning. 
+The base package is versioned independently of the resource packages. All packages are on the latest version, regardless of the version number.
 
 ### Add the service to your DI container
 
