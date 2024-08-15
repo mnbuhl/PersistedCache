@@ -26,13 +26,9 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <Optimize>true</Optimize>
     </PropertyGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <ProjectReference Include="..\PersistedCache\PersistedCache.csproj" />
-    </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="PersistedCache" Version="0.0.2" />
+      <PackageReference Include="PersistedCache" Version="0.0.3" />
       <PackageReference Include="MySql.Data" Version="9.0.0" />
     </ItemGroup>
 

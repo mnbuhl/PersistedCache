@@ -19,22 +19,8 @@ public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime where TDrive
     public async Task InitializeAsync()
     {
         await Container.StartAsync();
-        
-        ISqlPersistedCacheOptions options = new SqlPersistedCacheOptions((Container as IDatabaseContainer)!.GetConnectionString())
-        {
-            CreateTableIfNotExists = false,
-            TableName = TestConstants.TableName,
-        };
 
-        if (typeof(TDriver) == typeof(PostgreSqlCacheDriver))
-        {
-            options = new PostgreSqlPersistedCacheOptions((Container as IDatabaseContainer)!.GetConnectionString())
-            {
-                CreateTableIfNotExists = false,
-                TableName = TestConstants.TableName,
-            };
-        }
-
+        var options = GetOptions((Container as IDatabaseContainer)!.GetConnectionString());
         var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options)!;
         
         SetupStorage(driver);
@@ -65,5 +51,19 @@ public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime where TDrive
         {
             connection.Execute(driver.SetupStorageScript, transaction: transaction);
         });
+    }
+    
+    private static ISqlPersistedCacheOptions GetOptions(string connectionString)
+    {
+        ISqlPersistedCacheOptions options = new SqlPersistedCacheOptions(connectionString);
+        if (typeof(TDriver) == typeof(PostgreSqlCacheDriver))
+        {
+            options = new PostgreSqlPersistedCacheOptions(connectionString);
+        }
+        
+        options.TableName = TestConstants.TableName;
+        options.CreateTableIfNotExists = false;
+
+        return options;
     }
 }

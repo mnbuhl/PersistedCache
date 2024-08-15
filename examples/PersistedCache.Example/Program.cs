@@ -69,6 +69,13 @@ app.MapDelete("/flush", (IPersistedCache cache) =>
     .WithName("FlushCache")
     .WithOpenApi();
 
+app.MapDelete("/purge", (IPersistedCache cache) =>
+    {
+        cache.Purge();
+    })
+    .WithName("PurgeCache")
+    .WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
