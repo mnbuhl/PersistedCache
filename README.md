@@ -10,7 +10,6 @@ It is designed to be simple and easy to use, meanwhile it spare you the hassle a
 * You need a cache that can be persisted to disk.
 * You need a cache that can be shared across multiple applications.
 
-
 ### How to use it?
 
 Install the specific package for the resource you want to use. For example, if you want to use MySQL as the cache store, you would install the `PersistedCache.MySql` package.

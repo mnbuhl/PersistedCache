@@ -8,6 +8,8 @@ on:
       branches: [ main ]
       paths: [ 'src/**', 'tests/**', '.github/workflows/**' ]
 
+  workflow_call:
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
