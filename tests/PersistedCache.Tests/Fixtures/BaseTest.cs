@@ -14,9 +14,8 @@ public class BaseTest : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        _cache.Purge();
-        return Task.CompletedTask;
+        await _cache.FlushAsync();
     }
 }
