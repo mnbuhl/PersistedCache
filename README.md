@@ -12,7 +12,7 @@ It is designed to be simple and easy to use, meanwhile it spare you the hassle a
 
 ### How to use it?
 
-Install the specific package for the resource you want to use. For example, if you want to use MySQL as the cache store, you would install the `PersistedCache.MySql` package.
+Install the specific package for the resource you want to use. For example, if you want to use MySQL as the cache store, you would install the `PersistedCache.MySql` package. (Installing the base package is not necessary)
 
 ```bash
 dotnet add package PersistedCache.MySql
@@ -106,3 +106,5 @@ public class MyService
 ### Want to contribute?
 
 If you want to contribute to this project, please feel free to open an issue or a pull request.
+
+Want to make your own adapter? Add the `PersistedCache` package to your project and implement the `IPersistedCache` interface.
