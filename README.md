@@ -22,10 +22,10 @@ Or simply add it from the NuGet package gallery.
 
 Currently supported and planned resources are:
 * [x] `MySQL` - [PersistedCache.MySql](https://www.nuget.org/packages/PersistedCache.MySql)
-* [ ] `PostgreSQL`
+* [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
+* [ ] `SQL Server`
 * [ ] `SQLite`
 * [ ] `MongoDB`
-* [ ] `SQL Server`
 * [ ] `File System`
 * [ ] `AWS S3` (maybe)
 * [ ] `Azure Blob Storage` (maybe)
