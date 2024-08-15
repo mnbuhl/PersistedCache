@@ -6,6 +6,7 @@ using FluentAssertions;
 using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
 using PersistedCache.Sql;
+using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -160,6 +161,14 @@ namespace PersistedCache.Tests
     public class PostgreSqlSetTestsExecutor : SetTests<PostgreSqlCacheDriver>
     {
         public PostgreSqlSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        {
+        }
+    }
+    
+    [Collection(nameof(SqlServerFixture))]
+    public class SqlServerSetTestsExecutor : SetTests<SqlServerCacheDriver>
+    {
+        public SqlServerSetTestsExecutor(SqlServerFixture fixture) : base(fixture)
         {
         }
     }

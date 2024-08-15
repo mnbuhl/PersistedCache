@@ -13,7 +13,7 @@ namespace PersistedCache.MySql
         public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services,
             string connectionString)
         {
-            return services.AddMySqlPersistedCache(new SqlPersistedCacheOptions(connectionString));
+            return services.AddMySqlPersistedCache(new MySqlPersistedCacheOptions(connectionString));
         }
 
         /// <summary>
@@ -23,9 +23,9 @@ namespace PersistedCache.MySql
         /// <param name="connectionString">Connection string to the MySql database.</param>
         /// <param name="configure">Action to configure the cache options.</param>
         public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services,
-            string connectionString, Action<SqlPersistedCacheOptions> configure)
+            string connectionString, Action<MySqlPersistedCacheOptions> configure)
         {
-            var options = new SqlPersistedCacheOptions(connectionString);
+            var options = new MySqlPersistedCacheOptions(connectionString);
             configure(options);
 
             return services.AddMySqlPersistedCache(options);
@@ -37,7 +37,7 @@ namespace PersistedCache.MySql
         /// <param name="services">Service collection.</param>
         /// <param name="options">Options for the cache.</param>
         public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services,
-            SqlPersistedCacheOptions options)
+            MySqlPersistedCacheOptions options)
         {
             services.AddSingleton<ISqlPersistedCacheOptions>(options);
             services.AddSingleton<ISqlCacheDriver, MySqlCacheDriver>();
