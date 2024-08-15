@@ -6,9 +6,9 @@ namespace PersistedCache.Sql
     {
         private Timer? _timer;
         private readonly IPersistedCache _cache;
-        private readonly SqlPersistedCacheOptions _options;
+        private readonly ISqlPersistedCacheOptions _options;
         
-        public SqlPurgeCacheBackgroundJob(IPersistedCache cache, SqlPersistedCacheOptions options)
+        public SqlPurgeCacheBackgroundJob(IPersistedCache cache, ISqlPersistedCacheOptions options)
         {
             _cache = cache;
             _options = options;

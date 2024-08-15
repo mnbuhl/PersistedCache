@@ -34,7 +34,7 @@ public abstract class PurgeTests<TDriver> : BaseTest where TDriver : ISqlCacheDr
         _cache.Purge();
         
         // Assert
-        var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+        var result = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|>");
         result.Should().HaveCount(2);
     }
 
@@ -49,7 +49,7 @@ public abstract class PurgeTests<TDriver> : BaseTest where TDriver : ISqlCacheDr
         _cache.Purge();
 
         // Assert
-        var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+        var result = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|>");
         result.Should().HaveCount(2);
     }
 }

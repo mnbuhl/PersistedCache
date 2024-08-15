@@ -63,7 +63,7 @@ public abstract class PullTests<TDriver> : BaseTest where TDriver : ISqlCacheDri
         
         // Assert
         result.Should().BeNull();
-        var resultAfterPull = _executeSql($"SELECT * FROM {TestConstants.TableName} WHERE `key` = '{key}'");
+        var resultAfterPull = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|> WHERE <|key|> = '{key}'");
         resultAfterPull.Should().BeEmpty();
     }
     

@@ -2,7 +2,7 @@
 
 namespace PersistedCache.Sql
 {
-    public class SqlPersistedCacheOptions
+    public class SqlPersistedCacheOptions : ISqlPersistedCacheOptions
     {
         private TimeSpan _purgeInterval = TimeSpan.FromHours(24);
         private string _tableName = "persisted_cache";

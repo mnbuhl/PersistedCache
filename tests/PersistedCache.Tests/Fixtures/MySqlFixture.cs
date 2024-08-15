@@ -16,4 +16,7 @@ public class MySqlFixture : BaseDatabaseFixture<MySqlCacheDriver>, ICollectionFi
             .WithPassword("root")
             .Build();
     }
+
+    protected override char LeftEscapeCharacter => '`';
+    protected override char RightEscapeCharacter => '`';
 }

@@ -6,11 +6,11 @@ namespace PersistedCache.PostgreSql;
 
 public class PostgreSqlCacheDriver : ISqlCacheDriver
 {
-    private readonly SqlPersistedCacheOptions _options;
+    private readonly PostgreSqlPersistedCacheOptions _options;
 
-    public PostgreSqlCacheDriver(SqlPersistedCacheOptions options)
+    public PostgreSqlCacheDriver(ISqlPersistedCacheOptions options)
     {
-        _options = options;
+        _options = (PostgreSqlPersistedCacheOptions)options;
     }
     
     public string SetupStorageScript => 
@@ -19,13 +19,13 @@ public class PostgreSqlCacheDriver : ISqlCacheDriver
           DO
           $$
           BEGIN
-          CREATE TABLE IF NOT EXISTS "{_options.TableName}" (
+          CREATE TABLE IF NOT EXISTS "{_options.Schema}"."{_options.TableName}" (
               "key" VARCHAR(255) NOT NULL PRIMARY KEY,
               "value" JSONB NOT NULL,
               "expiry" TIMESTAMP(6) WITH TIME ZONE NOT NULL
           );
-          CREATE INDEX IF NOT EXISTS idx_key_expiry ON "{_options.TableName}" ("key", "expiry");
-          CREATE INDEX IF NOT EXISTS idx_expiry ON "{_options.TableName}" ("expiry");
+          CREATE INDEX IF NOT EXISTS idx_key_expiry ON "{_options.Schema}"."{_options.TableName}" ("key", "expiry");
+          CREATE INDEX IF NOT EXISTS idx_expiry ON "{_options.Schema}"."{_options.TableName}" ("expiry");
           END;
           $$
           """;
@@ -34,7 +34,7 @@ public class PostgreSqlCacheDriver : ISqlCacheDriver
         /*lang=PostgreSQL*/
         $"""
          SELECT "value"
-         FROM "{_options.TableName}"
+         FROM "{_options.Schema}"."{_options.TableName}"
          WHERE "key" = @Key
            AND "expiry" > @Expiry;
          """;
@@ -42,34 +42,34 @@ public class PostgreSqlCacheDriver : ISqlCacheDriver
     public string SetScript =>
         /*lang=PostgreSQL*/
         $"""
-         INSERT INTO "{_options.TableName}" ("key", "value", "expiry")
-         VALUES (@Key, to_json(@Value), @Expiry)
+         INSERT INTO "{_options.Schema}"."{_options.TableName}" ("key", "value", "expiry")
+         VALUES (@Key, cast(@Value as jsonb), @Expiry)
          ON CONFLICT ("key") DO UPDATE 
-         SET "value" = to_json(@Value), "expiry" = @Expiry;
+         SET "value" = cast(@Value as jsonb), "expiry" = @Expiry;
          """;
 
     public string ForgetScript =>
         /*lang=PostgreSQL*/
         $"""
-         DELETE FROM "{_options.TableName}"
+         DELETE FROM "{_options.Schema}"."{_options.TableName}"
          WHERE "key" = @Key;
          """;
 
     public string FlushScript => 
         /*lang=PostgreSQL*/ 
-        $"""DELETE FROM "{_options.TableName}";""";
+        $"""DELETE FROM "{_options.Schema}"."{_options.TableName}";""";
 
     public string FlushPatternScript =>
         /*lang=PostgreSQL*/
         $"""
-         DELETE FROM "{_options.TableName}"
+         DELETE FROM "{_options.Schema}"."{_options.TableName}"
          WHERE "key" ILIKE @Pattern;
          """;
 
     public string PurgeScript => 
         /*lang=PostgreSQL*/
         $"""
-         DELETE FROM "{_options.TableName}"
+         DELETE FROM "{_options.Schema}"."{_options.TableName}"
          WHERE "expiry" <= @Expiry;
          """;
     

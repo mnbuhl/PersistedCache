@@ -15,4 +15,7 @@ public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlCacheDriver>, ICo
             .WithPassword("postgres")
             .Build();
     }
+
+    protected override char LeftEscapeCharacter => '"';
+    protected override char RightEscapeCharacter => '"';
 }

@@ -13,7 +13,7 @@ namespace PersistedCache.PostgreSql
         public static IServiceCollection AddPostgreSqlPersistedCache(this IServiceCollection services,
             string connectionString)
         {
-            return services.AddPostgreSqlPersistedCache(new SqlPersistedCacheOptions(connectionString));
+            return services.AddPostgreSqlPersistedCache(new PostgreSqlPersistedCacheOptions(connectionString));
         }
 
         /// <summary>
@@ -23,9 +23,9 @@ namespace PersistedCache.PostgreSql
         /// <param name="connectionString">Connection string to the PostgreSQL database.</param>
         /// <param name="configure">Action to configure the cache options.</param>
         public static IServiceCollection AddPostgreSqlPersistedCache(this IServiceCollection services,
-            string connectionString, Action<SqlPersistedCacheOptions> configure)
+            string connectionString, Action<PostgreSqlPersistedCacheOptions> configure)
         {
-            var options = new SqlPersistedCacheOptions(connectionString);
+            var options = new PostgreSqlPersistedCacheOptions(connectionString);
             configure(options);
 
             return services.AddPostgreSqlPersistedCache(options);
@@ -37,9 +37,9 @@ namespace PersistedCache.PostgreSql
         /// <param name="services">Service collection.</param>
         /// <param name="options">Options for the cache.</param>
         public static IServiceCollection AddPostgreSqlPersistedCache(this IServiceCollection services,
-            SqlPersistedCacheOptions options)
+            PostgreSqlPersistedCacheOptions options)
         {
-            services.AddSingleton(options);
+            services.AddSingleton<ISqlPersistedCacheOptions>(options);
             services.AddSingleton<ISqlCacheDriver, PostgreSqlCacheDriver>();
             services.AddSingleton<IPersistedCache, SqlPersistedCache>();
 

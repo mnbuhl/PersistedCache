@@ -16,7 +16,7 @@ namespace PersistedCache.MySql
         public string SetupStorageScript => 
             /*lang=MySQL*/
             $"""
-             CREATE TABLE IF NOT EXISTS {_options.TableName} (
+             CREATE TABLE IF NOT EXISTS `{_options.TableName}` (
                  `key` VARCHAR(255) NOT NULL PRIMARY KEY,
                  `value` JSON NOT NULL,
                  `expiry` DATETIME(6) NOT NULL,
@@ -31,7 +31,7 @@ namespace PersistedCache.MySql
             /*lang=MySQL*/
             $"""
             SELECT `value`
-            FROM {_options.TableName}
+            FROM `{_options.TableName}`
             WHERE `key` = @Key
               AND `expiry` > @Expiry;
             """;
@@ -39,7 +39,7 @@ namespace PersistedCache.MySql
         public string SetScript =>
             /*lang=MySQL*/
             $"""
-            INSERT INTO {_options.TableName} (`key`, `value`, `expiry`)
+            INSERT INTO `{_options.TableName}` (`key`, `value`, `expiry`)
             VALUES (@Key, @Value, @Expiry)
             ON DUPLICATE KEY UPDATE `value` = @value, `expiry` = @expiry;
             """;
@@ -47,7 +47,7 @@ namespace PersistedCache.MySql
         public string ForgetScript =>
             /*lang=MySQL*/
             $"""
-            DELETE FROM {_options.TableName}
+            DELETE FROM `{_options.TableName}`
             WHERE `key` = @Key;
             """;
 
@@ -58,14 +58,14 @@ namespace PersistedCache.MySql
         public string FlushPatternScript =>
             /*lang=MySQL*/
             $"""
-             DELETE FROM {_options.TableName}
+             DELETE FROM `{_options.TableName}`
              WHERE `key` LIKE @Pattern;
              """;
 
         public string PurgeScript => 
             /*lang=MySQL*/
             $"""
-             DELETE FROM {_options.TableName}
+             DELETE FROM `{_options.TableName}`
              WHERE `expiry` <= @Expiry;
              """;
 

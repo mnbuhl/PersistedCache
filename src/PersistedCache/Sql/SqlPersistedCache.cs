@@ -6,10 +6,10 @@ namespace PersistedCache.Sql
     public class SqlPersistedCache : IPersistedCache
     {
         private readonly ISqlCacheDriver _driver;
-        private readonly SqlPersistedCacheOptions _options;
+        private readonly ISqlPersistedCacheOptions _options;
         private readonly SqlConnectionFactory _connectionFactory;
 
-        public SqlPersistedCache(ISqlCacheDriver driver, SqlPersistedCacheOptions options)
+        public SqlPersistedCache(ISqlCacheDriver driver, ISqlPersistedCacheOptions options)
         {
             _driver = driver;
             _options = options;
