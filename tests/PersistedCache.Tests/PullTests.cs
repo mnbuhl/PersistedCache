@@ -62,10 +62,10 @@ namespace PersistedCache.Tests
             // Arrange
             string key = Guid.NewGuid().ToString();
             var value = _fixture.Create<RandomObject>();
-            Arrange(key, value, Expire.InMilliseconds(1));
+            Arrange(key, value, Expire.InSeconds(1));
         
             // Act
-            Thread.Sleep(2);
+            Thread.Sleep(2000);
             var result = _cache.Pull<RandomObject>(key);
         
             // Assert

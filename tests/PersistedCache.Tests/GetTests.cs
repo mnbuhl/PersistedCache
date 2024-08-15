@@ -103,10 +103,10 @@ namespace PersistedCache.Tests
             // Arrange
             const string key = "expired";
             const string value = "value";
-            Arrange(key, value, Expire.InMilliseconds(1));
+            Arrange(key, value, Expire.InSeconds(1));
         
             // Act
-            await Task.Delay(2);
+            await Task.Delay(2000);
         
             // Assert
             var result = _cache.Get<string>(key);

@@ -63,11 +63,11 @@ namespace PersistedCache.Tests
             var keys = new[] { "key1", "key2", "key3" };
             foreach (var key in keys)
             {
-                _cache.Set(key, _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
+                _cache.Set(key, _fixture.Create<RandomObject>(), Expire.InSeconds(1));
             }
         
             // Act
-            Thread.Sleep(2);
+            Thread.Sleep(2000);
             _cache.Flush();
         
             // Assert
