@@ -1,85 +1,91 @@
-﻿using PersistedCache.MySql;
+﻿using System;
+using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
 using PersistedCache.Sql;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
+using Xunit;
 
-namespace PersistedCache.Tests;
-
-public abstract class ForgetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+namespace PersistedCache.Tests
 {
-    private readonly IPersistedCache _cache;
-    private readonly Fixture _fixture = new();
-    
-    public ForgetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+    public abstract class ForgetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
     {
-        _cache = fixture.PersistedCache;
-    }
+        private readonly IPersistedCache _cache;
+        private readonly Fixture _fixture = new Fixture();
     
-    [Fact]
-    public void Forget_WithKey_RemovesValue()
-    {
-        // Arrange
-        string key = Guid.NewGuid().ToString();
-        var value = _fixture.Create<RandomObject>();
-        Arrange(key, value);
-        
-        // Act
-        _cache.Forget(key);
-        
-        // Assert
-        var result = _cache.Get<RandomObject>(key);
-        result.Should().BeNull();
-    }
+        public ForgetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        {
+            _cache = fixture.PersistedCache;
+        }
     
-    [Fact]
-    public void Forget_WithNonExistingKey_DoesNotThrow()
-    {
-        // Arrange
-        string key = Guid.NewGuid().ToString();
+        [Fact]
+        public void Forget_WithKey_RemovesValue()
+        {
+            // Arrange
+            string key = Guid.NewGuid().ToString();
+            var value = _fixture.Create<RandomObject>();
+            Arrange(key, value);
         
-        // Act
-        Action act = () => _cache.Forget(key);
+            // Act
+            _cache.Forget(key);
         
-        // Assert
-        act.Should().NotThrow();
-    }
+            // Assert
+            var result = _cache.Get<RandomObject>(key);
+            result.Should().BeNull();
+        }
     
-    [Fact]
-    public async Task ForgetAsync_WithKey_RemovesValue()
-    {
-        // Arrange
-        string key = Guid.NewGuid().ToString();
-        var value = _fixture.Create<RandomObject>();
-        Arrange(key, value);
+        [Fact]
+        public void Forget_WithNonExistingKey_DoesNotThrow()
+        {
+            // Arrange
+            string key = Guid.NewGuid().ToString();
         
-        // Act
-        await _cache.ForgetAsync(key);
+            // Act
+            Action act = () => _cache.Forget(key);
         
-        // Assert
-        var result = _cache.Get<RandomObject>(key);
-        result.Should().BeNull();
-    }
+            // Assert
+            act.Should().NotThrow();
+        }
     
-    private void Arrange<T>(string key, T value, Expire? expire = null)
-    {
-        _cache.Set(key, value, expire ?? Expire.InMinutes(5));
+        [Fact]
+        public async Task ForgetAsync_WithKey_RemovesValue()
+        {
+            // Arrange
+            string key = Guid.NewGuid().ToString();
+            var value = _fixture.Create<RandomObject>();
+            Arrange(key, value);
+        
+            // Act
+            await _cache.ForgetAsync(key);
+        
+            // Assert
+            var result = _cache.Get<RandomObject>(key);
+            result.Should().BeNull();
+        }
+    
+        private void Arrange<T>(string key, T value, Expire? expire = null)
+        {
+            _cache.Set(key, value, expire ?? Expire.InMinutes(5));
+        }
     }
-}
 
-[Collection(nameof(MySqlFixture))]
-public class MySqlForgetTestsExecutor : ForgetTests<MySqlCacheDriver>
-{
-    public MySqlForgetTestsExecutor(MySqlFixture fixture) : base(fixture)
+    [Collection(nameof(MySqlFixture))]
+    public class MySqlForgetTestsExecutor : ForgetTests<MySqlCacheDriver>
     {
+        public MySqlForgetTestsExecutor(MySqlFixture fixture) : base(fixture)
+        {
+        }
     }
-}
 
-[Collection(nameof(PostgreSqlFixture))]
-public class PostgreSqlForgetTestsExecutor : ForgetTests<PostgreSqlCacheDriver>
-{
-    public PostgreSqlForgetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+    [Collection(nameof(PostgreSqlFixture))]
+    public class PostgreSqlForgetTestsExecutor : ForgetTests<PostgreSqlCacheDriver>
     {
+        public PostgreSqlForgetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        {
+        }
     }
 }
