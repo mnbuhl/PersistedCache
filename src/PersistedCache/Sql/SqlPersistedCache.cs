@@ -20,8 +20,10 @@ namespace PersistedCache.Sql
                 _connectionFactory.RunInTransaction((connection, transaction) =>
                 {
                     connection.Execute(
-                        _driver.SetupStorageScript,
-                        transaction: transaction
+                        new CommandDefinition(
+                            commandText: _driver.SetupStorageScript,
+                            transaction: transaction
+                        )
                     );
                 });
 
@@ -34,7 +36,7 @@ namespace PersistedCache.Sql
         {
             ValidateKey(key);
             ValidateValue(value);
-            
+
             var entry = new PersistedCacheEntry
             {
                 Key = key,
@@ -45,9 +47,11 @@ namespace PersistedCache.Sql
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
-                    _driver.SetScript,
-                    entry,
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.SetScript,
+                        parameters: entry,
+                        transaction: transaction
+                    )
                 );
             });
         }
@@ -64,7 +68,7 @@ namespace PersistedCache.Sql
         {
             ValidateKey(key);
             ValidateValue(value);
-            
+
             var entry = new PersistedCacheEntry
             {
                 Key = key,
@@ -76,9 +80,9 @@ namespace PersistedCache.Sql
             {
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.SetScript,
-                        entry,
-                        transaction,
+                        commandText: _driver.SetScript,
+                        parameters: entry,
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -98,9 +102,11 @@ namespace PersistedCache.Sql
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var res = connection.QueryFirstOrDefault<string>(
-                    _driver.GetScript,
-                    new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction
+                    )
                 );
 
                 return !string.IsNullOrWhiteSpace(res)
@@ -117,9 +123,9 @@ namespace PersistedCache.Sql
             {
                 var res = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
-                        _driver.GetScript,
-                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                        transaction,
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -137,9 +143,11 @@ namespace PersistedCache.Sql
             return _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 var value = connection.QueryFirstOrDefault<string>(
-                    _driver.GetScript,
-                    new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction
+                    )
                 );
 
                 if (!string.IsNullOrWhiteSpace(value))
@@ -148,7 +156,7 @@ namespace PersistedCache.Sql
                 }
 
                 var result = valueFactory();
-                
+
                 ValidateValue(result);
 
                 var entry = new PersistedCacheEntry
@@ -159,9 +167,11 @@ namespace PersistedCache.Sql
                 };
 
                 connection.Execute(
-                    _driver.SetScript,
-                    entry,
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.SetScript,
+                        parameters: entry,
+                        transaction: transaction
+                    )
                 );
 
                 return result;
@@ -183,9 +193,9 @@ namespace PersistedCache.Sql
             {
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
-                        _driver.GetScript,
-                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                        transaction,
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -196,7 +206,7 @@ namespace PersistedCache.Sql
                 }
 
                 var result = await valueFactory();
-                
+
                 ValidateValue(result);
 
                 var entry = new PersistedCacheEntry
@@ -208,21 +218,22 @@ namespace PersistedCache.Sql
 
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.SetScript,
-                        entry,
-                        transaction,
+                        commandText: _driver.SetScript,
+                        parameters: entry,
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
 
                 return result;
             }, cancellationToken);
-            
+
             return result!;
         }
 
         /// <inheritdoc />
-        public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default)
+        public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
+            CancellationToken cancellationToken = default)
         {
             return GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
         }
@@ -234,9 +245,11 @@ namespace PersistedCache.Sql
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
-                    _driver.ForgetScript,
-                    new { Key = key },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.ForgetScript,
+                        parameters: new { Key = key },
+                        transaction: transaction
+                    )
                 );
             });
         }
@@ -249,9 +262,9 @@ namespace PersistedCache.Sql
             {
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.ForgetScript,
-                        new { Key = key },
-                        transaction,
+                        commandText: _driver.ForgetScript,
+                        parameters: new { Key = key },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -266,16 +279,18 @@ namespace PersistedCache.Sql
             {
                 var value = connection.QueryFirstOrDefault<string>(
                     new CommandDefinition(
-                        _driver.GetScript,
-                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                        transaction
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction
                     )
                 );
 
                 connection.Execute(
-                    _driver.ForgetScript,
-                    new { Key = key },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.ForgetScript,
+                        parameters: new { Key = key },
+                        transaction: transaction
+                    )
                 );
 
                 return !string.IsNullOrWhiteSpace(value)
@@ -292,18 +307,18 @@ namespace PersistedCache.Sql
             {
                 var value = await connection.QueryFirstOrDefaultAsync<string>(
                     new CommandDefinition(
-                        _driver.GetScript,
-                        new { Key = key, Expiry = DateTimeOffset.UtcNow },
-                        transaction,
+                        commandText: _driver.GetScript,
+                        parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
 
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.ForgetScript,
-                        new { Key = key },
-                        transaction,
+                        commandText: _driver.ForgetScript,
+                        parameters: new { Key = key },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -320,8 +335,10 @@ namespace PersistedCache.Sql
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
-                    _driver.FlushScript,
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.FlushScript,
+                        transaction: transaction
+                    )
                 );
             });
         }
@@ -333,8 +350,8 @@ namespace PersistedCache.Sql
             {
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.FlushScript,
-                        transaction,
+                        commandText: _driver.FlushScript,
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -345,13 +362,15 @@ namespace PersistedCache.Sql
         public void Flush(string pattern)
         {
             pattern = ValidatePattern(pattern);
-            
+
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
-                    _driver.FlushPatternScript,
-                    new { Pattern = pattern },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.FlushPatternScript,
+                        parameters: new { Pattern = pattern },
+                        transaction: transaction
+                    )
                 );
             });
         }
@@ -360,14 +379,14 @@ namespace PersistedCache.Sql
         public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
         {
             pattern = ValidatePattern(pattern);
-            
+
             return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
             {
                 await connection.ExecuteAsync(
                     new CommandDefinition(
-                        _driver.FlushPatternScript,
-                        new { Pattern = pattern },
-                        transaction,
+                        commandText: _driver.FlushPatternScript,
+                        parameters: new { Pattern = pattern },
+                        transaction: transaction,
                         cancellationToken: cancellationToken
                     )
                 );
@@ -380,26 +399,28 @@ namespace PersistedCache.Sql
             _connectionFactory.RunInTransaction((connection, transaction) =>
             {
                 connection.Execute(
-                    _driver.PurgeScript,
-                    new { Expiry = DateTimeOffset.UtcNow },
-                    transaction
+                    new CommandDefinition(
+                        commandText: _driver.PurgeScript,
+                        parameters: new { Expiry = DateTimeOffset.UtcNow },
+                        transaction: transaction
+                    )
                 );
             });
         }
-        
+
         private static void ValidateKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentException("Key cannot be empty", nameof(key));
             }
-            
+
             if (key.Length > 255)
             {
                 throw new ArgumentException("Key length cannot exceed 255 characters", nameof(key));
             }
         }
-        
+
         private static void ValidateValue<T>(T value)
         {
             if (value == null)
@@ -414,12 +435,12 @@ namespace PersistedCache.Sql
             {
                 throw new ArgumentException("Pattern cannot be empty", nameof(pattern));
             }
-            
+
             if (!pattern.StartsWith("*") && !pattern.EndsWith("*"))
             {
                 throw new ArgumentException("Pattern must begin or end with a '*'", nameof(pattern));
             }
-            
+
             return pattern.Replace('*', _driver.Wildcard);
         }
     }

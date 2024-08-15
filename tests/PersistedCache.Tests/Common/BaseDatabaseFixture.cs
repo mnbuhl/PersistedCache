@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using DotNet.Testcontainers.Containers;
+using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
 using PersistedCache.Sql;
+using PersistedCache.SqlServer;
 using Xunit;
 
 namespace PersistedCache.Tests.Common
@@ -62,9 +64,18 @@ namespace PersistedCache.Tests.Common
         private static ISqlPersistedCacheOptions GetOptions(string connectionString)
         {
             ISqlPersistedCacheOptions options = new SqlPersistedCacheOptions(connectionString);
-            if (typeof(TDriver) == typeof(PostgreSqlCacheDriver))
+
+            switch (typeof(TDriver))
             {
-                options = new PostgreSqlPersistedCacheOptions(connectionString);
+                case Type type when type == typeof(SqlServerCacheDriver):
+                    options = new SqlServerPersistedCacheOptions(connectionString);
+                    break;
+                case Type type when type == typeof(MySqlCacheDriver):
+                    options = new SqlPersistedCacheOptions(connectionString);
+                    break;
+                case Type type when type == typeof(PostgreSqlCacheDriver):
+                    options = new PostgreSqlPersistedCacheOptions(connectionString);
+                    break;
             }
         
             options.TableName = TestConstants.TableName;
