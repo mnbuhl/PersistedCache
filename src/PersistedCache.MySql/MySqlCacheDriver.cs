@@ -4,11 +4,11 @@ using PersistedCache.Sql;
 
 namespace PersistedCache.MySql
 {
-    public class MySqlPersistedSqlCacheDriver : ISqlCacheDriver
+    public class MySqlCacheDriver : ISqlCacheDriver
     {
         private readonly SqlPersistedCacheOptions _options;
 
-        public MySqlPersistedSqlCacheDriver(SqlPersistedCacheOptions options)
+        public MySqlCacheDriver(SqlPersistedCacheOptions options)
         {
             _options = options;
         }

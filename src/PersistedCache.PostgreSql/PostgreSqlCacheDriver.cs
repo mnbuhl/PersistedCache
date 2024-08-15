@@ -4,11 +4,11 @@ using PersistedCache.Sql;
 
 namespace PersistedCache.PostgreSql;
 
-public class PostgreSqlPersistedCacheDriver : ISqlCacheDriver
+public class PostgreSqlCacheDriver : ISqlCacheDriver
 {
     private readonly SqlPersistedCacheOptions _options;
 
-    public PostgreSqlPersistedCacheDriver(SqlPersistedCacheOptions options)
+    public PostgreSqlCacheDriver(SqlPersistedCacheOptions options)
     {
         _options = options;
     }
