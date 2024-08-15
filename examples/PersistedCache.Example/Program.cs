@@ -1,5 +1,5 @@
 using PersistedCache;
-using PersistedCache.MySql;
+using PersistedCache.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql")!, options =>
+// builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql")!, options =>
+// {
+//     options.TableName = "persisted_cache";
+// });
+
+builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!, options =>
 {
     options.TableName = "persisted_cache";
 });
@@ -28,7 +33,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", (IPersistedCache cache) => cache.Get<int>("weather_forecast"))
+app.MapGet("/weatherforecast", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
     .WithName("GetWeatherForecast")
     .WithOpenApi();
 
@@ -62,6 +67,13 @@ app.MapDelete("/flush", (IPersistedCache cache) =>
         cache.Flush();
     })
     .WithName("FlushCache")
+    .WithOpenApi();
+
+app.MapDelete("/purge", (IPersistedCache cache) =>
+    {
+        cache.Purge();
+    })
+    .WithName("PurgeCache")
     .WithOpenApi();
 
 app.Run();

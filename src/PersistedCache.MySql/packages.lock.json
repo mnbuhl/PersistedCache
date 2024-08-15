@@ -2,16 +2,6 @@
   "version": 1,
   "dependencies": {
     ".NETStandard,Version=v2.0": {
-      "Microsoft.Extensions.DependencyInjection.Abstractions": {
-        "type": "Direct",
-        "requested": "[6.0.0, )",
-        "resolved": "6.0.0",
-        "contentHash": "xlzi2IYREJH3/m6+lUrQlujzX8wDitm4QGnUu6kUXTQAWPuZY8i+ticFJbzfqaetLA6KR/rO6Ew/HuYD+bxifg==",
-        "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
-          "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
       "MySql.Data": {
         "type": "Direct",
         "requested": "[9.0.0, )",
@@ -44,9 +34,9 @@
       },
       "PersistedCache": {
         "type": "Direct",
-        "requested": "[0.0.1, )",
-        "resolved": "0.0.1",
-        "contentHash": "rzdPkRiuasUHk4Ft9Bw9Q0uGBuJgNt3gq52qn+P8k4Mx3CDbnnE5MZY7FQzKyNh4nsXEUlTX+ZJd42ncQGMw2A==",
+        "requested": "[0.0.3, )",
+        "resolved": "0.0.3",
+        "contentHash": "c+qSv74uZoJ94R/vTOhFORNzzz99rXMmDqba0pky6CG0o+iO9BknJY25xqflA5/B5suQNzmc5h6a5hqwcVr1/A==",
         "dependencies": {
           "Dapper": "2.1.35",
           "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
@@ -117,6 +107,15 @@
         "contentHash": "qWzV9o+ZRWq+pGm+1dF+R7qTgTYoXvbyowRoBxQJGfqTpqDun2eteerjRQhq5PQ/14S+lqto3Ft4gYaRyl4rdQ==",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "6.0.0"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "xlzi2IYREJH3/m6+lUrQlujzX8wDitm4QGnUu6kUXTQAWPuZY8i+ticFJbzfqaetLA6KR/rO6Ew/HuYD+bxifg==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "System.Threading.Tasks.Extensions": "4.5.4"
         }
       },
       "Microsoft.Extensions.FileProviders.Abstractions": {

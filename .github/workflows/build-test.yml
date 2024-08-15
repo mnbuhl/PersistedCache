@@ -9,6 +9,7 @@ on:
       paths: [ 'src/**', 'tests/**', '.github/workflows/**' ]
 
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   build-test:

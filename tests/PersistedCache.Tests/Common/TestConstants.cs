@@ -1,4 +1,4 @@
-﻿namespace PersistedCache.Tests.Fixtures;
+﻿namespace PersistedCache.Tests.Common;
 
 public static class TestConstants
 {

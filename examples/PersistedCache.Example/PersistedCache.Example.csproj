@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PersistedCache.MySql\PersistedCache.MySql.csproj" />
+      <ProjectReference Include="..\..\src\PersistedCache.PostgreSql\PersistedCache.PostgreSql.csproj" />
     </ItemGroup>
 
 </Project>

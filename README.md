@@ -1,7 +1,7 @@
 # Persisted Cache
 
 Persisted Cache is a simple caching library that allows you to turn any stateful resource into a key-value store. 
-It is designed to be simple and easy to use, meanwhile it spare you the hassle and costs of managing a separate cache server.
+It is designed to be simple and easy to use, meanwhile it spares you the hassle and costs of managing a separate cache server.
 
 ### Why would you use this?
 
@@ -22,10 +22,10 @@ Or simply add it from the NuGet package gallery.
 
 Currently supported and planned resources are:
 * [x] `MySQL` - [PersistedCache.MySql](https://www.nuget.org/packages/PersistedCache.MySql)
-* [ ] `PostgreSQL`
+* [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
+* [ ] `SQL Server`
 * [ ] `SQLite`
 * [ ] `MongoDB`
-* [ ] `SQL Server`
 * [ ] `File System`
 * [ ] `AWS S3` (maybe)
 * [ ] `Azure Blob Storage` (maybe)

@@ -10,5 +10,18 @@ services:
     volumes:
       - mysql:/var/lib/mysql
   
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: persistedcachedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  
 volumes:
   mysql:
+  postgres:

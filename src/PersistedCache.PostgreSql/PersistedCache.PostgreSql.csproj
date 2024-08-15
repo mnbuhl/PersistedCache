@@ -11,8 +11,8 @@
 
     <PropertyGroup>
         <Authors>Mikkel Buhl</Authors>
-        <Description>Simple persisted cache for .NET and MySQL</Description>
-        <PackageId>PersistedCache.MySql</PackageId>
+        <Description>Simple persisted cache for .NET and PostgreSQL</Description>
+        <PackageId>PersistedCache.PostgreSql</PackageId>
         <PackageTags>cache storage database</PackageTags>
         <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mnbuhl/PersistedCache</RepositoryUrl>
@@ -26,10 +26,10 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <Optimize>true</Optimize>
     </PropertyGroup>
-    
+
     <ItemGroup>
+      <PackageReference Include="Npgsql" Version="6.0.11" />
       <PackageReference Include="PersistedCache" Version="0.0.3" />
-      <PackageReference Include="MySql.Data" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
