@@ -1,0 +1,11 @@
+﻿name: Publish PersistedCache package to NuGet
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-package:
+    name: Publish PersistedCache package to NuGet
+    uses: ./.github/workflows/publish-reuse.yml
+    with:
+      PACKAGE_ID: 'PersistedCache'
+    secrets: inherit

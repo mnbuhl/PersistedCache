@@ -1,0 +1,44 @@
+﻿name: Publish package to NuGet
+on:
+  workflow_call: 
+    inputs:
+      PACKAGE_ID:
+        required: true
+        type: string
+        description: 'The folder containing the project to publish'
+
+jobs:
+  build-test:
+    uses: ./.github/workflows/build-test.yml
+    secrets: inherit
+    
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+    
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+          
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          tag_prefix: '${{ inputs.PACKAGE_ID }}-v'
+          
+      - name: Pack NuGet package
+        run: dotnet pack --configuration Release src/${{ inputs.PACKAGE_ID }} --output ./artifacts /p:PackageVersion=${{ steps.tag_version.outputs.new_version }}
+        
+      - name: Publish NuGet package
+        run: dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+        
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
