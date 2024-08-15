@@ -1,16 +1,18 @@
-﻿using AutoFixture;
+﻿using PersistedCache.MySql;
+using PersistedCache.PostgreSql;
+using PersistedCache.Sql;
+using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
-namespace PersistedCache.Tests.MySql;
+namespace PersistedCache.Tests;
 
-[Collection(nameof(MySqlFixture))]
-public class SetTests
+public abstract class SetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
 {
     private readonly IPersistedCache _cache;
     private readonly Fixture _fixture = new();
 
-    public SetTests(MySqlFixture fixture)
+    public SetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
     {
         _cache = fixture.PersistedCache;
     }
@@ -137,5 +139,21 @@ public class SetTests
         // Assert
         var result = await _cache.GetAsync<string>(key);
         result.Should().Be(value);
+    }
+}
+
+[Collection(nameof(MySqlFixture))]
+public class MySqlSetTestsExecutor : SetTests<MySqlCacheDriver>
+{
+    public MySqlSetTestsExecutor(MySqlFixture fixture) : base(fixture)
+    {
+    }
+}
+
+[Collection(nameof(PostgreSqlFixture))]
+public class PostgreSqlSetTestsExecutor : SetTests<PostgreSqlCacheDriver>
+{
+    public PostgreSqlSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+    {
     }
 }

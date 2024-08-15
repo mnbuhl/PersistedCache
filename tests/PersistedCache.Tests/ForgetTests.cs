@@ -1,16 +1,18 @@
-﻿using AutoFixture;
+﻿using PersistedCache.MySql;
+using PersistedCache.PostgreSql;
+using PersistedCache.Sql;
+using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
-namespace PersistedCache.Tests.MySql;
+namespace PersistedCache.Tests;
 
-[Collection(nameof(MySqlFixture))]
-public class ForgetTests : BaseTest
+public abstract class ForgetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
 {
     private readonly IPersistedCache _cache;
     private readonly Fixture _fixture = new();
     
-    public ForgetTests(MySqlFixture fixture) : base(fixture.PersistedCache)
+    public ForgetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
     {
         _cache = fixture.PersistedCache;
     }
@@ -63,5 +65,21 @@ public class ForgetTests : BaseTest
     private void Arrange<T>(string key, T value, Expire? expire = null)
     {
         _cache.Set(key, value, expire ?? Expire.InMinutes(5));
+    }
+}
+
+[Collection(nameof(MySqlFixture))]
+public class MySqlForgetTestsExecutor : ForgetTests<MySqlCacheDriver>
+{
+    public MySqlForgetTestsExecutor(MySqlFixture fixture) : base(fixture)
+    {
+    }
+}
+
+[Collection(nameof(PostgreSqlFixture))]
+public class PostgreSqlForgetTestsExecutor : ForgetTests<PostgreSqlCacheDriver>
+{
+    public PostgreSqlForgetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+    {
     }
 }

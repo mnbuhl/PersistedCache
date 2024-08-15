@@ -1,17 +1,19 @@
-﻿using AutoFixture;
+﻿using PersistedCache.MySql;
+using PersistedCache.PostgreSql;
+using PersistedCache.Sql;
+using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
-namespace PersistedCache.Tests.MySql;
+namespace PersistedCache.Tests;
 
-[Collection(nameof(MySqlFixture))]
-public class PullTests : BaseTest
+public abstract class PullTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
 {
     private readonly IPersistedCache _cache;
     private readonly Fixture _fixture = new();
     private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-    public PullTests(MySqlFixture fixture) : base(fixture.PersistedCache)
+    public PullTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
     {
         _cache = fixture.PersistedCache;
         _executeSql = fixture.ExecuteSql;
@@ -85,5 +87,21 @@ public class PullTests : BaseTest
     private void Arrange<T>(string key, T value, Expire? expire = null)
     {
         _cache.Set(key, value, expire ?? Expire.InMinutes(5));
+    }
+}
+
+[Collection(nameof(MySqlFixture))]
+public class MySqlPullTestsExecutor : PullTests<MySqlCacheDriver>
+{
+    public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture)
+    {
+    }
+}
+
+[Collection(nameof(PostgreSqlFixture))]
+public class PostgreSqlPullTestsExecutor : PullTests<PostgreSqlCacheDriver>
+{
+    public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+    {
     }
 }

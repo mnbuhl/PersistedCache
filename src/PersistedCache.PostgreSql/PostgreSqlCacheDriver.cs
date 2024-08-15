@@ -43,9 +43,9 @@ public class PostgreSqlCacheDriver : ISqlCacheDriver
         /*lang=PostgreSQL*/
         $"""
          INSERT INTO "{_options.TableName}" ("key", "value", "expiry")
-         VALUES (@Key, @Value, @Expiry)
+         VALUES (@Key, to_json(@Value), @Expiry)
          ON CONFLICT ("key") DO UPDATE 
-         SET "value" = @Value, "expiry" = @Expiry;
+         SET "value" = to_json(@Value), "expiry" = @Expiry;
          """;
 
     public string ForgetScript =>

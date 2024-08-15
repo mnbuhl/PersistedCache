@@ -1,4 +1,5 @@
 ﻿using PersistedCache.PostgreSql;
+using PersistedCache.Tests.Common;
 using Testcontainers.PostgreSql;
 
 namespace PersistedCache.Tests.Fixtures;

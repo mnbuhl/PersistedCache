@@ -1,5 +1,5 @@
-﻿using DotNet.Testcontainers.Containers;
-using PersistedCache.MySql;
+﻿using PersistedCache.MySql;
+using PersistedCache.Tests.Common;
 using Testcontainers.MySql;
 
 

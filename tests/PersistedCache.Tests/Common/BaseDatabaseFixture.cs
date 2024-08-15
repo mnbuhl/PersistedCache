@@ -2,7 +2,7 @@
 using DotNet.Testcontainers.Containers;
 using PersistedCache.Sql;
 
-namespace PersistedCache.Tests.Fixtures;
+namespace PersistedCache.Tests.Common;
 
 public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime where TDriver : ISqlCacheDriver
 {

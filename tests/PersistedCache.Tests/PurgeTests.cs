@@ -1,16 +1,19 @@
-﻿using PersistedCache.Tests.Fixtures;
+﻿using PersistedCache.MySql;
+using PersistedCache.PostgreSql;
+using PersistedCache.Sql;
+using PersistedCache.Tests.Common;
+using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 
-namespace PersistedCache.Tests.MySql;
+namespace PersistedCache.Tests;
 
-[Collection(nameof(MySqlFixture))]
-public class PurgeTests : BaseTest
+public abstract class PurgeTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
 {
     private readonly IPersistedCache _cache;
     private readonly Fixture _fixture = new();
     private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-    public PurgeTests(MySqlFixture fixture) : base(fixture.PersistedCache)
+    public PurgeTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
     {
         _cache = fixture.PersistedCache;
         _executeSql = fixture.ExecuteSql;
@@ -48,5 +51,21 @@ public class PurgeTests : BaseTest
         // Assert
         var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
         result.Should().HaveCount(2);
+    }
+}
+
+[Collection(nameof(MySqlFixture))]
+public class MySqlPurgeTestsExecutor : PurgeTests<MySqlCacheDriver>
+{
+    public MySqlPurgeTestsExecutor(MySqlFixture fixture) : base(fixture)
+    {
+    }
+}
+
+[Collection(nameof(PostgreSqlFixture))]
+public class PostgreSqlPurgeTestsExecutor : PurgeTests<PostgreSqlCacheDriver>
+{
+    public PostgreSqlPurgeTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+    {
     }
 }
