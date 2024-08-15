@@ -8,13 +8,15 @@ namespace PersistedCache.Tests.Fixtures;
 [CollectionDefinition(nameof(MySqlFixture))]
 public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime
 {
+    public IPersistedCache PersistedCache { get; private set; } = null!;
+    
     private readonly MySqlContainer _container = new MySqlBuilder()
         .WithDatabase("PersistedCache")
         .WithUsername("root")
         .WithPassword("root")
         .Build();
 
-    public IPersistedCache PersistedCache { get; private set; } = null!;
+    private ISqlCacheDriver _driver = null!;
     
     public async Task InitializeAsync()
     {
@@ -23,19 +25,27 @@ public class MySqlFixture : ICollectionFixture<MySqlFixture>, IAsyncLifetime
         var options = new SqlPersistedCacheOptions(_container.GetConnectionString())
         {
             CreateTableIfNotExists = false,
-            TableName = "persisted_cache",
+            TableName = TestConstants.TableName,
         };
         
         var driver = new MySqlPersistedSqlCacheDriver(options);
         
         SetupStorage(driver);
         
+        _driver = driver;
         PersistedCache = new SqlPersistedCache(driver, options);
     }
 
     public async Task DisposeAsync()
     {
         await _container.DisposeAsync();
+    }
+    
+    public IEnumerable<dynamic> ExecuteSql(string sql)
+    {
+        using var connection = _driver.CreateConnection();
+        var result = connection.Query(sql);
+        return result;
     }
     
     private static void SetupStorage(ISqlCacheDriver driver)
