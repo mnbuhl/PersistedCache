@@ -7,14 +7,13 @@ on:
         type: string
         description: 'The folder containing the project to publish'
 
-jobs:
-  build-test:
-    uses: ./.github/workflows/build-test.yml
-    secrets: inherit
-    
+jobs:    
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Build and test
+        uses: ./.github/workflows/build-test.yml
+        
       - name: Checkout
         uses: actions/checkout@v4
     

@@ -1,4 +1,4 @@
-﻿name: Publish PersistedCache package to NuGet
+﻿name: Publish PersistedCache
 on:
   workflow_dispatch:
 
