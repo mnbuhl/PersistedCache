@@ -22,6 +22,19 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
   
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: "Secret123!"
+      DATABASE_NAME: persistedcachedb
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver:/var/opt/mssql
+  
 volumes:
   mysql:
   postgres:
+  sqlserver:

@@ -25,8 +25,9 @@ namespace PersistedCache.Tests.Common
         public async Task InitializeAsync()
         {
             await Container.StartAsync();
-
-            var options = GetOptions((Container as IDatabaseContainer).GetConnectionString());
+            
+            var connectionString = (Container as IDatabaseContainer).GetConnectionString();
+            var options = GetOptions(connectionString);
             var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options);
         
             SetupStorage(driver);

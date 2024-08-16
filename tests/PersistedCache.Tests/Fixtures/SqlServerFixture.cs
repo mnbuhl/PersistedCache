@@ -1,5 +1,4 @@
-﻿using DotNet.Testcontainers.Builders;
-using PersistedCache.SqlServer;
+﻿using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using Testcontainers.MsSql;
 using Xunit;
@@ -11,10 +10,7 @@ namespace PersistedCache.Tests.Fixtures
     {
         public SqlServerFixture()
         {
-            Container = new MsSqlBuilder()
-                .WithPortBinding(1433)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
-                .Build();
+            Container = new MsSqlBuilder().Build();
         }
         
         protected override char LeftEscapeCharacter => '[';
