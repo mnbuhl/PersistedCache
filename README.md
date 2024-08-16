@@ -60,23 +60,72 @@ All the options shown above are optional and have default values, only the conne
 ### Use the cache
 
 ```csharp
-public class MyService
-{
-    private readonly IPersistedCache _cache;
-
-    public MyService(IPersistedCache cache)
-    {
-        _cache = cache;
-    }
-    
+public class MyService(IPersistedCache cache)
+{    
+    // Set a value in the cache
     public void SetSomething()
     {
-        _cache.Set("my-key", "some value", Expire.InMinutes(5));
+        cache.Set("my-key", "some value", Expire.InMinutes(5));
     }
 
+    // Get a value from the cache
     public string GetSomething()
     {
-        return _cache.Get<string>("my-key");
+        return cache.Get<string>("my-key");
+    }
+    
+    // Get a value from the cache or set it if it doesn't exist
+    public void GetOrSetSomething()
+    {
+        var value = cache.GetOrSet("my-key", () => new RandomObject(), Expire.InMinutes(5));
+    }
+    
+    // Forget a value from the cache
+    public void ForgetSomething()
+    {
+        cache.Forget("my-key");
+    }
+    
+    // Flush values matching a pattern from the cache
+    public void FlushPattern()
+    {
+        cache.Flush("my-*");
+    }
+    
+    // Flush all values from the cache
+    public void FlushAll()
+    {
+        cache.Flush();
+    }
+    
+    // Get a value from the cache and remove it
+    public RandomObject PullSomething()
+    {
+        return cache.Pull<RandomObject>("my-key");
+    }
+    
+    // Purge the cache of expired entries
+    public void PurgeCache()
+    {
+        cache.Purge();
+    }
+    
+    // Set a value in the cache asynchronously
+    public async Task SetSomethingAsync()
+    {
+        await cache.SetForeverAsync("my-async-key", new RandomObject());
+    }
+    
+    // Get a value from the cache asynchronously
+    public async Task<RandomObject> GetSomethingAsync()
+    {
+        return await cache.GetAsync<RandomObject>("my-async-key");
+    }
+    
+    // Get a value from the cache or set it if it doesn't exist asynchronously
+    public async Task GetOrSetSomethingAsync()
+    {
+        var value = await cache.GetOrSetAsync("my-async-key", async () => await GetRandomObjectAsync());
     }
 }
 ```
