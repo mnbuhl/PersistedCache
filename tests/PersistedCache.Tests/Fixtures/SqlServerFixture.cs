@@ -10,7 +10,9 @@ namespace PersistedCache.Tests.Fixtures
     {
         public SqlServerFixture()
         {
-            Container = new MsSqlBuilder().Build();
+            Container = new MsSqlBuilder()
+                .WithPassword("Password123!")
+                .Build();
         }
         
         protected override char LeftEscapeCharacter => '[';
