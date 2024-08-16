@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.PostgreSql", "src\PersistedCache.PostgreSql\PersistedCache.PostgreSql.csproj", "{738745FD-612E-4553-B8C0-41FFE8F492DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.SqlServer", "src\PersistedCache.SqlServer\PersistedCache.SqlServer.csproj", "{A2841E19-4673-4EFF-B107-43AD4115F30F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{738745FD-612E-4553-B8C0-41FFE8F492DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{738745FD-612E-4553-B8C0-41FFE8F492DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{738745FD-612E-4553-B8C0-41FFE8F492DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2841E19-4673-4EFF-B107-43AD4115F30F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2841E19-4673-4EFF-B107-43AD4115F30F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2841E19-4673-4EFF-B107-43AD4115F30F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2841E19-4673-4EFF-B107-43AD4115F30F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8A9F2660-8E83-416E-919B-02243E2E0E6D} = {BD906076-617D-44E5-AF27-D23543868D21}
@@ -56,5 +62,6 @@ Global
 		{9204C5DC-8D53-44BE-B2EF-E615EF6C90DA} = {BB31D9B5-D15B-4FA1-B4CF-9F4DE99EBF0E}
 		{23E966F7-B47B-4DC6-96BD-1BCEEE73E957} = {BDD6C6DE-583C-4794-A9C8-F40C41108066}
 		{738745FD-612E-4553-B8C0-41FFE8F492DC} = {BD906076-617D-44E5-AF27-D23543868D21}
+		{A2841E19-4673-4EFF-B107-43AD4115F30F} = {BD906076-617D-44E5-AF27-D23543868D21}
 	EndGlobalSection
 EndGlobal
