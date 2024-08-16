@@ -69,7 +69,7 @@ public class MyService(IPersistedCache cache)
     }
 
     // Get a value from the cache
-    public string GetSomething()
+    public string? GetSomething()
     {
         return cache.Get<string>("my-key");
     }
@@ -99,7 +99,7 @@ public class MyService(IPersistedCache cache)
     }
     
     // Get a value from the cache and remove it
-    public RandomObject PullSomething()
+    public RandomObject? PullSomething()
     {
         return cache.Pull<RandomObject>("my-key");
     }
@@ -117,18 +117,20 @@ public class MyService(IPersistedCache cache)
     }
     
     // Get a value from the cache asynchronously
-    public async Task<RandomObject> GetSomethingAsync()
+    public async Task<RandomObject?> GetSomethingAsync()
     {
         return await cache.GetAsync<RandomObject>("my-async-key");
     }
     
     // Get a value from the cache or set it if it doesn't exist asynchronously
-    public async Task GetOrSetSomethingAsync()
+    public async Task<RandomObject?> GetOrSetSomethingAsync()
     {
-        var value = await cache.GetOrSetAsync("my-async-key", async () => await GetRandomObjectAsync());
+        return await cache.GetOrSetAsync("my-async-key", async () => await GetRandomObjectAsync());
     }
 }
 ```
+
+Be aware when using value types, as the cache will return the default value if the key does not exist instead of null, unless you use a nullable value in the generic type.
 
 ### Methods
 
