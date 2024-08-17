@@ -1,4 +1,5 @@
 using PersistedCache;
+using PersistedCache.FileSystem;
 using PersistedCache.PostgreSql;
 using PersistedCache.SqlServer;
 
@@ -9,20 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql")!, options =>
-// {
-//     options.TableName = "persisted_cache";
-// });
+/*
+builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql")!, options =>
+{
+    options.TableName = "persisted_cache";
+});
 
-// builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!, options =>
-// {
-//     options.TableName = "persisted_cache";
-// });
+builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!, options =>
+{
+    options.TableName = "persisted_cache";
+});
 
 builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!, options =>
 {
     options.TableName = "persisted_cache";
 });
+*/
+
+builder.Services.AddFileSystemPersistedCache("cache");
 
 var app = builder.Build();
 
