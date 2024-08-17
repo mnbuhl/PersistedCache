@@ -57,8 +57,14 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
 
         var cacheEntry = ReadFromFile<FileSystemCacheEntry<T>>(filePath);
 
-        if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
+        if (cacheEntry == null)
         {
+            return default;
+        }
+        
+        if (cacheEntry.Expiry.IsExpired)
+        {
+            Task.Run(() => Forget(key));
             return default;
         }
 
@@ -71,8 +77,14 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
 
         var cacheEntry = await ReadFromFileAsync<FileSystemCacheEntry<T>>(filePath, cancellationToken);
 
-        if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
+        if (cacheEntry == null)
         {
+            return default;
+        }
+        
+        if (cacheEntry.Expiry.IsExpired)
+        {
+            await Task.Run(() => Forget(key), cancellationToken);
             return default;
         }
 
