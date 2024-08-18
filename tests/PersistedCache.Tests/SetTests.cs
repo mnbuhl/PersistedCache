@@ -168,4 +168,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemSetTestsExecutor : SetTests
+    {
+        public FileSystemSetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
 }

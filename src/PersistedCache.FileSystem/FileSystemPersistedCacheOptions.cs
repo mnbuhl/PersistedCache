@@ -6,6 +6,7 @@ public class FileSystemPersistedCacheOptions : PersistedCacheOptions
     {
         ValidatePath(path);
         CacheFolderName = path;
+        JsonOptions.Converters.Add(new ExpireJsonConverter());
     }
     
     public string CacheFolderName { get; }

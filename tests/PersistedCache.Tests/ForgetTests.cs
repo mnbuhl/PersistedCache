@@ -93,4 +93,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemForgetTestsExecutor : ForgetTests
+    {
+        public FileSystemForgetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
 }

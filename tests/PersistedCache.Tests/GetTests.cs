@@ -106,7 +106,7 @@ namespace PersistedCache.Tests
             await Task.Delay(2000);
         
             // Assert
-            var result = _cache.Get<string>(key);
+            var result = await _cache.GetAsync<string>(key);
             result.Should().BeNull();
         }
 
@@ -136,6 +136,14 @@ namespace PersistedCache.Tests
     public class SqlServerGetTestsExecutor : GetTests
     {
         public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemGetTestsExecutor : GetTests
+    {
+        public FileSystemGetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }

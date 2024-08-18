@@ -14,9 +14,9 @@ namespace PersistedCache.Tests
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<IEnumerable<object>> _getCacheEntries;
+        private readonly Func<IEnumerable<CacheEntry>> _getCacheEntries;
     
-        protected PurgeTests(IPersistedCache cache, Func<IEnumerable<object>> getCacheEntries) : base(cache)
+        protected PurgeTests(IPersistedCache cache, Func<IEnumerable<CacheEntry>> getCacheEntries) : base(cache)
         {
             _cache = cache;
             _getCacheEntries = getCacheEntries;
@@ -77,6 +77,14 @@ namespace PersistedCache.Tests
     public class SqlServerPurgeTestsExecutor : PurgeTests
     {
         public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+        {
+        }
+    }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemPurgeTestsExecutor : PurgeTests
+    {
+        public FileSystemPurgeTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }

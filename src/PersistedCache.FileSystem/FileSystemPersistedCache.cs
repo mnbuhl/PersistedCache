@@ -199,6 +199,12 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         var directory = new DirectoryInfo(_options.CacheFolderName);
         
+        // validate pattern
+        if (!pattern.StartsWith("*") && !pattern.EndsWith("*") && !pattern.Contains('?'))
+        {
+            throw new ArgumentException("The pattern must contain at least one wildcard character. (*,?)", nameof(pattern));
+        }
+        
         foreach (var file in directory.EnumerateFiles(pattern))
         {
             file.Delete();
@@ -217,7 +223,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         
         foreach (var file in directory.EnumerateFiles())
         {
-            var cacheEntry = ReadFromFile<FileSystemCacheEntry<string>>(file.FullName);
+            var cacheEntry = ReadFromFile<object>(file.FullName);
 
             if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
             {

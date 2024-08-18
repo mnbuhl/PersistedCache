@@ -39,7 +39,12 @@ public static class FileSystemPersistedCacheExtensions
         public static IServiceCollection AddFileSystemPersistedCache(this IServiceCollection services,
             FileSystemPersistedCacheOptions options)
         {
-            options.JsonOptions.Converters.Add(new ExpireJsonConverter());
+            var expireConverter = new ExpireJsonConverter();
+            
+            if (!options.JsonOptions.Converters.Contains(expireConverter))
+            {
+                options.JsonOptions.Converters.Add(expireConverter);
+            }
             
             var cache = new FileSystemPersistedCache(options);
             

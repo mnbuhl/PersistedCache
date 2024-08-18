@@ -14,9 +14,9 @@ namespace PersistedCache.Tests
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<string, object> _getCacheEntry;
+        private readonly Func<string, CacheEntry> _getCacheEntry;
     
-        protected PullTests(IPersistedCache cache, Func<string, object> getCacheEntry) : base(cache)
+        protected PullTests(IPersistedCache cache, Func<string, CacheEntry> getCacheEntry) : base(cache)
         {
             _cache = cache;
             _getCacheEntry = getCacheEntry;
@@ -113,6 +113,14 @@ namespace PersistedCache.Tests
     public class SqlServerPullTestsExecutor : PullTests
     {
         public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+        {
+        }
+    }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemPullTestsExecutor : PullTests
+    {
+        public FileSystemPullTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
         {
         }
     }
