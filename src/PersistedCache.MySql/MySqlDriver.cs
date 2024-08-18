@@ -6,9 +6,9 @@ namespace PersistedCache.MySql
 {
     public class MySqlDriver : ISqlCacheDriver
     {
-        private readonly SqlPersistedCacheOptions _options;
+        private readonly MySqlPersistedCacheOptions _options;
 
-        public MySqlDriver(SqlPersistedCacheOptions options)
+        public MySqlDriver(MySqlPersistedCacheOptions options)
         {
             _options = options;
         }

@@ -68,7 +68,7 @@ namespace PersistedCache.Tests.Common
                 case Type type when type == typeof(MySqlDriver):
                     options = new MySqlPersistedCacheOptions(connectionString);
                     break;
-                case Type type when type == typeof(PostgreSqlCacheDriver):
+                case Type type when type == typeof(PostgreSqlDriver):
                     options = new PostgreSqlPersistedCacheOptions(connectionString);
                     break;
                 default:

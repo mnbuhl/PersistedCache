@@ -8,7 +8,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(PostgreSqlFixture))]
-    public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlCacheDriver>, ICollectionFixture<PostgreSqlFixture>
+    public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlDriver>, ICollectionFixture<PostgreSqlFixture>
     {
         public PostgreSqlFixture()
         {
