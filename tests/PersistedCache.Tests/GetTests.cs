@@ -2,9 +2,6 @@
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -17,7 +14,7 @@ namespace PersistedCache.Tests
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
     
-        public GetTests(IPersistedCache cache) : base(cache)
+        protected GetTests(IPersistedCache cache) : base(cache)
         {
             _cache = cache;
         }

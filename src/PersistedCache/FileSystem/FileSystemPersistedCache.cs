@@ -55,7 +55,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
     {
         var filePath = GetFilePath(key);
 
-        var cacheEntry = ReadFromFile<FileSystemCacheEntry<T>>(filePath);
+        var cacheEntry = ReadFromFile<T>(filePath);
 
         if (cacheEntry == null)
         {
@@ -75,7 +75,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
     {
         var filePath = GetFilePath(key);
 
-        var cacheEntry = await ReadFromFileAsync<FileSystemCacheEntry<T>>(filePath, cancellationToken: cancellationToken);
+        var cacheEntry = await ReadFromFileAsync<T>(filePath, cancellationToken: cancellationToken);
 
         if (cacheEntry == null)
         {
@@ -155,7 +155,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
     {
         var filePath = GetFilePath(key);
         
-        var cacheEntry = ReadFromFile<FileSystemCacheEntry<T>>(filePath, deleteOnClose: true);
+        var cacheEntry = ReadFromFile<T>(filePath, deleteOnClose: true);
         
         if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
         {
@@ -169,7 +169,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
     {
         var filePath = GetFilePath(key);
         
-        var cacheEntry = await ReadFromFileAsync<FileSystemCacheEntry<T>>(filePath, deleteOnClose: true, cancellationToken);
+        var cacheEntry = await ReadFromFileAsync<T>(filePath, deleteOnClose: true, cancellationToken);
         
         if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
         {
@@ -273,7 +273,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
         fileStream.Flush();
     }
 
-    private async Task<T?> ReadFromFileAsync<T>(string filePath, bool deleteOnClose = false,
+    private async Task<FileSystemCacheEntry<T>?> ReadFromFileAsync<T>(string filePath, bool deleteOnClose = false,
         CancellationToken cancellationToken = default)
     {
         if (!File.Exists(filePath))
@@ -287,10 +287,10 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
 
         using var fileStream =
             new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
-        return await JsonSerializer.DeserializeAsync<T>(fileStream, _options.JsonOptions, cancellationToken);
+        return await JsonSerializer.DeserializeAsync<FileSystemCacheEntry<T>>(fileStream, _options.JsonOptions, cancellationToken);
     }
 
-    private T? ReadFromFile<T>(string filePath, bool deleteOnClose = false)
+    private FileSystemCacheEntry<T>? ReadFromFile<T>(string filePath, bool deleteOnClose = false)
     {
         if (!File.Exists(filePath))
         {
@@ -302,7 +302,7 @@ public class FileSystemPersistedCache : IPersistedCache<FileSystem>
             : FileOptions.Asynchronous;
 
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
-        return JsonSerializer.Deserialize<T>(fileStream, _options.JsonOptions);
+        return JsonSerializer.Deserialize<FileSystemCacheEntry<T>>(fileStream, _options.JsonOptions);
     }
 
     private string GetFilePath(string key)

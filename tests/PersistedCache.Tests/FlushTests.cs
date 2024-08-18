@@ -4,10 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -21,7 +17,7 @@ namespace PersistedCache.Tests
         private readonly Fixture _fixture = new Fixture();
         private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-        public FlushTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
+        protected FlushTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
         {
             _cache = cache;
             _executeSql = executeSql;

@@ -2,7 +2,7 @@
 
 internal class FileSystemCacheEntry<T>
 {
-    public required string Key { get; set; }
-    public required T Value { get; set; }
-    public Expire Expiry { get; set; }
+    public required string Key { get; init; }
+    public required T Value { get; init; }
+    public Expire Expiry { get; init; }
 }

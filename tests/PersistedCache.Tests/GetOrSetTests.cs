@@ -14,7 +14,7 @@ namespace PersistedCache.Tests
         private readonly IPersistedCache _cache;    
         private readonly Fixture _fixture = new Fixture();
     
-        public GetOrSetTests(IPersistedCache cache) : base(cache)
+        protected GetOrSetTests(IPersistedCache cache) : base(cache)
         {
             _cache = cache;
         }
