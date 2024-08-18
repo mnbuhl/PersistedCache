@@ -28,7 +28,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="PersistedCache" Version="0.0.9" />
+      <PackageReference Include="PersistedCache" Version="0.0.10" />
       <PackageReference Include="MySql.Data" Version="9.0.0" />
     </ItemGroup>
 
