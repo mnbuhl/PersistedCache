@@ -2,7 +2,7 @@
 
 namespace PersistedCache.FileSystem;
 
-public class FileSystemPersistedCache : IPersistedCache<FileSystem>
+internal class FileSystemPersistedCache : IPersistedCache<FileSystem>
 {
     private readonly FileSystemPersistedCacheOptions _options;
 

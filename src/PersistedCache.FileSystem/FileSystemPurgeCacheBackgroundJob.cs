@@ -2,7 +2,7 @@
 
 namespace PersistedCache.FileSystem;
 
-public class FileSystemPurgeCacheBackgroundJob : IHostedService
+internal class FileSystemPurgeCacheBackgroundJob : IHostedService, IDisposable
 {
     private Timer? _timer;
     private readonly IPersistedCache _cache;
