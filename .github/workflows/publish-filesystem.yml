@@ -1,0 +1,11 @@
+﻿name: Publish PersistedCache.FileSystem
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-package:
+    name: Publish PersistedCache.FileSystem package to NuGet
+    uses: ./.github/workflows/publish-reuse.yml
+    with:
+      PACKAGE_ID: 'PersistedCache.FileSystem'
+    secrets: inherit
