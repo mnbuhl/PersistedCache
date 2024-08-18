@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PersistedCache.Sql;
 
 namespace PersistedCache.PostgreSql
@@ -39,13 +40,14 @@ namespace PersistedCache.PostgreSql
         public static IServiceCollection AddPostgreSqlPersistedCache(this IServiceCollection services,
             PostgreSqlPersistedCacheOptions options)
         {
-            services.AddSingleton<ISqlPersistedCacheOptions>(options);
-            services.AddSingleton<ISqlCacheDriver, PostgreSqlCacheDriver>();
-            services.AddSingleton<IPersistedCache, SqlPersistedCache>();
+            var driver = new PostgreSqlDriver(options);
+            var cache = new SqlPersistedCache<PostgreSqlDriver>(driver, options);
+            services.TryAddSingleton<IPersistedCache>(cache);
+            services.AddSingleton<IPersistedCache<PostgreSqlDriver>>(cache);
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new SqlPurgeCacheBackgroundJob<PostgreSqlDriver>(cache, options));
             }
 
             return services;

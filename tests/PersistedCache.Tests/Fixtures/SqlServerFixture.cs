@@ -1,4 +1,6 @@
-﻿using PersistedCache.SqlServer;
+﻿using System.Collections.Generic;
+using Dapper;
+using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using Testcontainers.MsSql;
 using Xunit;
@@ -6,7 +8,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(SqlServerFixture))]
-    public class SqlServerFixture : BaseDatabaseFixture<SqlServerCacheDriver>, ICollectionFixture<SqlServerFixture>
+    public class SqlServerFixture : BaseDatabaseFixture<SqlServerDriver>, ICollectionFixture<SqlServerFixture>
     {
         public SqlServerFixture()
         {
@@ -15,7 +17,21 @@ namespace PersistedCache.Tests.Fixtures
                 .Build();
         }
         
-        protected override char LeftEscapeCharacter => '[';
-        protected override char RightEscapeCharacter => ']';
+        public override IEnumerable<CacheEntry> GetCacheEntries()
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.Query<CacheEntry>($"SELECT * FROM [{TestConstants.TableName}]");
+            }
+        }
+
+        public override CacheEntry GetCacheEntry(string key)
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.QueryFirstOrDefault<CacheEntry>($"SELECT * FROM [{TestConstants.TableName}] WHERE [key] = @Key",
+                    new { Key = key });
+            }
+        }
     }
 }

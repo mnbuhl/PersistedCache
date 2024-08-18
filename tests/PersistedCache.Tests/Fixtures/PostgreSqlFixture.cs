@@ -1,4 +1,6 @@
-﻿using PersistedCache.PostgreSql;
+﻿using System.Collections.Generic;
+using Dapper;
+using PersistedCache.PostgreSql;
 using PersistedCache.Tests.Common;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -6,7 +8,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(PostgreSqlFixture))]
-    public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlCacheDriver>, ICollectionFixture<PostgreSqlFixture>
+    public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlDriver>, ICollectionFixture<PostgreSqlFixture>
     {
         public PostgreSqlFixture()
         {
@@ -16,8 +18,21 @@ namespace PersistedCache.Tests.Fixtures
                 .WithPassword("postgres")
                 .Build();
         }
+        
+        public override IEnumerable<CacheEntry> GetCacheEntries()
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.Query<CacheEntry>($"SELECT * FROM {TestConstants.TableName}");
+            }
+        }
 
-        protected override char LeftEscapeCharacter => '"';
-        protected override char RightEscapeCharacter => '"';
+        public override CacheEntry GetCacheEntry(string key)
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.QueryFirstOrDefault<CacheEntry>($@"SELECT * FROM ""{TestConstants.TableName}"" WHERE ""key"" = @Key", new { Key = key });
+            }
+        }
     }
 }

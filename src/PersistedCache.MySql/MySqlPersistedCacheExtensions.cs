@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PersistedCache.Sql;
 
 namespace PersistedCache.MySql
@@ -39,13 +40,14 @@ namespace PersistedCache.MySql
         public static IServiceCollection AddMySqlPersistedCache(this IServiceCollection services,
             MySqlPersistedCacheOptions options)
         {
-            services.AddSingleton<ISqlPersistedCacheOptions>(options);
-            services.AddSingleton<ISqlCacheDriver, MySqlCacheDriver>();
-            services.AddSingleton<IPersistedCache, SqlPersistedCache>();
+            var driver = new MySqlDriver(options);
+            var cache = new SqlPersistedCache<MySqlDriver>(driver, options);
+            services.TryAddSingleton<IPersistedCache>(cache);
+            services.AddSingleton<IPersistedCache<MySqlDriver>>(cache);
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new SqlPurgeCacheBackgroundJob<MySqlDriver>(cache, options));
             }
 
             return services;

@@ -4,10 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -15,16 +11,16 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class FlushTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class FlushTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<string, IEnumerable<dynamic>> _executeSql;
+        private readonly Func<IEnumerable<CacheEntry>> _getCacheEntries;
     
-        public FlushTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        protected FlushTests(IPersistedCache cache, Func<IEnumerable<CacheEntry>> getCacheEntries) : base(cache)
         {
-            _cache = fixture.PersistedCache;
-            _executeSql = fixture.ExecuteSql;
+            _cache = cache;
+            _getCacheEntries = getCacheEntries;
         }
     
         [Fact]
@@ -41,7 +37,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -52,7 +48,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -71,7 +67,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -89,7 +85,7 @@ namespace PersistedCache.Tests
             await _cache.FlushAsync();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -107,7 +103,7 @@ namespace PersistedCache.Tests
             _cache.Flush("key*");
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().HaveCount(1);
         }
     
@@ -123,25 +119,33 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlFlushTestsExecutor : FlushTests<MySqlCacheDriver>
+    public class MySqlFlushTestsExecutor : FlushTests
     {
-        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlFlushTestsExecutor : FlushTests<PostgreSqlCacheDriver>
+    public class PostgreSqlFlushTestsExecutor : FlushTests
     {
-        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerFlushTestsExecutor : FlushTests<SqlServerCacheDriver>
+    public class SqlServerFlushTestsExecutor : FlushTests
     {
-        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+        {
+        }
+    }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemFlushTestsExecutor : FlushTests
+    {
+        public FileSystemFlushTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }

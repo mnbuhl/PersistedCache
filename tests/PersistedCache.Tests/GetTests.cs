@@ -2,10 +2,6 @@
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -13,14 +9,14 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class GetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class GetTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
     
-        public GetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        protected GetTests(IPersistedCache cache) : base(cache)
         {
-            _cache = fixture.PersistedCache;
+            _cache = cache;
         }
     
         [Theory]
@@ -110,7 +106,7 @@ namespace PersistedCache.Tests
             await Task.Delay(2000);
         
             // Assert
-            var result = _cache.Get<string>(key);
+            var result = await _cache.GetAsync<string>(key);
             result.Should().BeNull();
         }
 
@@ -121,25 +117,33 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlGetTestsExecutor : GetTests<MySqlCacheDriver>
+    public class MySqlGetTestsExecutor : GetTests
     {
-        public MySqlGetTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlGetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlGetTestsExecutor : GetTests<PostgreSqlCacheDriver>
+    public class PostgreSqlGetTestsExecutor : GetTests
     {
-        public PostgreSqlGetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlGetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerGetTestsExecutor : GetTests<SqlServerCacheDriver>
+    public class SqlServerGetTestsExecutor : GetTests
     {
-        public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
+    
+    [Collection(nameof(FileSystemFixture))]
+    public class FileSystemGetTestsExecutor : GetTests
+    {
+        public FileSystemGetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }

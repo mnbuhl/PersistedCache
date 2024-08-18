@@ -1,4 +1,6 @@
-﻿using PersistedCache.MySql;
+﻿using System.Collections.Generic;
+using Dapper;
+using PersistedCache.MySql;
 using PersistedCache.Tests.Common;
 using Testcontainers.MySql;
 using Xunit;
@@ -7,7 +9,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(MySqlFixture))]
-    public class MySqlFixture : BaseDatabaseFixture<MySqlCacheDriver>, ICollectionFixture<MySqlFixture>
+    public class MySqlFixture : BaseDatabaseFixture<MySqlDriver>, ICollectionFixture<MySqlFixture>
     {
         public MySqlFixture()
         {
@@ -17,8 +19,21 @@ namespace PersistedCache.Tests.Fixtures
                 .WithPassword("root")
                 .Build();
         }
+        
+        public override IEnumerable<CacheEntry> GetCacheEntries()
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.Query<CacheEntry>($"SELECT * FROM `{TestConstants.TableName}`");
+            }
+        }
 
-        protected override char LeftEscapeCharacter => '`';
-        protected override char RightEscapeCharacter => '`';
+        public override CacheEntry GetCacheEntry(string key)
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.QueryFirstOrDefault<CacheEntry>($"SELECT * FROM `{TestConstants.TableName}` WHERE `key` = @Key", new { Key = key });
+            }
+        }
     }
 }

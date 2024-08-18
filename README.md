@@ -24,9 +24,10 @@ Currently supported and planned resources are:
 * [x] `MySQL` - [PersistedCache.MySql](https://www.nuget.org/packages/PersistedCache.MySql)
 * [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
 * [x] `SQL Server` - [PersistedCache.SqlServer](https://www.nuget.org/packages/PersistedCache.SqlServer)
+* [x] `File System` - [PersistedCache.FileSystem](https://www.nuget.org/packages/PersistedCache.FileSystem)
 * [ ] `SQLite`
 * [ ] `MongoDB`
-* [ ] `File System`
+* [ ] `Version 1.0` milestone
 * [ ] `AWS S3` (maybe)
 * [ ] `Azure Blob Storage` (maybe)
 
@@ -131,6 +132,32 @@ public class MyService(IPersistedCache cache)
 ```
 
 Be aware when using value types, as the cache will return the default value if the key does not exist instead of null, unless you use a nullable value in the generic type.
+
+### Use more than one persisted cache
+
+If you need to use more than one Persisted Cache, you can use the driver based injection.
+
+```csharp
+services.AddMySqlPersistedCache("Your connection string here");
+services.AddFileSystemPersistedCache("Your path here");
+```
+
+Then you can inject the cache you need in your service.
+
+```csharp
+public class MyService(
+    IPersistedCache<MySqlDriver> mySqlCache,
+    IPersistedCache<FileSystemDriver> fileSystemCache
+)  {
+    public void SetSomething()
+    {
+        mySqlCache.Set("my-key", "some value", Expire.InMinutes(5));
+        fileSystemCache.Set("my-key", "some value", Expire.InMinutes(5));
+    }
+}
+```
+
+The first cache registered will be the default cache, so you can use the `IPersistedCache` interface without specifying the driver.
 
 ### Methods
 
