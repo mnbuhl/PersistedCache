@@ -2,7 +2,7 @@
 
 namespace PersistedCache.Sql;
 
-internal interface ISqlPersistedCacheOptions
+public interface ISqlPersistedCacheOptions
 {
     /// <summary>
     /// The name of the table to use for the cache.
