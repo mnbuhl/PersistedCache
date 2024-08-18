@@ -2,7 +2,7 @@
 
 namespace PersistedCache.Sql;
 
-public interface ISqlCacheDriver
+public interface ISqlCacheDriver : IDriver
 {
     /// <summary>
     /// The script to setup the storage (i.e. create the table)
