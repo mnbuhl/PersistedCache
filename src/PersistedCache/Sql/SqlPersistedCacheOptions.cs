@@ -1,6 +1,6 @@
 ﻿namespace PersistedCache.Sql;
 
-public abstract class SqlPersistedCacheOptions : PersistedCacheOptions, ISqlPersistedCacheOptions
+public abstract class SqlPersistedCacheOptions : PersistedCacheOptions
 {
     private string _tableName = "persisted_cache";
 

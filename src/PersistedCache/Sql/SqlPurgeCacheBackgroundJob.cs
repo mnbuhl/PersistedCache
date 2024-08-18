@@ -2,13 +2,13 @@
 
 namespace PersistedCache.Sql
 {
-    internal class SqlPurgeCacheBackgroundJob : IHostedService, IDisposable
+    internal class SqlPurgeCacheBackgroundJob<TDriver> : IHostedService, IDisposable where TDriver : class, IDriver
     {
         private Timer? _timer;
-        private readonly IPersistedCache _cache;
-        private readonly ISqlPersistedCacheOptions _options;
+        private readonly IPersistedCache<TDriver> _cache;
+        private readonly SqlPersistedCacheOptions _options;
         
-        public SqlPurgeCacheBackgroundJob(IPersistedCache cache, ISqlPersistedCacheOptions options)
+        public SqlPurgeCacheBackgroundJob(IPersistedCache<TDriver> cache, SqlPersistedCacheOptions options)
         {
             _cache = cache;
             _options = options;
