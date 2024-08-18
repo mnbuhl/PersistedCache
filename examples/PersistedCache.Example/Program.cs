@@ -27,7 +27,8 @@ builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionS
 });
 */
 
-builder.Services.AddFileSystemPersistedCache("cache");
+var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
+builder.Services.AddFileSystemPersistedCache(cachePath);
 
 var app = builder.Build();
 
@@ -45,50 +46,106 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
-    .WithName("GetWeatherForecast")
+app.MapGet("/get", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
+    .WithName("Get")
     .WithOpenApi();
 
-app.MapPost("/weatherforecast", (IPersistedCache cache) =>
+app.MapPost("/set", (IPersistedCache cache) =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-
+        var forecast = GetWeatherForecast();
         cache.SetForever("weather_forecast", forecast);
-        
+
         return forecast;
     })
-    .WithName("PostWeatherForecast")
+    .WithName("Set")
     .WithOpenApi();
 
-app.MapDelete("/weatherforecast", (IPersistedCache cache) =>
+app.MapGet("/get-or-set", (IPersistedCache cache) =>
     {
-        cache.Forget("weather_forecast");
+        var forecast = cache.GetOrSet("weather_forecast", GetWeatherForecast, Expire.InMinutes(5));
+        return forecast;
     })
-    .WithName("DeleteWeatherForecast")
+    .WithName("GetOrSet")
     .WithOpenApi();
 
-app.MapDelete("/flush", (IPersistedCache cache) =>
+app.MapDelete("/pull", (IPersistedCache cache) =>
     {
-        cache.Flush();
+        var forecast = cache.Pull<WeatherForecast[]>("weather_forecast");
+        return forecast;
     })
-    .WithName("FlushCache")
+    .WithName("Pull")
     .WithOpenApi();
 
-app.MapDelete("/purge", (IPersistedCache cache) =>
-    {
-        cache.Purge();
-    })
+app.MapDelete("/forget", (IPersistedCache cache) => { cache.Forget("weather_forecast"); })
+    .WithName("Forget")
+    .WithOpenApi();
+
+app.MapDelete("/flush", (IPersistedCache cache) => { cache.Flush(); })
+    .WithName("Flush")
+    .WithOpenApi();
+
+app.MapDelete("flush/{pattern}", (IPersistedCache cache, string pattern) => { cache.Flush(pattern); })
+    .WithName("FlushPattern")
+    .WithOpenApi();
+
+app.MapDelete("/purge", (IPersistedCache cache) => { cache.Purge(); })
     .WithName("PurgeCache")
     .WithOpenApi();
 
+// Async variants
+app.MapGet("/get-async", async (IPersistedCache cache) => await cache.GetAsync<WeatherForecast[]>("weather_forecast"))
+    .WithName("GetAsync")
+    .WithOpenApi();
+
+app.MapPost("/set-async", async (IPersistedCache cache) =>
+    {
+        var forecast = GetWeatherForecast();
+        await cache.SetForeverAsync("weather_forecast", forecast);
+
+        return forecast;
+    })
+    .WithName("SetAsync")
+    .WithOpenApi();
+
+app.MapGet("/get-or-set-async", async (IPersistedCache cache) =>
+        await cache.GetOrSetAsync("weather_forecast", () => Task.FromResult(GetWeatherForecast), Expire.InMinutes(5)))
+    .WithName("GetOrSetAsync")
+    .WithOpenApi();
+
+app.MapDelete("/pull-async", async (IPersistedCache cache) =>
+        await cache.PullAsync<WeatherForecast[]>("weather_forecast"))
+    .WithName("PullAsync")
+    .WithOpenApi();
+
+app.MapDelete("/forget-async", async (IPersistedCache cache) =>
+        await cache.ForgetAsync("weather_forecast"))
+    .WithName("ForgetAsync")
+    .WithOpenApi();
+
+app.MapDelete("/flush-async", async (IPersistedCache cache) =>
+        await cache.FlushAsync())
+    .WithName("FlushAsync")
+    .WithOpenApi();
+
+app.MapDelete("flush-async/{pattern}", async (IPersistedCache cache, string pattern) =>
+        await cache.FlushAsync(pattern))
+    .WithName("FlushPatternAsync")
+    .WithOpenApi();
+
 app.Run();
+
+
+WeatherForecast[] GetWeatherForecast()
+{
+    return Enumerable.Range(1, 5).Select(index =>
+            new WeatherForecast
+            (
+                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                Random.Shared.Next(-20, 55),
+                summaries[Random.Shared.Next(summaries.Length)]
+            ))
+        .ToArray();
+}
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
