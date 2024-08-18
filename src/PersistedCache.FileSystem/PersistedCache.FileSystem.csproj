@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PersistedCache\PersistedCache.csproj" />
+      <PackageReference Include="PersistedCache" Version="0.0.7" />
     </ItemGroup>
 
 </Project>

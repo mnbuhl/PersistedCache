@@ -40,8 +40,9 @@ namespace PersistedCache.MySql
             MySqlPersistedCacheOptions options)
         {
             services.AddSingleton<ISqlPersistedCacheOptions>(options);
-            services.AddSingleton<ISqlCacheDriver, MySqlCacheDriver>();
-            services.AddSingleton<IPersistedCache, SqlPersistedCache>();
+            services.AddSingleton<ISqlCacheDriver, MySqlDriver>();
+            services.AddSingleton<IPersistedCache, SqlPersistedCache<MySqlDriver>>();
+            services.AddSingleton<IPersistedCache<MySqlDriver>, SqlPersistedCache<MySqlDriver>>();
 
             if (options.PurgeExpiredEntries)
             {

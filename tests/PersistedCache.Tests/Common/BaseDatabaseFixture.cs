@@ -11,7 +11,8 @@ using Xunit;
 
 namespace PersistedCache.Tests.Common
 {
-    public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime where TDriver : ISqlCacheDriver
+    public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime
+        where TDriver : class, ISqlCacheDriver, IDriver
     {
         public IPersistedCache PersistedCache { get; private set; }
 
@@ -19,19 +20,19 @@ namespace PersistedCache.Tests.Common
         protected ISqlCacheDriver Driver => _driver;
 
         private ISqlCacheDriver _driver;
-    
+
         public async Task InitializeAsync()
         {
             await Container.StartAsync();
-            
+
             var connectionString = (Container as IDatabaseContainer).GetConnectionString();
             var options = GetOptions(connectionString);
             var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options);
-        
+
             SetupStorage(driver);
-        
+
             _driver = driver;
-            PersistedCache = new SqlPersistedCache(driver, options);
+            PersistedCache = new SqlPersistedCache<TDriver>(driver, options);
         }
 
         public async Task DisposeAsync()
@@ -41,10 +42,10 @@ namespace PersistedCache.Tests.Common
 
         // @TODO: Change object to PersistedCacheEntry
         public abstract IEnumerable<object> GetCacheEntries();
-        
+
         // @TODO: Change object to PersistedCacheEntry
         public abstract object GetCacheEntry(string key);
-    
+
         private static void SetupStorage(ISqlCacheDriver driver)
         {
             var connectionFactory = new SqlConnectionFactory(driver);
@@ -54,24 +55,26 @@ namespace PersistedCache.Tests.Common
                 connection.Execute(driver.SetupStorageScript, transaction: transaction);
             });
         }
-    
+
         private static ISqlPersistedCacheOptions GetOptions(string connectionString)
         {
-            ISqlPersistedCacheOptions options = new SqlPersistedCacheOptions(connectionString);
+            ISqlPersistedCacheOptions options;
 
             switch (typeof(TDriver))
             {
                 case Type type when type == typeof(SqlServerCacheDriver):
                     options = new SqlServerPersistedCacheOptions(connectionString);
                     break;
-                case Type type when type == typeof(MySqlCacheDriver):
-                    options = new SqlPersistedCacheOptions(connectionString);
+                case Type type when type == typeof(MySqlDriver):
+                    options = new MySqlPersistedCacheOptions(connectionString);
                     break;
                 case Type type when type == typeof(PostgreSqlCacheDriver):
                     options = new PostgreSqlPersistedCacheOptions(connectionString);
                     break;
+                default:
+                    throw new ArgumentException("Invalid driver type.");
             }
-        
+
             options.TableName = TestConstants.TableName;
             options.CreateTableIfNotExists = false;
 

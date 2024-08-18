@@ -42,7 +42,7 @@ public static class FileSystemPersistedCacheExtensions
             
             services.AddSingleton(options);
             services.AddSingleton<IPersistedCache, FileSystemPersistedCache>();
-            services.AddSingleton<IPersistedCache<FileSystem>, FileSystemPersistedCache>();
+            services.AddSingleton<IPersistedCache<FileSystemDriver>, FileSystemPersistedCache>();
 
             if (options.PurgeExpiredEntries)
             {

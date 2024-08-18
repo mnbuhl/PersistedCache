@@ -9,7 +9,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(MySqlFixture))]
-    public class MySqlFixture : BaseDatabaseFixture<MySqlCacheDriver>, ICollectionFixture<MySqlFixture>
+    public class MySqlFixture : BaseDatabaseFixture<MySqlDriver>, ICollectionFixture<MySqlFixture>
     {
         public MySqlFixture()
         {
