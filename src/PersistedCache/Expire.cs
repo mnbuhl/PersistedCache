@@ -9,24 +9,29 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
     
     private Expire(DateTimeOffset value)
     {
+        _value = value;
+    }
+
+    private static Expire Create(DateTimeOffset value)
+    {
         if (value < DateTimeOffset.UtcNow)
         {
             throw new ArgumentException("The expire value must be in the future.", nameof(value));
         }
         
-        _value = value;
+        return new Expire(value);
     }
     
-    public static Expire Never => new Expire(DateTimeOffset.MaxValue);
-    public static Expire InMilliseconds(int milliseconds) => new Expire(DateTimeOffset.UtcNow.AddMilliseconds(milliseconds));
-    public static Expire InSeconds(int seconds) => new Expire(DateTimeOffset.UtcNow.AddSeconds(seconds));
-    public static Expire InMinutes(int minutes) => new Expire(DateTimeOffset.UtcNow.AddMinutes(minutes));
-    public static Expire InHours(int hours) => new Expire(DateTimeOffset.UtcNow.AddHours(hours));
-    public static Expire InDays(int days) => new Expire(DateTimeOffset.UtcNow.AddDays(days));
-    public static Expire InMonths(int months) => new Expire(DateTimeOffset.UtcNow.AddMonths(months));
-    public static Expire InYears(int years) => new Expire(DateTimeOffset.UtcNow.AddYears(years));
-    public static Expire At(DateTimeOffset dateTime) => new Expire(dateTime);
-    public static Expire In(TimeSpan timeSpan) => new Expire(DateTimeOffset.UtcNow.Add(timeSpan));
+    public static Expire Never => Create(DateTimeOffset.MaxValue);
+    public static Expire InMilliseconds(int milliseconds) => Create(DateTimeOffset.UtcNow.AddMilliseconds(milliseconds));
+    public static Expire InSeconds(int seconds) => Create(DateTimeOffset.UtcNow.AddSeconds(seconds));
+    public static Expire InMinutes(int minutes) => Create(DateTimeOffset.UtcNow.AddMinutes(minutes));
+    public static Expire InHours(int hours) => Create(DateTimeOffset.UtcNow.AddHours(hours));
+    public static Expire InDays(int days) => Create(DateTimeOffset.UtcNow.AddDays(days));
+    public static Expire InMonths(int months) => Create(DateTimeOffset.UtcNow.AddMonths(months));
+    public static Expire InYears(int years) => Create(DateTimeOffset.UtcNow.AddYears(years));
+    public static Expire At(DateTimeOffset dateTime) => Create(dateTime);
+    public static Expire In(TimeSpan timeSpan) => Create(DateTimeOffset.UtcNow.Add(timeSpan));
     
     [JsonIgnore]
     public bool IsExpired => _value < DateTimeOffset.UtcNow;
