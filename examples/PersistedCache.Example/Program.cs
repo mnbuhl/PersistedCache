@@ -1,5 +1,6 @@
 using PersistedCache;
 using PersistedCache.FileSystem;
+using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
 using PersistedCache.SqlServer;
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-/*
+
 builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionString("MySql")!, options =>
 {
     options.TableName = "persisted_cache";
@@ -25,7 +26,6 @@ builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionS
 {
     options.TableName = "persisted_cache";
 });
-*/
 
 var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
 builder.Services.AddFileSystemPersistedCache(cachePath);
@@ -76,7 +76,7 @@ app.MapDelete("/pull", (IPersistedCache cache) =>
     .WithName("Pull")
     .WithOpenApi();
 
-app.MapDelete("/forget", (IPersistedCache cache) => { cache.Forget("weather_forecast"); })
+app.MapDelete("/forget", (IPersistedCache<FileSystemDriver> cache) => { cache.Forget("weather_forecast"); })
     .WithName("Forget")
     .WithOpenApi();
 
@@ -84,7 +84,7 @@ app.MapDelete("/flush", (IPersistedCache cache) => { cache.Flush(); })
     .WithName("Flush")
     .WithOpenApi();
 
-app.MapDelete("flush/{pattern}", (IPersistedCache cache, string pattern) => { cache.Flush(pattern); })
+app.MapDelete("flush/{pattern}", (IPersistedCache<MySqlDriver> cache, string pattern) => { cache.Flush(pattern); })
     .WithName("FlushPattern")
     .WithOpenApi();
 
@@ -107,7 +107,7 @@ app.MapPost("/set-async", async (IPersistedCache cache) =>
     .WithName("SetAsync")
     .WithOpenApi();
 
-app.MapGet("/get-or-set-async", async (IPersistedCache cache) =>
+app.MapGet("/get-or-set-async", async (IPersistedCache<SqlServerDriver> cache) =>
         await cache.GetOrSetAsync("weather_forecast", () => Task.FromResult(GetWeatherForecast), Expire.InMinutes(5)))
     .WithName("GetOrSetAsync")
     .WithOpenApi();

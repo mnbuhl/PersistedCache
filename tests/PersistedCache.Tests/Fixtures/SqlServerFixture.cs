@@ -8,7 +8,7 @@ using Xunit;
 namespace PersistedCache.Tests.Fixtures
 {
     [CollectionDefinition(nameof(SqlServerFixture))]
-    public class SqlServerFixture : BaseDatabaseFixture<SqlServerCacheDriver>, ICollectionFixture<SqlServerFixture>
+    public class SqlServerFixture : BaseDatabaseFixture<SqlServerDriver>, ICollectionFixture<SqlServerFixture>
     {
         public SqlServerFixture()
         {

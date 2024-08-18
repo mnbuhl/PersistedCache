@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace PersistedCache.FileSystem;
 
@@ -40,13 +41,14 @@ public static class FileSystemPersistedCacheExtensions
         {
             options.JsonOptions.Converters.Add(new ExpireJsonConverter());
             
-            services.AddSingleton(options);
-            services.AddSingleton<IPersistedCache, FileSystemPersistedCache>();
-            services.AddSingleton<IPersistedCache<FileSystemDriver>, FileSystemPersistedCache>();
+            var cache = new FileSystemPersistedCache(options);
+            
+            services.TryAddSingleton<IPersistedCache>(cache);
+            services.AddSingleton<IPersistedCache<FileSystemDriver>>(cache);
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<FileSystemPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new FileSystemPurgeCacheBackgroundJob(cache, options));
             }
 
             return services;

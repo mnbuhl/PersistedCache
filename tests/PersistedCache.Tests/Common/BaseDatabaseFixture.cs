@@ -56,13 +56,13 @@ namespace PersistedCache.Tests.Common
             });
         }
 
-        private static ISqlPersistedCacheOptions GetOptions(string connectionString)
+        private static SqlPersistedCacheOptions GetOptions(string connectionString)
         {
-            ISqlPersistedCacheOptions options;
+            SqlPersistedCacheOptions options;
 
             switch (typeof(TDriver))
             {
-                case Type type when type == typeof(SqlServerCacheDriver):
+                case Type type when type == typeof(SqlServerDriver):
                     options = new SqlServerPersistedCacheOptions(connectionString);
                     break;
                 case Type type when type == typeof(MySqlDriver):

@@ -47,7 +47,7 @@ namespace PersistedCache.MySql
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new SqlPurgeCacheBackgroundJob<MySqlDriver>(cache, options));
             }
 
             return services;

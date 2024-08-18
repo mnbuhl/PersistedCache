@@ -4,13 +4,13 @@ using PersistedCache.Sql;
 
 namespace PersistedCache.SqlServer;
 
-public class SqlServerCacheDriver : ISqlCacheDriver
+public class SqlServerDriver : ISqlCacheDriver
 {
     private readonly SqlServerPersistedCacheOptions _options;
 
-    public SqlServerCacheDriver(ISqlPersistedCacheOptions options)
+    public SqlServerDriver(SqlServerPersistedCacheOptions options)
     {
-        _options = (SqlServerPersistedCacheOptions)options;
+        _options = options;
     }
 
     public string SetupStorageScript => 

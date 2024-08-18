@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PersistedCache.Sql;
 
 namespace PersistedCache.SqlServer
@@ -39,13 +40,14 @@ namespace PersistedCache.SqlServer
         public static IServiceCollection AddSqlServerPersistedCache(this IServiceCollection services,
             SqlServerPersistedCacheOptions options)
         {
-            services.AddSingleton<ISqlPersistedCacheOptions>(options);
-            services.AddSingleton<ISqlCacheDriver, SqlServerCacheDriver>();
-            services.AddSingleton<IPersistedCache, SqlPersistedCache>();
+            var driver = new SqlServerDriver(options);
+            var cache = new SqlPersistedCache<SqlServerDriver>(driver, options);
+            services.TryAddSingleton<IPersistedCache>(cache);
+            services.AddSingleton<IPersistedCache<SqlServerDriver>>(cache);
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new SqlPurgeCacheBackgroundJob<SqlServerDriver>(cache, options));
             }
 
             return services;

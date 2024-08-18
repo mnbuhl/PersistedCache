@@ -40,14 +40,14 @@ namespace PersistedCache.PostgreSql
         public static IServiceCollection AddPostgreSqlPersistedCache(this IServiceCollection services,
             PostgreSqlPersistedCacheOptions options)
         {
-            services.AddSingleton<ISqlPersistedCacheOptions>(options);
-            services.AddSingleton<ISqlCacheDriver, PostgreSqlDriver>();
-            services.TryAddSingleton<IPersistedCache, SqlPersistedCache<PostgreSqlDriver>>();
-            services.AddSingleton<IPersistedCache<PostgreSqlDriver>, SqlPersistedCache<PostgreSqlDriver>>();
+            var driver = new PostgreSqlDriver(options);
+            var cache = new SqlPersistedCache<PostgreSqlDriver>(driver, options);
+            services.TryAddSingleton<IPersistedCache>(cache);
+            services.AddSingleton<IPersistedCache<PostgreSqlDriver>>(cache);
 
             if (options.PurgeExpiredEntries)
             {
-                services.AddHostedService<SqlPurgeCacheBackgroundJob>();
+                services.AddHostedService(_ => new SqlPurgeCacheBackgroundJob<PostgreSqlDriver>(cache, options));
             }
 
             return services;
