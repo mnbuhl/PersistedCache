@@ -17,19 +17,19 @@ namespace PersistedCache.Tests.Fixtures
                 .Build();
         }
         
-        public override IEnumerable<object> GetCacheEntries()
+        public override IEnumerable<CacheEntry> GetCacheEntries()
         {
             using (var connection = Driver.CreateConnection())
             {
-                return connection.Query($"SELECT * FROM [{TestConstants.TableName}]");
+                return connection.Query<CacheEntry>($"SELECT * FROM [{TestConstants.TableName}]");
             }
         }
 
-        public override object GetCacheEntry(string key)
+        public override CacheEntry GetCacheEntry(string key)
         {
             using (var connection = Driver.CreateConnection())
             {
-                return connection.QueryFirstOrDefault($"SELECT * FROM [{TestConstants.TableName}] WHERE [key] = @Key",
+                return connection.QueryFirstOrDefault<CacheEntry>($"SELECT * FROM [{TestConstants.TableName}] WHERE [key] = @Key",
                     new { Key = key });
             }
         }

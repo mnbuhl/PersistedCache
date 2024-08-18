@@ -11,10 +11,10 @@ using Xunit;
 
 namespace PersistedCache.Tests.Common
 {
-    public abstract class BaseDatabaseFixture<TDriver> : IAsyncLifetime
+    public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         where TDriver : class, ISqlCacheDriver, IDriver
     {
-        public IPersistedCache PersistedCache { get; private set; }
+        public override IPersistedCache PersistedCache { get; protected set; }
 
         protected DockerContainer Container;
         protected ISqlCacheDriver Driver => _driver;
@@ -39,12 +39,6 @@ namespace PersistedCache.Tests.Common
         {
             await Container.DisposeAsync();
         }
-
-        // @TODO: Change object to PersistedCacheEntry
-        public abstract IEnumerable<object> GetCacheEntries();
-
-        // @TODO: Change object to PersistedCacheEntry
-        public abstract object GetCacheEntry(string key);
 
         private static void SetupStorage(ISqlCacheDriver driver)
         {
