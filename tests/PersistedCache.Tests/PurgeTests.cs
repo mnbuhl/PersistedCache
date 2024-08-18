@@ -14,12 +14,12 @@ namespace PersistedCache.Tests
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<string, IEnumerable<dynamic>> _executeSql;
+        private readonly Func<IEnumerable<object>> _getCacheEntries;
     
-        protected PurgeTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
+        protected PurgeTests(IPersistedCache cache, Func<IEnumerable<object>> getCacheEntries) : base(cache)
         {
             _cache = cache;
-            _executeSql = executeSql;
+            _getCacheEntries = getCacheEntries;
         }
     
         [Fact]
@@ -37,7 +37,7 @@ namespace PersistedCache.Tests
             _cache.Purge();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|>");
+            var result = _getCacheEntries();
             result.Should().HaveCount(2);
         }
 
@@ -52,7 +52,7 @@ namespace PersistedCache.Tests
             _cache.Purge();
 
             // Assert
-            var result = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|>");
+            var result = _getCacheEntries();
             result.Should().HaveCount(2);
         }
     }
@@ -60,7 +60,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(MySqlFixture))]
     public class MySqlPurgeTestsExecutor : PurgeTests
     {
-        public MySqlPurgeTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public MySqlPurgeTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
@@ -68,7 +68,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(PostgreSqlFixture))]
     public class PostgreSqlPurgeTestsExecutor : PurgeTests
     {
-        public PostgreSqlPurgeTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public PostgreSqlPurgeTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
@@ -76,7 +76,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(SqlServerFixture))]
     public class SqlServerPurgeTestsExecutor : PurgeTests
     {
-        public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -15,12 +14,12 @@ namespace PersistedCache.Tests
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<string, IEnumerable<dynamic>> _executeSql;
+        private readonly Func<string, object> _getCacheEntry;
     
-        protected PullTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
+        protected PullTests(IPersistedCache cache, Func<string, object> getCacheEntry) : base(cache)
         {
             _cache = cache;
-            _executeSql = executeSql;
+            _getCacheEntry = getCacheEntry;
         }
     
         [Fact]
@@ -67,8 +66,8 @@ namespace PersistedCache.Tests
         
             // Assert
             result.Should().BeNull();
-            var resultAfterPull = _executeSql($"SELECT * FROM <|{TestConstants.TableName}|> WHERE <|key|> = '{key}'");
-            resultAfterPull.Should().BeEmpty();
+            var resultAfterPull = _getCacheEntry(key);
+            resultAfterPull.Should().BeNull();
         }
     
         [Fact]
@@ -97,7 +96,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(MySqlFixture))]
     public class MySqlPullTestsExecutor : PullTests
     {
-        public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
         {
         }
     }
@@ -105,7 +104,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(PostgreSqlFixture))]
     public class PostgreSqlPullTestsExecutor : PullTests
     {
-        public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
         {
         }
     }
@@ -113,7 +112,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(SqlServerFixture))]
     public class SqlServerPullTestsExecutor : PullTests
     {
-        public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
         {
         }
     }

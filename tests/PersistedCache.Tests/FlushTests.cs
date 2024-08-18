@@ -15,12 +15,12 @@ namespace PersistedCache.Tests
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
-        private readonly Func<string, IEnumerable<dynamic>> _executeSql;
+        private readonly Func<IEnumerable<object>> _getCacheEntries;
     
-        protected FlushTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
+        protected FlushTests(IPersistedCache cache, Func<IEnumerable<object>> getCacheEntries) : base(cache)
         {
             _cache = cache;
-            _executeSql = executeSql;
+            _getCacheEntries = getCacheEntries;
         }
     
         [Fact]
@@ -37,7 +37,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -48,7 +48,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -67,7 +67,7 @@ namespace PersistedCache.Tests
             _cache.Flush();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -85,7 +85,7 @@ namespace PersistedCache.Tests
             await _cache.FlushAsync();
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().BeEmpty();
         }
     
@@ -103,7 +103,7 @@ namespace PersistedCache.Tests
             _cache.Flush("key*");
         
             // Assert
-            var result = _executeSql($"SELECT * FROM {TestConstants.TableName}");
+            var result = _getCacheEntries();
             result.Should().HaveCount(1);
         }
     
@@ -121,7 +121,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(MySqlFixture))]
     public class MySqlFlushTestsExecutor : FlushTests
     {
-        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
@@ -129,7 +129,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(PostgreSqlFixture))]
     public class PostgreSqlFlushTestsExecutor : FlushTests
     {
-        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }
@@ -137,7 +137,7 @@ namespace PersistedCache.Tests
     [Collection(nameof(SqlServerFixture))]
     public class SqlServerFlushTestsExecutor : FlushTests
     {
-        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
+        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }

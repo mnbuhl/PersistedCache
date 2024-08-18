@@ -16,9 +16,7 @@ namespace PersistedCache.Tests.Common
         public IPersistedCache PersistedCache { get; private set; }
 
         protected DockerContainer Container;
-    
-        protected abstract char LeftEscapeCharacter { get; }
-        protected abstract char RightEscapeCharacter { get; }
+        protected ISqlCacheDriver Driver => _driver;
 
         private ISqlCacheDriver _driver;
     
@@ -40,17 +38,12 @@ namespace PersistedCache.Tests.Common
         {
             await Container.DisposeAsync();
         }
-    
-        public IEnumerable<dynamic> ExecuteSql(string sql)
-        {
-            sql = sql.Replace("<|", $"{LeftEscapeCharacter}")
-                .Replace("|>", $"{RightEscapeCharacter}");
-            using (var connection = _driver.CreateConnection())
-            {
-                var result = connection.Query(sql);
-                return result;
-            }
-        }
+
+        // @TODO: Change object to PersistedCacheEntry
+        public abstract IEnumerable<object> GetCacheEntries();
+        
+        // @TODO: Change object to PersistedCacheEntry
+        public abstract object GetCacheEntry(string key);
     
         private static void SetupStorage(ISqlCacheDriver driver)
         {

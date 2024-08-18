@@ -1,4 +1,6 @@
-﻿using PersistedCache.MySql;
+﻿using System.Collections.Generic;
+using Dapper;
+using PersistedCache.MySql;
 using PersistedCache.Tests.Common;
 using Testcontainers.MySql;
 using Xunit;
@@ -17,8 +19,21 @@ namespace PersistedCache.Tests.Fixtures
                 .WithPassword("root")
                 .Build();
         }
+        
+        public override IEnumerable<object> GetCacheEntries()
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.Query($"SELECT * FROM `{TestConstants.TableName}`");
+            }
+        }
 
-        protected override char LeftEscapeCharacter => '`';
-        protected override char RightEscapeCharacter => '`';
+        public override object GetCacheEntry(string key)
+        {
+            using (var connection = Driver.CreateConnection())
+            {
+                return connection.QueryFirstOrDefault($"SELECT * FROM `{TestConstants.TableName}` WHERE `key` = @Key", new { Key = key });
+            }
+        }
     }
 }
