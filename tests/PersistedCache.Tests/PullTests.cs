@@ -4,10 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -15,16 +11,16 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class PullTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class PullTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
         private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-        public PullTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        protected PullTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
         {
-            _cache = fixture.PersistedCache;
-            _executeSql = fixture.ExecuteSql;
+            _cache = cache;
+            _executeSql = executeSql;
         }
     
         [Fact]
@@ -99,25 +95,25 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlPullTestsExecutor : PullTests<MySqlCacheDriver>
+    public class MySqlPullTestsExecutor : PullTests
     {
-        public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlPullTestsExecutor : PullTests<PostgreSqlCacheDriver>
+    public class PostgreSqlPullTestsExecutor : PullTests
     {
-        public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerPullTestsExecutor : PullTests<SqlServerCacheDriver>
+    public class SqlServerPullTestsExecutor : PullTests
     {
-        public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }

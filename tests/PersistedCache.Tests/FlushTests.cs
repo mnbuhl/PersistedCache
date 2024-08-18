@@ -15,16 +15,16 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class FlushTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class FlushTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
         private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-        public FlushTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        public FlushTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
         {
-            _cache = fixture.PersistedCache;
-            _executeSql = fixture.ExecuteSql;
+            _cache = cache;
+            _executeSql = executeSql;
         }
     
         [Fact]
@@ -123,25 +123,25 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlFlushTestsExecutor : FlushTests<MySqlCacheDriver>
+    public class MySqlFlushTestsExecutor : FlushTests
     {
-        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlFlushTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlFlushTestsExecutor : FlushTests<PostgreSqlCacheDriver>
+    public class PostgreSqlFlushTestsExecutor : FlushTests
     {
-        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlFlushTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerFlushTestsExecutor : FlushTests<SqlServerCacheDriver>
+    public class SqlServerFlushTestsExecutor : FlushTests
     {
-        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }

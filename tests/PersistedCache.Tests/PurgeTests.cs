@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -14,16 +10,16 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class PurgeTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class PurgeTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
         private readonly Func<string, IEnumerable<dynamic>> _executeSql;
     
-        public PurgeTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        protected PurgeTests(IPersistedCache cache, Func<string, IEnumerable<dynamic>> executeSql) : base(cache)
         {
-            _cache = fixture.PersistedCache;
-            _executeSql = fixture.ExecuteSql;
+            _cache = cache;
+            _executeSql = executeSql;
         }
     
         [Fact]
@@ -62,25 +58,25 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlPurgeTestsExecutor : PurgeTests<MySqlCacheDriver>
+    public class MySqlPurgeTestsExecutor : PurgeTests
     {
-        public MySqlPurgeTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlPurgeTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlPurgeTestsExecutor : PurgeTests<PostgreSqlCacheDriver>
+    public class PostgreSqlPurgeTestsExecutor : PurgeTests
     {
-        public PostgreSqlPurgeTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlPurgeTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerPurgeTestsExecutor : PurgeTests<SqlServerCacheDriver>
+    public class SqlServerPurgeTestsExecutor : PurgeTests
     {
-        public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.ExecuteSql)
         {
         }
     }

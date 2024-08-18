@@ -4,7 +4,6 @@ using AutoFixture;
 using FluentAssertions;
 using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
 using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
@@ -13,14 +12,14 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class GetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class GetTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
     
-        public GetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        public GetTests(IPersistedCache cache) : base(cache)
         {
-            _cache = fixture.PersistedCache;
+            _cache = cache;
         }
     
         [Theory]
@@ -121,25 +120,25 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlGetTestsExecutor : GetTests<MySqlCacheDriver>
+    public class MySqlGetTestsExecutor : GetTests
     {
-        public MySqlGetTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlGetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlGetTestsExecutor : GetTests<PostgreSqlCacheDriver>
+    public class PostgreSqlGetTestsExecutor : GetTests
     {
-        public PostgreSqlGetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlGetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerGetTestsExecutor : GetTests<SqlServerCacheDriver>
+    public class SqlServerGetTestsExecutor : GetTests
     {
-        public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }

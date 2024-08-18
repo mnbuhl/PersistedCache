@@ -2,10 +2,6 @@
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sql;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
@@ -13,14 +9,14 @@ using Xunit;
 
 namespace PersistedCache.Tests
 {
-    public abstract class ForgetTests<TDriver> : BaseTest where TDriver : ISqlCacheDriver
+    public abstract class ForgetTests : BaseTest
     {
         private readonly IPersistedCache _cache;
         private readonly Fixture _fixture = new Fixture();
     
-        public ForgetTests(BaseDatabaseFixture<TDriver> fixture) : base(fixture.PersistedCache)
+        public ForgetTests(IPersistedCache cache) : base(cache)
         {
-            _cache = fixture.PersistedCache;
+            _cache = cache;
         }
     
         [Fact]
@@ -75,25 +71,25 @@ namespace PersistedCache.Tests
     }
 
     [Collection(nameof(MySqlFixture))]
-    public class MySqlForgetTestsExecutor : ForgetTests<MySqlCacheDriver>
+    public class MySqlForgetTestsExecutor : ForgetTests
     {
-        public MySqlForgetTestsExecutor(MySqlFixture fixture) : base(fixture)
+        public MySqlForgetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
 
     [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlForgetTestsExecutor : ForgetTests<PostgreSqlCacheDriver>
+    public class PostgreSqlForgetTestsExecutor : ForgetTests
     {
-        public PostgreSqlForgetTestsExecutor(PostgreSqlFixture fixture) : base(fixture)
+        public PostgreSqlForgetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
     
     [Collection(nameof(SqlServerFixture))]
-    public class SqlServerForgetTestsExecutor : ForgetTests<SqlServerCacheDriver>
+    public class SqlServerForgetTestsExecutor : ForgetTests
     {
-        public SqlServerForgetTestsExecutor(SqlServerFixture fixture) : base(fixture)
+        public SqlServerForgetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
         {
         }
     }
