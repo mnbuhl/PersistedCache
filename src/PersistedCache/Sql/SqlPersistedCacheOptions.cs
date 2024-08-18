@@ -4,7 +4,7 @@ public abstract class SqlPersistedCacheOptions : PersistedCacheOptions, ISqlPers
 {
     private string _tableName = "persisted_cache";
 
-    public SqlPersistedCacheOptions(string connectionString)
+    protected SqlPersistedCacheOptions(string connectionString)
     {
         ConnectionString = !string.IsNullOrWhiteSpace(connectionString) 
             ? connectionString 
