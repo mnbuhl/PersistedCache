@@ -1,5 +1,7 @@
 ﻿namespace PersistedCache
 {
+    public interface IPersistedCache<TDriver> : IPersistedCache where TDriver : class, IDriver;
+    
     public interface IPersistedCache
     {
         /// <summary>

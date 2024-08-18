@@ -2,8 +2,8 @@
 {
     internal class PersistedCacheEntry
     {
-        public string Key { get; set; } = string.Empty;
-        public string Value { get; set; } = string.Empty;
-        public DateTimeOffset Expiry { get; set; }
+        public required string Key { get; init; }
+        public required string Value { get; init; }
+        public DateTimeOffset Expiry { get; init; }
     }
 }
