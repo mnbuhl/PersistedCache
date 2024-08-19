@@ -21,6 +21,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
+        <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -28,13 +29,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.1.35" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-      <PackageReference Include="PolySharp" Version="1.14.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="System.Text.Json" Version="6.0.9" />
+        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="PolySharp" Version="1.14.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Text.Json" Version="6.0.9" />
     </ItemGroup>
 
     <ItemGroup>

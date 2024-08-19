@@ -13,9 +13,9 @@
       },
       "PersistedCache": {
         "type": "Direct",
-        "requested": "[0.0.10, )",
-        "resolved": "0.0.10",
-        "contentHash": "pJ3mLJCWD41Fhyu/e9qc6QeYuuqi+aBoqOP5pHncVh5Io4wMEc0lk1O4s3kvBWkYuM4cI5rlnQwo2QVs02F9Ig==",
+        "requested": "[0.0.11, )",
+        "resolved": "0.0.11",
+        "contentHash": "ka0TsU0wIpHLJrx9kt2Km6nQBFwt83c39svlBZh6w/SViYUfuPOKZjVoIPlojaWUUXUYwVWtfsbItLnf6CoDdA==",
         "dependencies": {
           "Dapper": "2.1.35",
           "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
