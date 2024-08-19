@@ -8,180 +8,179 @@ using PersistedCache.Tests.Fixtures;
 using PersistedCache.Tests.Helpers;
 using Xunit;
 
-namespace PersistedCache.Tests
+namespace PersistedCache.Tests;
+
+public abstract class SetTests : BaseTest
 {
-    public abstract class SetTests : BaseTest
+    private readonly IPersistedCache _cache;
+    private readonly Fixture _fixture = new Fixture();
+
+    protected SetTests(IPersistedCache cache) : base(cache)
     {
-        private readonly IPersistedCache _cache;
-        private readonly Fixture _fixture = new Fixture();
-
-        protected SetTests(IPersistedCache cache) : base(cache)
-        {
-            _cache = cache;
-        }
-
-        [Fact]
-        public void Set_WithKeyAndValue_SetsValue()
-        {
-            // Arrange
-            const string key = "key";
-            const string value = "value";
-        
-            // Act
-            _cache.Set(key, value, Expire.InMinutes(5));
-        
-            // Assert
-            var result = _cache.Get<string>(key);
-            result.Should().Be(value);
-        }
-
-        [Fact]
-        public void Set_WithKeyAndObjectValue_SetsValue()
-        {
-            // Arrange
-            const string key = "random_object";
-            var value = _fixture.Create<RandomObject>();
-
-            // Act
-            _cache.Set(key, value, Expire.InMinutes(5));
-
-            // Assert
-            var result = _cache.Get<RandomObject>(key);
-            result.Should().BeEquivalentTo(value);
-        }
-
-        [Fact]
-        public void Set_WithKeyAndArrayValue_SetsValue()
-        {
-            // Arrange
-            const string key = "array";
-            var value = new List<RandomObject>();
-        
-            for (var i = 0; i < 100; i++)
-            {
-                value.Add(_fixture.Create<RandomObject>());
-            }
-        
-            // Act
-            _cache.Set(key, value, Expire.InMinutes(5));
-        
-            // Assert
-            var result = _cache.Get<List<RandomObject>>(key);
-            result.Should().BeEquivalentTo(value);
-        }
-
-        [Fact]
-        public void Set_ForExistingKeyWithNewValue_UpdatesValue()
-        {
-            // Arrange
-            const string key = "key";
-            const string value = "value";
-            const string newValue = "new_value";
-
-            // Act
-            _cache.Set(key, value, Expire.InMinutes(5));
-            _cache.Set(key, newValue, Expire.InMinutes(5));
-
-            // Assert
-            var result = _cache.Get<string>(key);
-            result.Should().Be(newValue);
-        }
-
-        [Fact]
-        public void Set_WithInvalidExpire_ThrowsArgumentException()
-        {
-            // Arrange
-            const string key = "key";
-            const string value = "value";
-
-            // Act
-            var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(-5)));
-
-            // Assert
-            act.Should().Throw<ArgumentException>();
-        }
-    
-        [Fact]
-        public void Set_WithInvalidKey_ThrowsArgumentException()
-        {
-            // Arrange
-            const string key = null;
-            const string value = "value";
-
-            // Act
-            var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(5)));
-
-            // Assert
-            act.Should().Throw<ArgumentException>();
-        }
-    
-        [Fact]
-        public void Set_WithTooLongKey_ThrowsArgumentException()
-        {
-            // Arrange
-            var key = "a".PadRight(256, 'a');
-            const string value = "value";
-
-            // Act
-            var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(5)));
-
-            // Assert
-            act.Should().Throw<ArgumentException>();
-        }
-
-        [Fact]
-        public async Task SetAsync_WithKeyAndValue_SetsValue()
-        {
-            // Arrange
-            const string key = "key";
-            const string value = "value";
-
-            // Act
-            await _cache.SetAsync(key, value, Expire.InMinutes(5));
-
-            // Assert
-            var result = await _cache.GetAsync<string>(key);
-            result.Should().Be(value);
-        }
+        _cache = cache;
     }
 
-    [Collection(nameof(MySqlFixture))]
-    public class MySqlSetTestsExecutor : SetTests
+    [Fact]
+    public void Set_WithKeyAndValue_SetsValue()
     {
-        public MySqlSetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
-        {
-        }
+        // Arrange
+        const string key = "key";
+        const string value = "value";
+        
+        // Act
+        _cache.Set(key, value, Expire.InMinutes(5));
+        
+        // Assert
+        var result = _cache.Get<string>(key);
+        result.Should().Be(value);
     }
 
-    [Collection(nameof(PostgreSqlFixture))]
-    public class PostgreSqlSetTestsExecutor : SetTests
+    [Fact]
+    public void Set_WithKeyAndObjectValue_SetsValue()
     {
-        public PostgreSqlSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
+        // Arrange
+        const string key = "random_object";
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        _cache.Set(key, value, Expire.InMinutes(5));
+
+        // Assert
+        var result = _cache.Get<RandomObject>(key);
+        result.Should().BeEquivalentTo(value);
+    }
+
+    [Fact]
+    public void Set_WithKeyAndArrayValue_SetsValue()
+    {
+        // Arrange
+        const string key = "array";
+        var value = new List<RandomObject>();
+        
+        for (var i = 0; i < 100; i++)
         {
+            value.Add(_fixture.Create<RandomObject>());
         }
+        
+        // Act
+        _cache.Set(key, value, Expire.InMinutes(5));
+        
+        // Assert
+        var result = _cache.Get<List<RandomObject>>(key);
+        result.Should().BeEquivalentTo(value);
+    }
+
+    [Fact]
+    public void Set_ForExistingKeyWithNewValue_UpdatesValue()
+    {
+        // Arrange
+        const string key = "key";
+        const string value = "value";
+        const string newValue = "new_value";
+
+        // Act
+        _cache.Set(key, value, Expire.InMinutes(5));
+        _cache.Set(key, newValue, Expire.InMinutes(5));
+
+        // Assert
+        var result = _cache.Get<string>(key);
+        result.Should().Be(newValue);
+    }
+
+    [Fact]
+    public void Set_WithInvalidExpire_ThrowsArgumentException()
+    {
+        // Arrange
+        const string key = "key";
+        const string value = "value";
+
+        // Act
+        var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(-5)));
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
     
-    [Collection(nameof(SqlServerFixture))]
-    public class SqlServerSetTestsExecutor : SetTests
+    [Fact]
+    public void Set_WithInvalidKey_ThrowsArgumentException()
     {
-        public SqlServerSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-        {
-        }
+        // Arrange
+        const string key = null;
+        const string value = "value";
+
+        // Act
+        var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(5)));
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
     
-    [Collection(nameof(FileSystemFixture))]
-    public class FileSystemSetTestsExecutor : SetTests
+    [Fact]
+    public void Set_WithTooLongKey_ThrowsArgumentException()
     {
-        public FileSystemSetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
-        {
-        }
+        // Arrange
+        var key = "a".PadRight(256, 'a');
+        const string value = "value";
+
+        // Act
+        var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(5)));
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
-    
-    [Collection(nameof(SqliteFixture))]
-    public class SqliteSetTestsExecutor : SetTests
+
+    [Fact]
+    public async Task SetAsync_WithKeyAndValue_SetsValue()
     {
-        public SqliteSetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
-        {
-        }
+        // Arrange
+        const string key = "key";
+        const string value = "value";
+
+        // Act
+        await _cache.SetAsync(key, value, Expire.InMinutes(5));
+
+        // Assert
+        var result = await _cache.GetAsync<string>(key);
+        result.Should().Be(value);
+    }
+}
+
+[Collection(nameof(MySqlFixture))]
+public class MySqlSetTestsExecutor : SetTests
+{
+    public MySqlSetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
+
+[Collection(nameof(PostgreSqlFixture))]
+public class PostgreSqlSetTestsExecutor : SetTests
+{
+    public PostgreSqlSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
+    
+[Collection(nameof(SqlServerFixture))]
+public class SqlServerSetTestsExecutor : SetTests
+{
+    public SqlServerSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
+    
+[Collection(nameof(FileSystemFixture))]
+public class FileSystemSetTestsExecutor : SetTests
+{
+    public FileSystemSetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
+    
+[Collection(nameof(SqliteFixture))]
+public class SqliteSetTestsExecutor : SetTests
+{
+    public SqliteSetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+    {
     }
 }

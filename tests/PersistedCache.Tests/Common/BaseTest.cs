@@ -1,25 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace PersistedCache.Tests.Common
+namespace PersistedCache.Tests.Common;
+
+public class BaseTest : IAsyncLifetime
 {
-    public class BaseTest : IAsyncLifetime
+    private readonly IPersistedCache _cache;
+
+    public BaseTest(IPersistedCache cache)
     {
-        private readonly IPersistedCache _cache;
+        _cache = cache;
+    }
 
-        public BaseTest(IPersistedCache cache)
-        {
-            _cache = cache;
-        }
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task DisposeAsync()
-        {
-            await _cache.FlushAsync();
-        }
+    public async Task DisposeAsync()
+    {
+        await _cache.FlushAsync();
     }
 }
