@@ -13,7 +13,7 @@
         <Authors>Mikkel Buhl</Authors>
         <Description>Simple persisted cache for .NET</Description>
         <PackageId>PersistedCache</PackageId>
-        <PackageTags>cache storage database</PackageTags>
+        <PackageTags>cache storage database filesystem sql documentdb</PackageTags>
         <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mnbuhl/PersistedCache</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

@@ -13,7 +13,7 @@
         <Authors>Mikkel Buhl</Authors>
         <Description>Simple persisted cache for .NET and MySQL</Description>
         <PackageId>PersistedCache.MySql</PackageId>
-        <PackageTags>cache storage database</PackageTags>
+        <PackageTags>cache storage database sql mysql</PackageTags>
         <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mnbuhl/PersistedCache</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.SqlServer", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.FileSystem", "src\PersistedCache.FileSystem\PersistedCache.FileSystem.csproj", "{8BBCC92D-6F90-47C9-BB2C-64ACAE364157}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistedCache.Sqlite", "src\PersistedCache.Sqlite\PersistedCache.Sqlite.csproj", "{70B83709-A212-427A-8723-FE24AEBAE405}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{8BBCC92D-6F90-47C9-BB2C-64ACAE364157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BBCC92D-6F90-47C9-BB2C-64ACAE364157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BBCC92D-6F90-47C9-BB2C-64ACAE364157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70B83709-A212-427A-8723-FE24AEBAE405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70B83709-A212-427A-8723-FE24AEBAE405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70B83709-A212-427A-8723-FE24AEBAE405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70B83709-A212-427A-8723-FE24AEBAE405}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8A9F2660-8E83-416E-919B-02243E2E0E6D} = {BD906076-617D-44E5-AF27-D23543868D21}
@@ -70,5 +76,6 @@ Global
 		{738745FD-612E-4553-B8C0-41FFE8F492DC} = {BD906076-617D-44E5-AF27-D23543868D21}
 		{A2841E19-4673-4EFF-B107-43AD4115F30F} = {BD906076-617D-44E5-AF27-D23543868D21}
 		{8BBCC92D-6F90-47C9-BB2C-64ACAE364157} = {BD906076-617D-44E5-AF27-D23543868D21}
+		{70B83709-A212-427A-8723-FE24AEBAE405} = {BD906076-617D-44E5-AF27-D23543868D21}
 	EndGlobalSection
 EndGlobal
