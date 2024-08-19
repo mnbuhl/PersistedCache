@@ -98,7 +98,7 @@ namespace PersistedCache.Tests
             {
                 _cache.SetForever(key, _fixture.Create<RandomObject>());
             }
-        
+            
             // Act
             _cache.Flush("key*");
         
@@ -146,6 +146,14 @@ namespace PersistedCache.Tests
     public class FileSystemFlushTestsExecutor : FlushTests
     {
         public FileSystemFlushTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+        {
+        }
+    }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqliteFlushTestsExecutor : FlushTests
+    {
+        public SqliteFlushTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
         {
         }
     }

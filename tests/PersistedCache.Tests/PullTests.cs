@@ -124,4 +124,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqlitePullTestsExecutor : PullTests
+    {
+        public SqlitePullTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+        {
+        }
+    }
 }

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>Mikkel Buhl</Authors>
+        <Description>Simple persisted cache for .NET and SQLite</Description>
+        <PackageId>PersistedCache.Sqlite</PackageId>
+        <PackageTags>cache storage sqlite database sql</PackageTags>
+        <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mnbuhl/PersistedCache</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PersistedCache" Version="0.0.10" />
+      <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+    </ItemGroup>
+
+</Project>

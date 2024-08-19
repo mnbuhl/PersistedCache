@@ -3,7 +3,7 @@ using Dapper;
 
 namespace PersistedCache.Sql;
 
-internal class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver : class, IDriver
+public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver : class, IDriver
 {
     private readonly ISqlCacheDriver _driver;
     private readonly SqlPersistedCacheOptions _options;

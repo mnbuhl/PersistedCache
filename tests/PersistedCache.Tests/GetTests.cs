@@ -147,4 +147,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqliteGetTestsExecutor : GetTests
+    {
+        public SqliteGetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
 }

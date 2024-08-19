@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using DotNet.Testcontainers.Containers;
 using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
 using PersistedCache.Sql;
+using PersistedCache.Sqlite;
 using PersistedCache.SqlServer;
 using Xunit;
 
@@ -18,15 +18,19 @@ namespace PersistedCache.Tests.Common
 
         protected DockerContainer Container;
         protected ISqlCacheDriver Driver => _driver;
+        protected string ConnectionString;
 
         private ISqlCacheDriver _driver;
 
         public async Task InitializeAsync()
         {
-            await Container.StartAsync();
-
-            var connectionString = (Container as IDatabaseContainer).GetConnectionString();
-            var options = GetOptions(connectionString);
+            if (Container != null)
+            {
+                await Container.StartAsync();
+                ConnectionString = (Container as IDatabaseContainer).GetConnectionString();
+            }
+            
+            var options = GetOptions(ConnectionString);
             var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options);
 
             SetupStorage(driver);
@@ -37,7 +41,10 @@ namespace PersistedCache.Tests.Common
 
         public async Task DisposeAsync()
         {
-            await Container.DisposeAsync();
+            if (Container != null)
+            {
+                await Container.DisposeAsync();
+            }
         }
 
         private static void SetupStorage(ISqlCacheDriver driver)
@@ -64,6 +71,9 @@ namespace PersistedCache.Tests.Common
                     break;
                 case Type type when type == typeof(PostgreSqlDriver):
                     options = new PostgreSqlPersistedCacheOptions(connectionString);
+                    break;
+                case Type type when type == typeof(SqliteDriver):
+                    options = new SqlitePersistedCacheOptions(connectionString);
                     break;
                 default:
                     throw new ArgumentException("Invalid driver type.");

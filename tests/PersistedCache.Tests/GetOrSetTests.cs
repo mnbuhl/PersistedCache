@@ -118,4 +118,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqliteGetOrSetTestsExecutor : GetOrSetTests
+    {
+        public SqliteGetOrSetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
 }

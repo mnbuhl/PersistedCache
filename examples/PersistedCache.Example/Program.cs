@@ -2,6 +2,7 @@ using PersistedCache;
 using PersistedCache.FileSystem;
 using PersistedCache.MySql;
 using PersistedCache.PostgreSql;
+using PersistedCache.Sqlite;
 using PersistedCache.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,15 +18,9 @@ builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionStrin
     options.TableName = "persisted_cache";
 });
 
-builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!, options =>
-{
-    options.TableName = "persisted_cache";
-});
-
-builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!, options =>
-{
-    options.TableName = "persisted_cache";
-});
+builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!);
+builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!);
+builder.Services.AddSqlitePersistedCache("Data Source=test.db;Mode=Memory;Cache=Shared");
 
 var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
 builder.Services.AddFileSystemPersistedCache(cachePath);

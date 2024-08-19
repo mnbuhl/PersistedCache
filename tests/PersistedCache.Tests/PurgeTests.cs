@@ -88,4 +88,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqlitePurgeTestsExecutor : PurgeTests
+    {
+        public SqlitePurgeTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+        {
+        }
+    }
 }

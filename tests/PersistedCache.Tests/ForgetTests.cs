@@ -101,4 +101,12 @@ namespace PersistedCache.Tests
         {
         }
     }
+    
+    [Collection(nameof(SqliteFixture))]
+    public class SqliteForgetTestsExecutor : ForgetTests
+    {
+        public SqliteForgetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+        {
+        }
+    }
 }
