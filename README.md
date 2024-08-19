@@ -25,11 +25,9 @@ Currently supported and planned resources are:
 * [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
 * [x] `SQL Server` - [PersistedCache.SqlServer](https://www.nuget.org/packages/PersistedCache.SqlServer)
 * [x] `File System` - [PersistedCache.FileSystem](https://www.nuget.org/packages/PersistedCache.FileSystem)
-* [ ] `SQLite`
+* [x] `SQLite` - [PersistedCache.SQLite](https://www.nuget.org/packages/PersistedCache.Sqlite)
 * [ ] `MongoDB`
 * [ ] `Version 1.0` milestone
-* [ ] `AWS S3` (maybe)
-* [ ] `Azure Blob Storage` (maybe)
 
 The reason that the version does not match is due to semantic versioning. 
 The base package is versioned independently of the resource packages. All packages are on the latest version, regardless of the version number.
