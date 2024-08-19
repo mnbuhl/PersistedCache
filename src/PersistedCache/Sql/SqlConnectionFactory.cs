@@ -13,7 +13,7 @@ internal class SqlConnectionFactory
 
     public void RunInTransaction(Action<IDbConnection, IDbTransaction> action)
     {
-        var connection = _driver.CreateConnection();
+        using var connection = _driver.CreateConnection();
         connection.Open();
 
         using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -25,7 +25,7 @@ internal class SqlConnectionFactory
 
     public T? RunInTransaction<T>(Func<IDbConnection, IDbTransaction, T> action)
     {
-        var connection = _driver.CreateConnection();
+        using var connection = _driver.CreateConnection();
         connection.Open();
 
         using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -41,7 +41,7 @@ internal class SqlConnectionFactory
     public async Task RunInTransactionAsync(Func<IDbConnection, IDbTransaction, Task> action,
         CancellationToken cancellationToken = default)
     {
-        var connection = _driver.CreateConnection();
+        using var connection = _driver.CreateConnection();
         await connection.OpenAsync(cancellationToken);
 
         using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -55,7 +55,7 @@ internal class SqlConnectionFactory
         Func<IDbConnection, IDbTransaction, Task<T>> action,
         CancellationToken cancellationToken = default)
     {
-        var connection = _driver.CreateConnection();
+        using var connection = _driver.CreateConnection();
         await connection.OpenAsync(cancellationToken);
 
         using var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
