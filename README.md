@@ -25,7 +25,7 @@ Currently supported and planned resources are:
 * [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
 * [x] `SQL Server` - [PersistedCache.SqlServer](https://www.nuget.org/packages/PersistedCache.SqlServer)
 * [x] `File System` - [PersistedCache.FileSystem](https://www.nuget.org/packages/PersistedCache.FileSystem)
-* [x] `SQLite` - [PersistedCache.SQLite](https://www.nuget.org/packages/PersistedCache.Sqlite)
+* [x] `SQLite` - [PersistedCache.Sqlite](https://www.nuget.org/packages/PersistedCache.Sqlite)
 * [ ] `MongoDB`
 * [ ] `Version 1.0` milestone
 
