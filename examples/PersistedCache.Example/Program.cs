@@ -20,7 +20,7 @@ builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionStrin
 
 builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!);
 builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!);
-builder.Services.AddSqlitePersistedCache("Data Source=test.db;Mode=Memory;Cache=Shared");
+builder.Services.AddSqlitePersistedCache("Data Source=test.db");
 
 var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
 builder.Services.AddFileSystemPersistedCache(cachePath);

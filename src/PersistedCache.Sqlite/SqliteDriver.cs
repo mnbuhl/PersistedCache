@@ -1,5 +1,5 @@
 ﻿using System.Data.Common;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using PersistedCache.Sql;
 
 namespace PersistedCache.Sqlite;
@@ -73,6 +73,6 @@ public class SqliteDriver : ISqlCacheDriver
     
     public DbConnection CreateConnection()
     {
-        return new SQLiteConnection(_options.ConnectionString);
+        return new SqliteConnection(_options.ConnectionString);
     }
 }

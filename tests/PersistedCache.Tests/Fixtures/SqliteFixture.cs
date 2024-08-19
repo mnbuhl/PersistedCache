@@ -12,7 +12,7 @@ namespace PersistedCache.Tests.Fixtures
     {
         public SqliteFixture()
         {
-            ConnectionString = $"Data Source={Guid.NewGuid()}.db;Mode=Memory;Cache=Shared";
+            ConnectionString = "Data Source=test.db";
         }
         
         public override IEnumerable<CacheEntry> GetCacheEntries()
