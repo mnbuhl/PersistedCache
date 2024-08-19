@@ -7,5 +7,5 @@ jobs:
     name: Publish PersistedCache.SqlServer package to NuGet
     uses: ./.github/workflows/publish-reuse.yml
     with:
-      PACKAGE_ID: 'PersistedCache.SqlServer'
+      PACKAGE_ID: "['PersistedCache.SqlServer']"
     secrets: inherit

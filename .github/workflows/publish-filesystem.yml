@@ -7,5 +7,5 @@ jobs:
     name: Publish PersistedCache.FileSystem package to NuGet
     uses: ./.github/workflows/publish-reuse.yml
     with:
-      PACKAGE_ID: 'PersistedCache.FileSystem'
+      PACKAGE_ID: "['PersistedCache.FileSystem']"
     secrets: inherit

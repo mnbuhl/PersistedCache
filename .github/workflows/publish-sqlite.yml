@@ -1,0 +1,11 @@
+﻿name: Publish PersistedCache.Sqlite
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-package:
+    name: Publish PersistedCache.Sqlite package to NuGet
+    uses: ./.github/workflows/publish-reuse.yml
+    with:
+      PACKAGE_ID: "['PersistedCache.Sqlite']"
+    secrets: inherit

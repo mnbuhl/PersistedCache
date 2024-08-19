@@ -7,5 +7,5 @@ jobs:
     name: Publish PersistedCache.PostgreSql package to NuGet
     uses: ./.github/workflows/publish-reuse.yml
     with:
-      PACKAGE_ID: 'PersistedCache.PostgreSql'
+      PACKAGE_ID: "['PersistedCache.PostgreSql']"
     secrets: inherit
