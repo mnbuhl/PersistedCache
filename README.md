@@ -20,13 +20,13 @@ dotnet add package PersistedCache.MySql
 Or simply add it from the NuGet package gallery.
 
 
-Currently supported and planned resources are:
+Currently supported resources are:
 * [x] `MySQL` - [PersistedCache.MySql](https://www.nuget.org/packages/PersistedCache.MySql)
 * [x] `PostgreSQL` - [PersistedCache.PostgreSql](https://www.nuget.org/packages/PersistedCache.PostgreSql)
 * [x] `SQL Server` - [PersistedCache.SqlServer](https://www.nuget.org/packages/PersistedCache.SqlServer)
 * [x] `File System` - [PersistedCache.FileSystem](https://www.nuget.org/packages/PersistedCache.FileSystem)
 * [x] `SQLite` - [PersistedCache.Sqlite](https://www.nuget.org/packages/PersistedCache.Sqlite)
-* [ ] `MongoDB`
+* [x] `MongoDB` - [PersistedCache.MongoDb](https://www.nuget.org/packages/PersistedCache.MongoDb)
 * [ ] `Version 1.0` milestone
 
 The reason that the version does not match is due to semantic versioning. 

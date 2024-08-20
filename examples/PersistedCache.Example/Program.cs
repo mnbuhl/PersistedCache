@@ -16,10 +16,8 @@ builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionStrin
 builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!);
 builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!);
 builder.Services.AddSqlitePersistedCache("Data Source=test.db");
+builder.Services.AddFileSystemPersistedCache(AppDomain.CurrentDomain.BaseDirectory + "/cache");
 builder.Services.AddMongoDbPersistedCache(builder.Configuration.GetConnectionString("MongoDb")!, "persistedcachedb");
-
-var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
-builder.Services.AddFileSystemPersistedCache(cachePath);
 
 var app = builder.Build();
 
