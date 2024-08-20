@@ -1,9 +1,11 @@
 ﻿namespace PersistedCache
 {
-    internal class PersistedCacheEntry
+    internal class PersistedCacheEntry : PersistedCacheEntry<string>;
+    
+    internal class PersistedCacheEntry<T>
     {
         public required string Key { get; init; }
-        public required string Value { get; init; }
-        public DateTimeOffset Expiry { get; init; }
+        public required T Value { get; init; }
+        public Expire Expiry { get; init; }
     }
 }

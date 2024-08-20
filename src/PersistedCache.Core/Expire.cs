@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Data;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dapper;
 
 namespace PersistedCache;
 
@@ -70,7 +72,7 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
     }
 }
 
-internal class ExpireJsonConverter : JsonConverter<Expire>
+public class ExpireJsonConverter : JsonConverter<Expire>
 {
     public override Expire Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -80,5 +82,18 @@ internal class ExpireJsonConverter : JsonConverter<Expire>
     public override void Write(Utf8JsonWriter writer, Expire value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value.ToString());
+    }
+}
+
+public class ExpireTypeHandler : SqlMapper.TypeHandler<Expire>
+{
+    public override void SetValue(IDbDataParameter parameter, Expire value)
+    {
+        parameter.Value = (DateTimeOffset)value;
+    }
+
+    public override Expire Parse(object value)
+    {
+        return (Expire)value;
     }
 }

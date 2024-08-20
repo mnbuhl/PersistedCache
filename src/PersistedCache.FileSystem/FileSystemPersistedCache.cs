@@ -17,7 +17,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         var filePath = GetFilePath(key);
 
-        var cacheEntry = new FileSystemCacheEntry<T>
+        var cacheEntry = new PersistedCacheEntry<T>
         {
             Key = key,
             Value = value,
@@ -36,7 +36,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         var filePath = GetFilePath(key);
 
-        var cacheEntry = new FileSystemCacheEntry<T>
+        var cacheEntry = new PersistedCacheEntry<T>
         {
             Key = key,
             Value = value,
@@ -279,7 +279,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         fileStream.Flush();
     }
 
-    private async Task<FileSystemCacheEntry<T>?> ReadFromFileAsync<T>(string filePath, bool deleteOnClose = false,
+    private async Task<PersistedCacheEntry<T>?> ReadFromFileAsync<T>(string filePath, bool deleteOnClose = false,
         CancellationToken cancellationToken = default)
     {
         if (!File.Exists(filePath))
@@ -293,10 +293,10 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 
         using var fileStream =
             new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
-        return await JsonSerializer.DeserializeAsync<FileSystemCacheEntry<T>>(fileStream, _options.JsonOptions, cancellationToken);
+        return await JsonSerializer.DeserializeAsync<PersistedCacheEntry<T>>(fileStream, _options.JsonOptions, cancellationToken);
     }
 
-    private FileSystemCacheEntry<T>? ReadFromFile<T>(string filePath, bool deleteOnClose = false)
+    private PersistedCacheEntry<T>? ReadFromFile<T>(string filePath, bool deleteOnClose = false)
     {
         if (!File.Exists(filePath))
         {
@@ -308,7 +308,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
             : FileOptions.Asynchronous;
 
         using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
-        return JsonSerializer.Deserialize<FileSystemCacheEntry<T>>(fileStream, _options.JsonOptions);
+        return JsonSerializer.Deserialize<PersistedCacheEntry<T>>(fileStream, _options.JsonOptions);
     }
 
     private string GetFilePath(string key)
