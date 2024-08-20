@@ -16,6 +16,7 @@ builder.Services.AddMySqlPersistedCache(builder.Configuration.GetConnectionStrin
 builder.Services.AddPostgreSqlPersistedCache(builder.Configuration.GetConnectionString("PostgreSql")!);
 builder.Services.AddSqlServerPersistedCache(builder.Configuration.GetConnectionString("SqlServer")!);
 builder.Services.AddSqlitePersistedCache("Data Source=test.db");
+builder.Services.AddMongoDbPersistedCache(builder.Configuration.GetConnectionString("MongoDb")!, "persistedcachedb");
 
 var cachePath = AppDomain.CurrentDomain.BaseDirectory + "/cache";
 builder.Services.AddFileSystemPersistedCache(cachePath);
@@ -36,14 +37,14 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/get", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
+app.MapGet("/get", (IPersistedCache<MongoDbDriver> cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
     .WithName("Get")
     .WithOpenApi();
 
-app.MapPost("/set", (IPersistedCache cache) =>
+app.MapPost("/set", (IPersistedCache<MongoDbDriver> cache) =>
     {
         var forecast = GetWeatherForecast();
-        cache.SetForever("weather_forecast", forecast);
+        cache.Set("weather_forecast", forecast, Expire.InMinutes(5));
 
         return forecast;
     })

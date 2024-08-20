@@ -34,7 +34,20 @@ services:
     volumes:
       - sqlserver:/var/opt/mssql
   
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: persistedcachedb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+  
 volumes:
   mysql:
   postgres:
   sqlserver:
+  mongodb:
