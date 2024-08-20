@@ -32,17 +32,6 @@
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
-      "PersistedCache": {
-        "type": "Direct",
-        "requested": "[0.0.11, )",
-        "resolved": "0.0.11",
-        "contentHash": "ka0TsU0wIpHLJrx9kt2Km6nQBFwt83c39svlBZh6w/SViYUfuPOKZjVoIPlojaWUUXUYwVWtfsbItLnf6CoDdA==",
-        "dependencies": {
-          "Dapper": "2.1.35",
-          "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
-          "System.Text.Json": "6.0.9"
-        }
-      },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
         "resolved": "2.3.1",
@@ -372,6 +361,14 @@
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "5.0.0",
           "System.Memory": "4.5.5"
+        }
+      },
+      "persistedcache.core": {
+        "type": "Project",
+        "dependencies": {
+          "Dapper": "[2.1.35, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[6.0.0, )",
+          "System.Text.Json": "[6.0.9, )"
         }
       }
     }

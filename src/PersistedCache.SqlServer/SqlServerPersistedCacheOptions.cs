@@ -1,6 +1,6 @@
 ﻿using PersistedCache.Sql;
 
-namespace PersistedCache.SqlServer;
+namespace PersistedCache;
 
 public class SqlServerPersistedCacheOptions : SqlPersistedCacheOptions
 {

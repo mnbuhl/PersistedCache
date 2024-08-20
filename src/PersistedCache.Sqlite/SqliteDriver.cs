@@ -2,7 +2,7 @@
 using Microsoft.Data.Sqlite;
 using PersistedCache.Sql;
 
-namespace PersistedCache.Sqlite;
+namespace PersistedCache;
 
 public class SqliteDriver : ISqlCacheDriver
 {

@@ -1,4 +1,4 @@
-﻿namespace PersistedCache.FileSystem;
+﻿namespace PersistedCache;
 
 internal class FileSystemCacheEntry<T>
 {

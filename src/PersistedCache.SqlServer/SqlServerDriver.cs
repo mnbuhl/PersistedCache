@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using PersistedCache.Sql;
 
-namespace PersistedCache.SqlServer;
+namespace PersistedCache;
 
 public class SqlServerDriver : ISqlCacheDriver
 {

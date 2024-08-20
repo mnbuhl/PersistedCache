@@ -2,7 +2,7 @@
 using MySql.Data.MySqlClient;
 using PersistedCache.Sql;
 
-namespace PersistedCache.MySql
+namespace PersistedCache
 {
     public class MySqlDriver : ISqlCacheDriver
     {

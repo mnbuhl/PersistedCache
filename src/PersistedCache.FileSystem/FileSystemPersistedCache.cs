@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace PersistedCache.FileSystem;
+namespace PersistedCache;
 
 internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 {

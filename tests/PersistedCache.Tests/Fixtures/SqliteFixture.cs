@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Dapper;
-using PersistedCache.Sqlite;
 using PersistedCache.Tests.Common;
 using Xunit;
 

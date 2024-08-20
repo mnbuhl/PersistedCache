@@ -1,6 +1,6 @@
 ﻿using PersistedCache.Sql;
 
-namespace PersistedCache.Sqlite;
+namespace PersistedCache;
 
 public class SqlitePersistedCacheOptions : SqlPersistedCacheOptions
 {

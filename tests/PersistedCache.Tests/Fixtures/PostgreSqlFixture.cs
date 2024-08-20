@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Dapper;
-using PersistedCache.PostgreSql;
 using PersistedCache.Tests.Common;
 using Testcontainers.PostgreSql;
 using Xunit;

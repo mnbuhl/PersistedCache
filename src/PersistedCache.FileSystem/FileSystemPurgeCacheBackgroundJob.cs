@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace PersistedCache.FileSystem;
+namespace PersistedCache;
 
 internal class FileSystemPurgeCacheBackgroundJob : IHostedService, IDisposable
 {

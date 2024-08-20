@@ -1,6 +1,6 @@
 ﻿using PersistedCache.Sql;
 
-namespace PersistedCache.MySql;
+namespace PersistedCache;
 
 public class MySqlPersistedCacheOptions : SqlPersistedCacheOptions
 {

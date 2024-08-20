@@ -1,9 +1,4 @@
 using PersistedCache;
-using PersistedCache.FileSystem;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
-using PersistedCache.Sqlite;
-using PersistedCache.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 

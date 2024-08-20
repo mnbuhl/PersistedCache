@@ -7,6 +7,7 @@
         <ImplicitUsings>true</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RootNamespace>PersistedCache</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,11 +29,14 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="PersistedCache" Version="0.0.11" />
       <PackageReference Include="MySql.Data" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
     </ItemGroup>
 </Project>

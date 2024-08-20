@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Dapper;
-using PersistedCache.SqlServer;
 using PersistedCache.Tests.Common;
 using Testcontainers.MsSql;
 using Xunit;

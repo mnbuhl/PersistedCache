@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using PersistedCache.Sql;
 
-namespace PersistedCache.SqlServer
+namespace PersistedCache
 {
     public static class SqlServerPersistedCacheExtensions
     {

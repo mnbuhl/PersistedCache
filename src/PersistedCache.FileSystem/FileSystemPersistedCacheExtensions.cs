@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace PersistedCache.FileSystem;
+namespace PersistedCache;
 
 public static class FileSystemPersistedCacheExtensions
 {

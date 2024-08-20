@@ -2,11 +2,7 @@
 using System.Threading.Tasks;
 using Dapper;
 using DotNet.Testcontainers.Containers;
-using PersistedCache.MySql;
-using PersistedCache.PostgreSql;
 using PersistedCache.Sql;
-using PersistedCache.Sqlite;
-using PersistedCache.SqlServer;
 using Xunit;
 
 namespace PersistedCache.Tests.Common;

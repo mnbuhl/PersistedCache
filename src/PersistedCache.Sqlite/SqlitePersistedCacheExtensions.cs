@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using PersistedCache.Sql;
 
-namespace PersistedCache.Sqlite;
+namespace PersistedCache;
 
 public static class SqlitePersistedCacheExtensions
 {

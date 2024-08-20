@@ -2,7 +2,7 @@
 using Npgsql;
 using PersistedCache.Sql;
 
-namespace PersistedCache.PostgreSql;
+namespace PersistedCache;
 
 public class PostgreSqlDriver : ISqlCacheDriver
 {
