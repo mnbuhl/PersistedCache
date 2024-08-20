@@ -96,3 +96,11 @@ public class SqlitePurgeTestsExecutor : PurgeTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbPurgeTestsExecutor : PurgeTests
+{
+    public MongoDbPurgeTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+    {
+    }
+}

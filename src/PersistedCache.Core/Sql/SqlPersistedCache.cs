@@ -36,8 +36,8 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public void Set<T>(string key, T value, Expire expiry)
     {
-        ValidateKey(key);
-        ValidateValue(value);
+        Validators.ValidateKey(key);
+        Validators.ValidateValue(value);
 
         var entry = new PersistedCacheEntry
         {
@@ -68,8 +68,8 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     public async Task SetAsync<T>(string key, T value, Expire expiry,
         CancellationToken cancellationToken = default)
     {
-        ValidateKey(key);
-        ValidateValue(value);
+        Validators.ValidateKey(key);
+        Validators.ValidateValue(value);
 
         var entry = new PersistedCacheEntry
         {
@@ -100,7 +100,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public T? Get<T>(string key)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return _connectionFactory.RunInTransaction((connection, transaction) =>
         {
             var res = connection.QueryFirstOrDefault<string>(
@@ -120,7 +120,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
             var res = await connection.QueryFirstOrDefaultAsync<string>(
@@ -141,7 +141,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return _connectionFactory.RunInTransaction((connection, transaction) =>
         {
             var value = connection.QueryFirstOrDefault<string>(
@@ -159,7 +159,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
 
             var result = valueFactory();
 
-            ValidateValue(result);
+            Validators.ValidateValue(result);
 
             var entry = new PersistedCacheEntry
             {
@@ -190,7 +190,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
             var value = await connection.QueryFirstOrDefaultAsync<string>(
@@ -209,7 +209,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
 
             var result = await valueFactory();
 
-            ValidateValue(result);
+            Validators.ValidateValue(result);
 
             var entry = new PersistedCacheEntry
             {
@@ -243,7 +243,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public void Forget(string key)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         _connectionFactory.RunInTransaction((connection, transaction) =>
         {
             connection.Execute(
@@ -259,7 +259,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public Task ForgetAsync(string key, CancellationToken cancellationToken = default)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
             await connection.ExecuteAsync(
@@ -276,7 +276,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public T? Pull<T>(string key)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return _connectionFactory.RunInTransaction((connection, transaction) =>
         {
             var value = connection.QueryFirstOrDefault<string>(
@@ -304,7 +304,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public async Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default)
     {
-        ValidateKey(key);
+        Validators.ValidateKey(key);
         return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
             var value = await connection.QueryFirstOrDefaultAsync<string>(
@@ -363,7 +363,8 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        pattern = ValidatePattern(pattern);
+        Validators.ValidatePattern(pattern);
+        pattern = pattern.Replace('*', _driver.Wildcard);
 
         _connectionFactory.RunInTransaction((connection, transaction) =>
         {
@@ -380,7 +381,8 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        pattern = ValidatePattern(pattern);
+        Validators.ValidatePattern(pattern, new PatternValidatorOptions());
+        pattern = pattern.Replace('*', _driver.Wildcard);
 
         return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
@@ -408,41 +410,5 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
                 )
             );
         });
-    }
-
-    private static void ValidateKey(string key)
-    {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            throw new ArgumentException("Key cannot be empty", nameof(key));
-        }
-
-        if (key.Length > 255)
-        {
-            throw new ArgumentException("Key length cannot exceed 255 characters", nameof(key));
-        }
-    }
-
-    private static void ValidateValue<T>(T value)
-    {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value), "Value cannot be null");
-        }
-    }
-
-    private string ValidatePattern(string pattern)
-    {
-        if (string.IsNullOrWhiteSpace(pattern))
-        {
-            throw new ArgumentException("Pattern cannot be empty", nameof(pattern));
-        }
-
-        if (!pattern.StartsWith("*") && !pattern.EndsWith("*"))
-        {
-            throw new ArgumentException("Pattern must begin or end with a '*'", nameof(pattern));
-        }
-
-        return pattern.Replace('*', _driver.Wildcard);
     }
 }

@@ -155,3 +155,11 @@ public class SqliteGetTestsExecutor : GetTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbGetTestsExecutor : GetTests
+{
+    public MongoDbGetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}

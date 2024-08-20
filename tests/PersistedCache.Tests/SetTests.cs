@@ -184,3 +184,11 @@ public class SqliteSetTestsExecutor : SetTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbSetTestsExecutor : SetTests
+{
+    public MongoDbSetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}

@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace PersistedCache;
 
-public class ExpireBsonSerializer : SerializerBase<Expire>
+internal class ExpireBsonSerializer : SerializerBase<Expire>
 {
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Expire value)
     {

@@ -24,8 +24,12 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         CreateIndexesIfNotExists();
     }
 
+    /// <inheritdoc />
     public void Set<T>(string key, T value, Expire expiry)
     {
+        Validators.ValidateKey(key);
+        Validators.ValidateValue(value);
+        
         var entry = new PersistedCacheEntry
         {
             Key = key,
@@ -40,13 +44,18 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         );
     }
 
+    /// <inheritdoc />
     public void SetForever<T>(string key, T value)
     {
         Set(key, value, Expire.Never);
     }
 
+    /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)
     {
+        Validators.ValidateKey(key);
+        Validators.ValidateValue(value);
+        
         await Collection.FindOneAndReplaceAsync<PersistedCacheEntry>(
             filter: x => x.Key == key,
             replacement: new PersistedCacheEntry
@@ -60,13 +69,17 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         );
     }
 
+    /// <inheritdoc />
     public async Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
     {
         await SetAsync(key, value, Expire.Never, cancellationToken);
     }
 
+    /// <inheritdoc />
     public T? Get<T>(string key)
     {
+        Validators.ValidateKey(key);
+        
         var entry = Collection.Find(x => x.Key == key && x.Expiry > Expire.Now).FirstOrDefault();
 
         if (entry == null)
@@ -77,8 +90,11 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions);
     }
 
+    /// <inheritdoc />
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
+        Validators.ValidateKey(key);
+        
         var entry = await Collection.Find(x => x.Key == key && x.Expiry > Expire.Now)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -90,8 +106,11 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions);
     }
 
+    /// <inheritdoc />
     public T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)
     {
+        Validators.ValidateKey(key);
+
         var entry = Collection.Find(x => x.Key == key && x.Expiry > Expire.Now).FirstOrDefault();
 
         if (entry != null)
@@ -100,15 +119,19 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         }
 
         var value = valueFactory();
+        Validators.ValidateValue(value);
+        
         Set(key, value, expiry);
         return value;
     }
 
+    /// <inheritdoc />
     public T GetOrSetForever<T>(string key, Func<T> valueFactory)
     {
         return GetOrSet(key, valueFactory, Expire.Never);
     }
 
+    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -121,28 +144,37 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         }
 
         var value = await valueFactory();
+        Validators.ValidateValue(value);
+        
         await SetAsync(key, value, expiry, cancellationToken);
         return value;
     }
 
+    /// <inheritdoc />
     public async Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
         CancellationToken cancellationToken = default)
     {
         return await GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
     }
 
+    /// <inheritdoc />
     public void Forget(string key)
     {
+        Validators.ValidateKey(key);
         Collection.DeleteOne(x => x.Key == key);
     }
 
+    /// <inheritdoc />
     public async Task ForgetAsync(string key, CancellationToken cancellationToken = default)
     {
+        Validators.ValidateKey(key);
         await Collection.DeleteOneAsync(x => x.Key == key, cancellationToken);
     }
 
+    /// <inheritdoc />
     public T? Pull<T>(string key)
     {
+        Validators.ValidateKey(key);
         var entry = Collection.FindOneAndDelete(x => x.Key == key);
 
         if (entry == null || entry.Expiry.IsExpired)
@@ -153,8 +185,10 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions);
     }
 
+    /// <inheritdoc />
     public async Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default)
     {
+        Validators.ValidateKey(key);
         var entry = await Collection.FindOneAndDeleteAsync(x => x.Key == key, cancellationToken: cancellationToken);
 
         if (entry == null || entry.Expiry.IsExpired)
@@ -165,28 +199,34 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions);
     }
 
+    /// <inheritdoc />
     public void Flush()
     {
         Collection.DeleteMany(FilterDefinition<PersistedCacheEntry>.Empty);
     }
 
+    /// <inheritdoc />
     public async Task FlushAsync(CancellationToken cancellationToken = default)
     {
         await Collection.DeleteManyAsync(FilterDefinition<PersistedCacheEntry>.Empty, cancellationToken);
     }
 
+    /// <inheritdoc />
     public void Flush(string pattern)
     {
-        ValidatePattern(pattern);
-        Collection.DeleteMany(x => x.Key == pattern);
+        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
+        Collection.DeleteMany(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern));
     }
 
+    /// <inheritdoc />
     public async Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        ValidatePattern(pattern);
-        await Collection.DeleteManyAsync(x => x.Key == pattern, cancellationToken);
+        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
+        await Collection.DeleteManyAsync(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern),
+            cancellationToken);
     }
 
+    /// <inheritdoc />
     public void Purge()
     {
         Collection.DeleteMany(x => x.Expiry < Expire.Now);
@@ -209,12 +249,4 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
 
     private IMongoCollection<PersistedCacheEntry> Collection => _client.GetDatabase(_options.DatabaseName)
         .GetCollection<PersistedCacheEntry>(_options.CollectionName);
-    
-    private static void ValidatePattern(string pattern)
-    {
-        if (pattern.Contains("*") || pattern.Contains("?"))
-        {
-            throw new NotSupportedException("Pattern matching is not supported by this cache driver.");
-        }
-    }
 }

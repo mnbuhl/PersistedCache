@@ -157,3 +157,11 @@ public class SqliteFlushTestsExecutor : FlushTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbFlushTestsExecutor : FlushTests
+{
+    public MongoDbFlushTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+    {
+    }
+}

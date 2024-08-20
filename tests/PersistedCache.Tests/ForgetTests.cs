@@ -109,3 +109,11 @@ public class SqliteForgetTestsExecutor : ForgetTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbForgetTestsExecutor : ForgetTests
+{
+    public MongoDbForgetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
