@@ -37,11 +37,11 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/get", (IPersistedCache<MongoDbDriver> cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
+app.MapGet("/get", (IPersistedCache cache) => cache.Get<WeatherForecast[]>("weather_forecast"))
     .WithName("Get")
     .WithOpenApi();
 
-app.MapPost("/set", (IPersistedCache<MongoDbDriver> cache) =>
+app.MapPost("/set", (IPersistedCache cache) =>
     {
         var forecast = GetWeatherForecast();
         cache.Set("weather_forecast", forecast, Expire.InMinutes(5));

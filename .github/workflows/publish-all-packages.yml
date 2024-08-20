@@ -7,5 +7,5 @@ jobs:
     name: Publish all PersistedCache packages to NuGet
     uses: ./.github/workflows/publish-reuse.yml
     with:
-      PACKAGE_ID: "['PersistedCache', 'PersistedCache.SqlServer', 'PersistedCache.MySql', 'PersistedCache.PostgreSql', 'PersistedCache.Sqlite', 'PersistedCache.FileSystem']"
+      PACKAGE_ID: "['PersistedCache', 'PersistedCache.SqlServer', 'PersistedCache.MySql', 'PersistedCache.PostgreSql', 'PersistedCache.Sqlite', 'PersistedCache.FileSystem', 'PersistedCache.MongoDb']"
     secrets: inherit

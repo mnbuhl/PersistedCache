@@ -2,7 +2,7 @@
 
 namespace PersistedCache;
 
-public class MongoDbPurgeCacheBackgroundJob : IHostedService, IDisposable
+internal class MongoDbPurgeCacheBackgroundJob : IHostedService, IDisposable
 {
     private Timer? _timer;
     private readonly IPersistedCache _cache;
