@@ -16,7 +16,7 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
 
     private static Expire Create(DateTimeOffset value)
     {
-        if (value < DateTimeOffset.UtcNow)
+        if (value < DateTimeOffset.UtcNow.AddSeconds(-1))
         {
             throw new ArgumentException("The expire value must be in the future.", nameof(value));
         }
@@ -34,11 +34,10 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
     public static Expire InYears(int years) => Create(DateTimeOffset.UtcNow.AddYears(years));
     public static Expire At(DateTimeOffset dateTime) => Create(dateTime);
     public static Expire In(TimeSpan timeSpan) => Create(DateTimeOffset.UtcNow.Add(timeSpan));
+    public static Expire Now => new Expire(DateTimeOffset.UtcNow);
     
     [JsonIgnore]
     public bool IsExpired => _value < DateTimeOffset.UtcNow;
-    
-    
     
     public static implicit operator DateTimeOffset(Expire expire) => expire._value;
     public static implicit operator Expire(DateTimeOffset dateTimeOffset) => new Expire(dateTimeOffset);
@@ -57,9 +56,6 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
 
     public override bool Equals(object? obj) => obj is Expire expire && _value == expire._value;
     public override int GetHashCode() => _value.GetHashCode();
-    
-    public static bool operator ==(Expire left, Expire right) => left.Equals(right);
-    public static bool operator !=(Expire left, Expire right) => !left.Equals(right);
 
     public bool Equals(Expire other)
     {
@@ -70,6 +66,15 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
     {
         return _value.CompareTo(other._value);
     }
+    
+    #region Operators
+    public static bool operator ==(Expire left, Expire right) => left.Equals(right);
+    public static bool operator !=(Expire left, Expire right) => !left.Equals(right);
+    public static bool operator <(Expire left, Expire right) => left.CompareTo(right) < 0;
+    public static bool operator <=(Expire left, Expire right) => left.CompareTo(right) <= 0;
+    public static bool operator >(Expire left, Expire right) => left.CompareTo(right) > 0;
+    public static bool operator >=(Expire left, Expire right) => left.CompareTo(right) >= 0;
+    #endregion
 }
 
 public class ExpireJsonConverter : JsonConverter<Expire>

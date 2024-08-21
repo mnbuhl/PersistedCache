@@ -132,3 +132,11 @@ public class SqlitePullTestsExecutor : PullTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbPullTestsExecutor : PullTests
+{
+    public MongoDbPullTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    {
+    }
+}

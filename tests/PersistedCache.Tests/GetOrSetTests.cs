@@ -126,3 +126,11 @@ public class SqliteGetOrSetTestsExecutor : GetOrSetTests
     {
     }
 }
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbGetOrSetTestsExecutor : GetOrSetTests
+{
+    public MongoDbGetOrSetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}

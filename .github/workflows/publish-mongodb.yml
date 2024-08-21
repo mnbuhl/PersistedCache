@@ -1,0 +1,11 @@
+﻿name: Publish PersistedCache.MongoDb
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-package:
+    name: Publish PersistedCache.MongoDb package to NuGet
+    uses: ./.github/workflows/publish-reuse.yml
+    with:
+      PACKAGE_ID: "['PersistedCache.MongoDb']"
+    secrets: inherit

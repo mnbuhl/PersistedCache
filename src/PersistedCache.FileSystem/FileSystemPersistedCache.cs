@@ -13,8 +13,12 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         EnsureDirectoryExists();
     }
 
+    /// <inheritdoc />
     public void Set<T>(string key, T value, Expire expiry)
     {
+        ValidateKey(key);
+        Validators.ValidateValue(value);
+        
         var filePath = GetFilePath(key);
 
         var cacheEntry = new PersistedCacheEntry<T>
@@ -27,13 +31,18 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         WriteToFile(filePath, cacheEntry);
     }
 
+    /// <inheritdoc />
     public void SetForever<T>(string key, T value)
     {
         Set(key, value, Expire.Never);
     }
 
+    /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)
     {
+        ValidateKey(key);
+        Validators.ValidateValue(value);
+        
         var filePath = GetFilePath(key);
 
         var cacheEntry = new PersistedCacheEntry<T>
@@ -46,13 +55,16 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         await WriteToFileAsync(filePath, cacheEntry, cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
     {
         await SetAsync(key, value, Expire.Never, cancellationToken);
     }
 
+    /// <inheritdoc />
     public T? Get<T>(string key)
     {
+        ValidateKey(key);
         var filePath = GetFilePath(key);
 
         var cacheEntry = ReadFromFile<T>(filePath);
@@ -71,8 +83,10 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry.Value;
     }
 
+    /// <inheritdoc />
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
+        ValidateKey(key);
         var filePath = GetFilePath(key);
 
         var cacheEntry = await ReadFromFileAsync<T>(filePath, cancellationToken: cancellationToken);
@@ -91,8 +105,10 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry.Value;
     }
 
+    /// <inheritdoc />
     public T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)
     {
+        ValidateKey(key);
         var value = Get<T>(key);
 
         if (value != null)
@@ -102,19 +118,23 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 
         value = valueFactory();
 
+        Validators.ValidateValue(value);
         Set(key, value, expiry);
 
         return value;
     }
 
+    /// <inheritdoc />
     public T GetOrSetForever<T>(string key, Func<T> valueFactory)
     {
         return GetOrSet(key, valueFactory, Expire.Never);
     }
 
+    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
+        ValidateKey(key);
         var value = await GetAsync<T>(key, cancellationToken);
 
         if (value != null)
@@ -124,19 +144,23 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 
         value = await valueFactory();
 
+        Validators.ValidateValue(value);
         await SetAsync(key, value, expiry, cancellationToken);
 
         return value;
     }
 
+    /// <inheritdoc />
     public async Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
         CancellationToken cancellationToken = default)
     {
         return await GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
     }
 
+    /// <inheritdoc />
     public void Forget(string key)
     {
+        ValidateKey(key);
         var filePath = GetFilePath(key);
 
         if (File.Exists(filePath))
@@ -145,14 +169,17 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         }
     }
 
+    /// <inheritdoc />
     public Task ForgetAsync(string key, CancellationToken cancellationToken = default)
     {
         Forget(key);
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public T? Pull<T>(string key)
     {
+        ValidateKey(key);
         var filePath = GetFilePath(key);
         
         var cacheEntry = ReadFromFile<T>(filePath, deleteOnClose: true);
@@ -165,8 +192,10 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry.Value;
     }
 
+    /// <inheritdoc />
     public async Task<T?> PullAsync<T>(string key, CancellationToken cancellationToken = default)
     {
+        ValidateKey(key);
         var filePath = GetFilePath(key);
         
         var cacheEntry = await ReadFromFileAsync<T>(filePath, deleteOnClose: true, cancellationToken);
@@ -179,6 +208,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry.Value;
     }
 
+    /// <inheritdoc />
     public void Flush()
     {
         var directory = new DirectoryInfo(_options.CacheFolderName);
@@ -189,21 +219,19 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         }
     }
 
+    /// <inheritdoc />
     public Task FlushAsync(CancellationToken cancellationToken = default)
     {
         Flush();
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public void Flush(string pattern)
     {
-        var directory = new DirectoryInfo(_options.CacheFolderName);
+        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
         
-        // validate pattern
-        if (!pattern.StartsWith("*") && !pattern.EndsWith("*") && !pattern.Contains('?'))
-        {
-            throw new ArgumentException("The pattern must contain at least one wildcard character. (*,?)", nameof(pattern));
-        }
+        var directory = new DirectoryInfo(_options.CacheFolderName);
         
         foreach (var file in directory.EnumerateFiles(pattern))
         {
@@ -211,12 +239,14 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         }
     }
 
+    /// <inheritdoc />
     public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
         Flush(pattern);
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public void Purge()
     {
         var directory = new DirectoryInfo(_options.CacheFolderName);
@@ -242,27 +272,11 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 
     private static void ValidateKey(string key)
     {
-        if (string.IsNullOrWhiteSpace(key))
+        Validators.ValidateKey(key, new KeyValidatorOptions
         {
-            throw new ArgumentException("The key must not be null or empty.", nameof(key));
-        }
-
-        var invalidChars = Path.GetInvalidFileNameChars();
-
-        if (key.Any(invalidChars.Contains))
-        {
-            throw new ArgumentException("The key contains invalid characters.", nameof(key));
-        }
-
-        if (key.Length > 255)
-        {
-            throw new ArgumentException("The key must not be longer than 255 characters.", nameof(key));
-        }
-
-        if (key.Contains('/') || key.Contains('\\'))
-        {
-            throw new ArgumentException("The key must not contain path separators.", nameof(key));
-        }
+            InvalidChars = Path.GetInvalidFileNameChars(),
+            MaxLength = 255
+        });
     }
 
     private async Task WriteToFileAsync<T>(string filePath, T value, CancellationToken cancellationToken)

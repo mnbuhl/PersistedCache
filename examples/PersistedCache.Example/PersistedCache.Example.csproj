@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PersistedCache.FileSystem\PersistedCache.FileSystem.csproj" />
+      <ProjectReference Include="..\..\src\PersistedCache.MongoDb\PersistedCache.MongoDb.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.MySql\PersistedCache.MySql.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.PostgreSql\PersistedCache.PostgreSql.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.Sqlite\PersistedCache.Sqlite.csproj" />

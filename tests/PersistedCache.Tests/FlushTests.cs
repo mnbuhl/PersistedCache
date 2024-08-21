@@ -111,7 +111,7 @@ public abstract class FlushTests : BaseTest
     public void Flush_WithInvalidPattern_ThrowsException()
     {
         // Act
-        Action act = () => _cache.Flush("hello*test");
+        Action act = () => _cache.Flush("^h((el!lotest");
         
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -154,6 +154,14 @@ public class FileSystemFlushTestsExecutor : FlushTests
 public class SqliteFlushTestsExecutor : FlushTests
 {
     public SqliteFlushTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+    {
+    }
+}
+
+[Collection(nameof(MongoDbFixture))]
+public class MongoDbFlushTestsExecutor : FlushTests
+{
+    public MongoDbFlushTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
     {
     }
 }

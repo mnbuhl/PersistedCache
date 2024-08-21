@@ -12,6 +12,7 @@
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="Testcontainers.MongoDb" Version="3.9.0" />
         <PackageReference Include="Testcontainers.MsSql" Version="3.9.0" />
         <PackageReference Include="Testcontainers.MySql" Version="3.9.0" />
         <PackageReference Include="Testcontainers.PostgreSql" Version="3.9.0" />
@@ -21,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PersistedCache.FileSystem\PersistedCache.FileSystem.csproj" />
+      <ProjectReference Include="..\..\src\PersistedCache.MongoDb\PersistedCache.MongoDb.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.MySql\PersistedCache.MySql.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.PostgreSql\PersistedCache.PostgreSql.csproj" />
       <ProjectReference Include="..\..\src\PersistedCache.Sqlite\PersistedCache.Sqlite.csproj" />
