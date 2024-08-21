@@ -27,7 +27,6 @@ Currently supported resources are:
 * [x] `File System` - [PersistedCache.FileSystem](https://www.nuget.org/packages/PersistedCache.FileSystem)
 * [x] `SQLite` - [PersistedCache.Sqlite](https://www.nuget.org/packages/PersistedCache.Sqlite)
 * [x] `MongoDB` - [PersistedCache.MongoDb](https://www.nuget.org/packages/PersistedCache.MongoDb)
-* [ ] `Version 1.0` milestone
 
 The reason that the version does not match is due to semantic versioning. 
 The base package is versioned independently of the resource packages. All packages are on the latest version, regardless of the version number.
