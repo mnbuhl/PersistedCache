@@ -28,8 +28,8 @@ public abstract class PurgeTests : BaseTest
         // Arrange
         _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
         _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
-        _cache.SetForever("key3", _fixture.Create<RandomObject>());
-        _cache.SetForever("key4", _fixture.Create<RandomObject>());
+        _cache.Set("key3", _fixture.Create<RandomObject>(), Expire.Never);
+        _cache.Set("key4", _fixture.Create<RandomObject>(), Expire.Never);
         
         Thread.Sleep(2000);
         
@@ -45,8 +45,8 @@ public abstract class PurgeTests : BaseTest
     public void Purge_WhenNoExpiredKeys_RemovesNothing()
     {
         // Arrange
-        _cache.SetForever("key1", _fixture.Create<RandomObject>());
-        _cache.SetForever("key2", _fixture.Create<RandomObject>());
+        _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.Never);
+        _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.Never);
 
         // Act
         _cache.Purge();

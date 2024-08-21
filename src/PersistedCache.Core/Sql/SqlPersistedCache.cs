@@ -59,12 +59,6 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     }
 
     /// <inheritdoc />
-    public void SetForever<T>(string key, T value)
-    {
-        Set(key, value, Expire.Never);
-    }
-
-    /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -90,13 +84,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
             );
         }, cancellationToken);
     }
-
-    /// <inheritdoc />
-    public Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
-    {
-        return SetAsync(key, value, Expire.Never, cancellationToken);
-    }
-
+    
     /// <inheritdoc />
     public T? Get<T>(string key)
     {
@@ -181,12 +169,6 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     }
 
     /// <inheritdoc />
-    public T GetOrSetForever<T>(string key, Func<T> valueFactory)
-    {
-        return GetOrSet(key, valueFactory, Expire.Never);
-    }
-
-    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -231,13 +213,6 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         }, cancellationToken);
 
         return result!;
-    }
-
-    /// <inheritdoc />
-    public Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
-        CancellationToken cancellationToken = default)
-    {
-        return GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
     }
 
     /// <inheritdoc />

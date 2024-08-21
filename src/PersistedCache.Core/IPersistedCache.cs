@@ -14,14 +14,6 @@
         void Set<T>(string key, T value, Expire expiry);
         
         /// <summary>
-        /// Set a value in the cache forever
-        /// </summary>
-        /// <param name="key">The key of the cached entry</param>
-        /// <param name="value">The value to cache</param>
-        /// <typeparam name="T">The type of the value to cache</typeparam>
-        void SetForever<T>(string key, T value);
-        
-        /// <summary>
         /// Set a value in the cache with an expiry time asynchronously
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
@@ -30,15 +22,6 @@
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to cache</typeparam>
         Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default);
-        
-        /// <summary>
-        /// Set a value in the cache forever asynchronously
-        /// </summary>
-        /// <param name="key">The key of the cached entry</param>
-        /// <param name="value">The value to cache</param>
-        /// <param name="cancellationToken">The cancellation token</param>
-        /// <typeparam name="T">The type of the value to cache</typeparam>
-        Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a value from the cache
@@ -68,15 +51,6 @@
         T GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry);
         
         /// <summary>
-        /// Get a value from the cache or set it if it doesn't exist forever
-        /// </summary>
-        /// <param name="key">The key of the cached entry</param>
-        /// <param name="valueFactory">The factory to create the value if it doesn't exist</param>
-        /// <typeparam name="T">The type of the value to get/cache</typeparam>
-        /// <returns>The value from the cache or the value created by the factory</returns>
-        T GetOrSetForever<T>(string key, Func<T> valueFactory);
-        
-        /// <summary>
         /// Get a value from the cache or set it if it doesn't exist asynchronously
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
@@ -86,16 +60,6 @@
         /// <typeparam name="T">The type of the value to get/cache</typeparam>
         /// <returns>The value from the cache or the value created by the factory</returns>
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
-        
-        /// <summary>
-        /// Get a value from the cache or set it if it doesn't exist forever asynchronously
-        /// </summary>
-        /// <param name="key">The key of the cached entry</param>
-        /// <param name="valueFactory">The factory to create the value if it doesn't exist</param>
-        /// <param name="cancellationToken">The cancellation token</param>
-        /// <typeparam name="T">The type of the value to get/cache</typeparam>
-        /// <returns>The value from the cache or the value created by the factory</returns>
-        Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Forget a value from the cache

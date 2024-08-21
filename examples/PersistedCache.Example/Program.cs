@@ -89,7 +89,7 @@ app.MapGet("/get-async", async (IPersistedCache cache) => await cache.GetAsync<W
 app.MapPost("/set-async", async (IPersistedCache cache) =>
     {
         var forecast = GetWeatherForecast();
-        await cache.SetForeverAsync("weather_forecast", forecast);
+        await cache.SetAsync("weather_forecast", forecast, Expire.Never);
 
         return forecast;
     })

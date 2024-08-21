@@ -32,12 +32,6 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
-    public void SetForever<T>(string key, T value)
-    {
-        Set(key, value, Expire.Never);
-    }
-
-    /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)
     {
         ValidateKey(key);
@@ -53,12 +47,6 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         };
 
         await WriteToFileAsync(filePath, cacheEntry, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
-    {
-        await SetAsync(key, value, Expire.Never, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -125,12 +113,6 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
-    public T GetOrSetForever<T>(string key, Func<T> valueFactory)
-    {
-        return GetOrSet(key, valueFactory, Expire.Never);
-    }
-
-    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -148,13 +130,6 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         await SetAsync(key, value, expiry, cancellationToken);
 
         return value;
-    }
-
-    /// <inheritdoc />
-    public async Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
-        CancellationToken cancellationToken = default)
-    {
-        return await GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
     }
 
     /// <inheritdoc />

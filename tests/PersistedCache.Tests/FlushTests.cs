@@ -30,7 +30,7 @@ public abstract class FlushTests : BaseTest
         var keys = new[] { "key1", "key2", "key3" };
         foreach (var key in keys)
         {
-            _cache.SetForever(key, _fixture.Create<RandomObject>());
+            _cache.Set(key, _fixture.Create<RandomObject>(), Expire.Never);
         }
         
         // Act
@@ -78,7 +78,7 @@ public abstract class FlushTests : BaseTest
         var keys = new[] { "key1", "key2", "key3" };
         foreach (var key in keys)
         {
-            await _cache.SetForeverAsync(key, _fixture.Create<RandomObject>());
+            await _cache.SetAsync(key, _fixture.Create<RandomObject>(), Expire.Never);
         }
         
         // Act
@@ -96,7 +96,7 @@ public abstract class FlushTests : BaseTest
         var keys = new[] { "key1", "key2", "key3", "4yek" };
         foreach (var key in keys)
         {
-            _cache.SetForever(key, _fixture.Create<RandomObject>());
+            _cache.Set(key, _fixture.Create<RandomObject>(), Expire.Never);
         }
             
         // Act

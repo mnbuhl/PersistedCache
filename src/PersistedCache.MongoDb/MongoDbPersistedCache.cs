@@ -43,13 +43,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
             options: new FindOneAndReplaceOptions<PersistedCacheEntry> { IsUpsert = true }
         );
     }
-
-    /// <inheritdoc />
-    public void SetForever<T>(string key, T value)
-    {
-        Set(key, value, Expire.Never);
-    }
-
+    
     /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)
     {
@@ -67,12 +61,6 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
             options: new FindOneAndReplaceOptions<PersistedCacheEntry> { IsUpsert = true },
             cancellationToken: cancellationToken
         );
-    }
-
-    /// <inheritdoc />
-    public async Task SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)
-    {
-        await SetAsync(key, value, Expire.Never, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -126,12 +114,6 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     }
 
     /// <inheritdoc />
-    public T GetOrSetForever<T>(string key, Func<T> valueFactory)
-    {
-        return GetOrSet(key, valueFactory, Expire.Never);
-    }
-
-    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -148,13 +130,6 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         
         await SetAsync(key, value, expiry, cancellationToken);
         return value;
-    }
-
-    /// <inheritdoc />
-    public async Task<T> GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory,
-        CancellationToken cancellationToken = default)
-    {
-        return await GetOrSetAsync(key, valueFactory, Expire.Never, cancellationToken);
     }
 
     /// <inheritdoc />

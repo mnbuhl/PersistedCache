@@ -112,7 +112,7 @@ public class MyService(IPersistedCache cache)
     // Set a value in the cache asynchronously
     public async Task SetSomethingAsync()
     {
-        await cache.SetForeverAsync("my-async-key", new RandomObject());
+        await cache.SetAsync("my-async-key", new RandomObject(), Expire.Never);
     }
     
     // Get a value from the cache asynchronously
@@ -162,15 +162,11 @@ The first cache registered will be the default cache, so you can use the `IPersi
 | Method                                                                                                                   | Description                                                                     |
 |--------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | `Set<T>(string key, T value, Expire expiry)`                                                                             | Set a value in the cache with an expiry time                                    |
-| `SetForever<T>(string key, T value)`                                                                                     | Set a value in the cache forever                                                |
 | `SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)`                         | Set a value in the cache with an expiry time asynchronously                     |
-| `SetForeverAsync<T>(string key, T value, CancellationToken cancellationToken = default)`                                 | Set a value in the cache forever asynchronously                                 |
 | `Get<T>(string key)`                                                                                                     | Get a value from the cache                                                      |
 | `GetAsync<T>(string key, CancellationToken cancellationToken = default)`                                                 | Get a value from the cache asynchronously                                       |
 | `GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)`                                                           | Get a value from the cache or set it if it doesn't exist                        |
-| `GetOrSetForever<T>(string key, Func<T> valueFactory)`                                                                   | Get a value from the cache or set it if it doesn't exist forever                |
 | `GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default)` | Get a value from the cache or set it if it doesn't exist asynchronously         |
-| `GetOrSetForeverAsync<T>(string key, Func<Task<T>> valueFactory, CancellationToken cancellationToken = default)`         | Get a value from the cache or set it if it doesn't exist forever asynchronously |
 | `Forget(string key)`                                                                                                     | Forget a value from the cache                                                   |
 | `ForgetAsync(string key, CancellationToken cancellationToken = default)`                                                 | Forget a value from the cache asynchronously                                    |
 | `Pull<T>(string key)`                                                                                                    | Get a value from the cache and remove it                                        |
