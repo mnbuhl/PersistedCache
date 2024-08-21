@@ -213,6 +213,41 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         return result!;
     }
 
+    public bool Exists(string key)
+    {
+        Validators.ValidateKey(key);
+        return _connectionFactory.RunInTransaction((connection, transaction) =>
+        {
+            var count = connection.QueryFirstOrDefault<int>(
+                new CommandDefinition(
+                    commandText: _driver.ExistsScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction
+                )
+            );
+
+            return count > 0;
+        });
+    }
+
+    public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidateKey(key);
+        return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var count = await connection.QueryFirstOrDefaultAsync<int>(
+                new CommandDefinition(
+                    commandText: _driver.ExistsScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return count > 0;
+        }, cancellationToken);
+    }
+
     /// <inheritdoc />
     public void Forget(string key)
     {

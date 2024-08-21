@@ -41,7 +41,16 @@ public class SqliteDriver : ISqlCacheDriver
          INSERT OR REPLACE INTO "{_options.TableName}" ("key", "value", "expiry")
          VALUES (@Key, @Value, @Expiry);
          """;
-    
+
+    public string ExistsScript =>
+        /*lang=SQLite*/
+        $"""
+         SELECT COUNT(*)
+         FROM "{_options.TableName}"
+         WHERE "key" = @Key
+           AND "expiry" > @Expiry;
+         """;
+
     public string ForgetScript =>
         /*lang=SQLite*/
         $"""

@@ -49,7 +49,16 @@ public class SqlServerDriver : ISqlCacheDriver
              INSERT ([key], [value], [expiry])
              VALUES (source.[key], source.[value], source.[expiry]);
          """;
-    
+
+    public string ExistsScript =>
+        /*lang=TSQL*/
+        $"""
+         SELECT COUNT(*)
+         FROM [{_options.Schema}].[{_options.TableName}]
+         WHERE [key] = @Key
+           AND [expiry] > @Expiry;
+         """;
+
     public string ForgetScript =>
         /*lang=TSQL*/
         $"""

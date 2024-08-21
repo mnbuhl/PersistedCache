@@ -11,7 +11,7 @@ public readonly struct Expire
 
     private static Expire Create(DateTimeOffset value)
     {
-        if (value < DateTimeOffset.UtcNow.AddSeconds(-1))
+        if (value < DateTimeOffset.UtcNow.AddMilliseconds(-1))
         {
             throw new ArgumentException("The expire value must be in the future.", nameof(value));
         }
@@ -20,10 +20,10 @@ public readonly struct Expire
     }
     
     public static Expire Never => Create(DateTimeOffset.MaxValue);
-    public static Expire InMilliseconds(int milliseconds) => Create(DateTimeOffset.UtcNow.AddMilliseconds(milliseconds));
-    public static Expire InSeconds(int seconds) => Create(DateTimeOffset.UtcNow.AddSeconds(seconds));
-    public static Expire InMinutes(int minutes) => Create(DateTimeOffset.UtcNow.AddMinutes(minutes));
-    public static Expire InHours(int hours) => Create(DateTimeOffset.UtcNow.AddHours(hours));
+    public static Expire InMilliseconds(long milliseconds) => Create(DateTimeOffset.UtcNow.AddMilliseconds(milliseconds));
+    public static Expire InSeconds(double seconds) => Create(DateTimeOffset.UtcNow.AddSeconds(seconds));
+    public static Expire InMinutes(double minutes) => Create(DateTimeOffset.UtcNow.AddMinutes(minutes));
+    public static Expire InHours(double hours) => Create(DateTimeOffset.UtcNow.AddHours(hours));
     public static Expire InDays(int days) => Create(DateTimeOffset.UtcNow.AddDays(days));
     public static Expire InMonths(int months) => Create(DateTimeOffset.UtcNow.AddMonths(months));
     public static Expire InYears(int years) => Create(DateTimeOffset.UtcNow.AddYears(years));

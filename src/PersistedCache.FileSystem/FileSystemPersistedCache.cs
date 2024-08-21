@@ -132,6 +132,24 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    public bool Exists(string key)
+    {
+        ValidateKey(key);
+        var filePath = GetFilePath(key);
+        var cacheEntry = ReadFromFile<object>(filePath);
+        
+        return cacheEntry is { IsExpired: false };
+    }
+
+    public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var filePath = GetFilePath(key);
+        var cacheEntry = await ReadFromFileAsync<object>(filePath, cancellationToken: cancellationToken);
+        
+        return cacheEntry is { IsExpired: false };
+    }
+
     /// <inheritdoc />
     public void Forget(string key)
     {

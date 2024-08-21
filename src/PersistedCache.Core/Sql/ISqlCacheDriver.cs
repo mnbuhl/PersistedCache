@@ -18,6 +18,11 @@ public interface ISqlCacheDriver : IDriver
     /// The script to set a value in the storage
     /// </summary>
     string SetScript { get; }
+    
+    /// <summary>
+    /// The script to determine if a value exists in the storage
+    /// </summary>
+    string ExistsScript { get; }
         
     /// <summary>
     /// The script to forget a value in the storage

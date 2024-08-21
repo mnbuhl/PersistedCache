@@ -43,7 +43,16 @@ namespace PersistedCache
             VALUES (@Key, @Value, @Expiry)
             ON DUPLICATE KEY UPDATE `value` = @value, `expiry` = @expiry;
             """;
-        
+
+        public string ExistsScript =>
+            /*lang=MySQL*/
+            $"""
+            SELECT COUNT(*)
+            FROM `{_options.TableName}`
+            WHERE `key` = @Key
+              AND `expiry` > @Expiry;
+            """;
+
         public string ForgetScript =>
             /*lang=MySQL*/
             $"""
