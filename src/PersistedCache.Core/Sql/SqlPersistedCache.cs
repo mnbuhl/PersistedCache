@@ -15,8 +15,6 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         _options = options;
         _connectionFactory = new SqlConnectionFactory(_driver);
         
-        SqlMapper.AddTypeHandler(new ExpireTypeHandler());
-
         if (options.CreateTableIfNotExists)
         {
             _connectionFactory.RunInTransaction((connection, transaction) =>

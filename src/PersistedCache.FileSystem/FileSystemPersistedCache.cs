@@ -62,7 +62,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
             return default;
         }
 
-        if (cacheEntry.Expiry.IsExpired)
+        if (cacheEntry.IsExpired)
         {
             Task.Run(() => Forget(key));
             return default;
@@ -84,7 +84,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
             return default;
         }
 
-        if (cacheEntry.Expiry.IsExpired)
+        if (cacheEntry.IsExpired)
         {
             await Task.Run(() => Forget(key), cancellationToken);
             return default;
@@ -159,7 +159,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         
         var cacheEntry = ReadFromFile<T>(filePath, deleteOnClose: true);
         
-        if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
+        if (cacheEntry == null || cacheEntry.IsExpired)
         {
             return default;
         }
@@ -175,7 +175,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         
         var cacheEntry = await ReadFromFileAsync<T>(filePath, deleteOnClose: true, cancellationToken);
         
-        if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
+        if (cacheEntry == null || cacheEntry.IsExpired)
         {
             return default;
         }
@@ -230,7 +230,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         {
             var cacheEntry = ReadFromFile<object>(file.FullName);
 
-            if (cacheEntry == null || cacheEntry.Expiry.IsExpired)
+            if (cacheEntry == null || cacheEntry.IsExpired)
             {
                 file.Delete();
             }

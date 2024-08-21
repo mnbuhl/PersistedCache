@@ -1,11 +1,6 @@
-﻿using System.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Dapper;
+﻿namespace PersistedCache;
 
-namespace PersistedCache;
-
-public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, IComparable
+public readonly struct Expire
 {
     private readonly DateTimeOffset _value;
     
@@ -34,71 +29,10 @@ public readonly struct Expire : IEquatable<Expire>, IComparable<Expire>, ICompar
     public static Expire InYears(int years) => Create(DateTimeOffset.UtcNow.AddYears(years));
     public static Expire At(DateTimeOffset dateTime) => Create(dateTime);
     public static Expire In(TimeSpan timeSpan) => Create(DateTimeOffset.UtcNow.Add(timeSpan));
-    public static Expire Now => new Expire(DateTimeOffset.UtcNow);
-    
-    [JsonIgnore]
-    public bool IsExpired => _value < DateTimeOffset.UtcNow;
     
     public static implicit operator DateTimeOffset(Expire expire) => expire._value;
     public static implicit operator Expire(DateTimeOffset dateTimeOffset) => new Expire(dateTimeOffset);
     public static explicit operator Expire(TimeSpan timeSpan) => new Expire(DateTimeOffset.UtcNow.Add(timeSpan));
     
     public override string ToString() => _value.ToString();
-    public int CompareTo(object obj)
-    {
-        if (obj is Expire expire)
-        {
-            return CompareTo(expire);
-        }
-
-        throw new ArgumentException($"Object must be of type {nameof(Expire)}");
-    }
-
-    public override bool Equals(object? obj) => obj is Expire expire && _value == expire._value;
-    public override int GetHashCode() => _value.GetHashCode();
-
-    public bool Equals(Expire other)
-    {
-        return _value.Equals(other._value);
-    }
-
-    public int CompareTo(Expire other)
-    {
-        return _value.CompareTo(other._value);
-    }
-    
-    #region Operators
-    public static bool operator ==(Expire left, Expire right) => left.Equals(right);
-    public static bool operator !=(Expire left, Expire right) => !left.Equals(right);
-    public static bool operator <(Expire left, Expire right) => left.CompareTo(right) < 0;
-    public static bool operator <=(Expire left, Expire right) => left.CompareTo(right) <= 0;
-    public static bool operator >(Expire left, Expire right) => left.CompareTo(right) > 0;
-    public static bool operator >=(Expire left, Expire right) => left.CompareTo(right) >= 0;
-    #endregion
-}
-
-public class ExpireJsonConverter : JsonConverter<Expire>
-{
-    public override Expire Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        return DateTimeOffset.Parse(reader.GetString());
-    }
-
-    public override void Write(Utf8JsonWriter writer, Expire value, JsonSerializerOptions options)
-    {
-        writer.WriteStringValue(value.ToString());
-    }
-}
-
-public class ExpireTypeHandler : SqlMapper.TypeHandler<Expire>
-{
-    public override void SetValue(IDbDataParameter parameter, Expire value)
-    {
-        parameter.Value = (DateTimeOffset)value;
-    }
-
-    public override Expire Parse(object value)
-    {
-        return (Expire)value;
-    }
 }

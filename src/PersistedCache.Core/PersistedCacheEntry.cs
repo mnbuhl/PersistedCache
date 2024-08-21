@@ -6,6 +6,8 @@
     {
         public required string Key { get; init; }
         public required T Value { get; init; }
-        public Expire Expiry { get; init; }
+        public DateTimeOffset Expiry { get; init; }
+        
+        public bool IsExpired => Expiry < DateTimeOffset.UtcNow;
     }
 }

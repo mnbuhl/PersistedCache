@@ -14,7 +14,6 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         _options = options;
         _client = new MongoClient(options.ConnectionString);
 
-        BsonSerializer.RegisterSerializer(new ExpireBsonSerializer());
         BsonClassMap.RegisterClassMap<PersistedCacheEntry<string>>(map =>
         {
             map.AutoMap();
@@ -68,7 +67,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     {
         Validators.ValidateKey(key);
         
-        var entry = Collection.Find(x => x.Key == key && x.Expiry > Expire.Now).FirstOrDefault();
+        var entry = Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).FirstOrDefault();
 
         if (entry == null)
         {
@@ -83,7 +82,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     {
         Validators.ValidateKey(key);
         
-        var entry = await Collection.Find(x => x.Key == key && x.Expiry > Expire.Now)
+        var entry = await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (entry == null)
@@ -99,7 +98,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     {
         Validators.ValidateKey(key);
 
-        var entry = Collection.Find(x => x.Key == key && x.Expiry > Expire.Now).FirstOrDefault();
+        var entry = Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).FirstOrDefault();
 
         if (entry != null)
         {
@@ -117,7 +116,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
-        var entry = await Collection.Find(x => x.Key == key && x.Expiry > Expire.Now)
+        var entry = await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (entry != null)
@@ -152,7 +151,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         Validators.ValidateKey(key);
         var entry = Collection.FindOneAndDelete(x => x.Key == key);
 
-        if (entry == null || entry.Expiry.IsExpired)
+        if (entry == null || entry.IsExpired)
         {
             return default;
         }
@@ -166,7 +165,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         Validators.ValidateKey(key);
         var entry = await Collection.FindOneAndDeleteAsync(x => x.Key == key, cancellationToken: cancellationToken);
 
-        if (entry == null || entry.Expiry.IsExpired)
+        if (entry == null || entry.IsExpired)
         {
             return default;
         }
@@ -204,7 +203,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     /// <inheritdoc />
     public void Purge()
     {
-        Collection.DeleteMany(x => x.Expiry < Expire.Now);
+        Collection.DeleteMany(x => x.Expiry < DateTimeOffset.UtcNow);
     }
 
     private void CreateIndexesIfNotExists()
