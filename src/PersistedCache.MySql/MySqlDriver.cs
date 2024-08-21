@@ -44,7 +44,7 @@ namespace PersistedCache
             ON DUPLICATE KEY UPDATE `value` = @value, `expiry` = @expiry;
             """;
 
-        public string ExistsScript =>
+        public string HasScript =>
             /*lang=MySQL*/
             $"""
             SELECT COUNT(*)

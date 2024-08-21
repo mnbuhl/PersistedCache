@@ -79,6 +79,12 @@ public class MyService(IPersistedCache cache)
         var value = cache.GetOrSet("my-key", () => new RandomObject(), Expire.InMinutes(5));
     }
     
+    // Check if a value exists in the cache
+    public bool HasSomething()
+    {
+        return cache.Has("my-key");
+    }
+    
     // Forget a value from the cache
     public void ForgetSomething()
     {
@@ -124,7 +130,7 @@ public class MyService(IPersistedCache cache)
     // Get a value from the cache or set it if it doesn't exist asynchronously
     public async Task<RandomObject?> GetOrSetSomethingAsync()
     {
-        return await cache.GetOrSetAsync("my-async-key", async () => await GetRandomObjectAsync());
+        return await cache.GetOrSetAsync("my-async-key", async () => await GetRandomObjectAsync(), Expire.InSeconds(5));
     }
 }
 ```
@@ -167,6 +173,8 @@ The first cache registered will be the default cache, so you can use the `IPersi
 | `GetAsync<T>(string key, CancellationToken cancellationToken = default)`                                                 | Get a value from the cache asynchronously                                       |
 | `GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)`                                                           | Get a value from the cache or set it if it doesn't exist                        |
 | `GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default)` | Get a value from the cache or set it if it doesn't exist asynchronously         |
+| `Has(string key)`                                                                                                        | Check if a value exists in the cache                                            |
+| `HasAsync(string key, CancellationToken cancellationToken = default)`                                                    | Check if a value exists in the cache asynchronously                             |
 | `Forget(string key)`                                                                                                     | Forget a value from the cache                                                   |
 | `ForgetAsync(string key, CancellationToken cancellationToken = default)`                                                 | Forget a value from the cache asynchronously                                    |
 | `Pull<T>(string key)`                                                                                                    | Get a value from the cache and remove it                                        |

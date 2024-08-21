@@ -213,14 +213,14 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         return result!;
     }
 
-    public bool Exists(string key)
+    public bool Has(string key)
     {
         Validators.ValidateKey(key);
         return _connectionFactory.RunInTransaction((connection, transaction) =>
         {
             var count = connection.QueryFirstOrDefault<int>(
                 new CommandDefinition(
-                    commandText: _driver.ExistsScript,
+                    commandText: _driver.HasScript,
                     parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
                     transaction: transaction
                 )
@@ -230,14 +230,14 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         });
     }
 
-    public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
+    public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         Validators.ValidateKey(key);
         return await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
             var count = await connection.QueryFirstOrDefaultAsync<int>(
                 new CommandDefinition(
-                    commandText: _driver.ExistsScript,
+                    commandText: _driver.HasScript,
                     parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
                     transaction: transaction,
                     cancellationToken: cancellationToken

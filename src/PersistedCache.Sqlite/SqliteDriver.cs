@@ -42,7 +42,7 @@ public class SqliteDriver : ISqlCacheDriver
          VALUES (@Key, @Value, @Expiry);
          """;
 
-    public string ExistsScript =>
+    public string HasScript =>
         /*lang=SQLite*/
         $"""
          SELECT COUNT(*)

@@ -7,11 +7,11 @@ using Xunit;
 
 namespace PersistedCache.Tests;
 
-public abstract class ExistsTests : BaseTest
+public abstract class HasTests : BaseTest
 {
     private readonly IPersistedCache _cache;
 
-    protected ExistsTests(IPersistedCache cache) : base(cache)
+    protected HasTests(IPersistedCache cache) : base(cache)
     {
         _cache = cache;
     }
@@ -24,7 +24,7 @@ public abstract class ExistsTests : BaseTest
         _cache.Set(key, new RandomObject(), Expire.Never);
         
         // Act
-        var result = _cache.Exists(key);
+        var result = _cache.Has(key);
         
         // Assert
         result.Should().BeTrue();
@@ -37,7 +37,7 @@ public abstract class ExistsTests : BaseTest
         const string key = "key";
         
         // Act
-        var result = _cache.Exists(key);
+        var result = _cache.Has(key);
         
         // Assert
         result.Should().BeFalse();
@@ -52,7 +52,7 @@ public abstract class ExistsTests : BaseTest
 
         // Act
         System.Threading.Thread.Sleep(2);
-        var result = _cache.Exists(key);
+        var result = _cache.Has(key);
 
         // Assert
         result.Should().BeFalse();
@@ -66,7 +66,7 @@ public abstract class ExistsTests : BaseTest
         await _cache.SetAsync(key, new RandomObject(), Expire.Never);
 
         // Act
-        var result = await _cache.ExistsAsync(key);
+        var result = await _cache.HasAsync(key);
 
         // Assert
         result.Should().BeTrue();
@@ -74,49 +74,49 @@ public abstract class ExistsTests : BaseTest
 }
 
 [Collection(nameof(MySqlFixture))]
-public class MySqlExistsTestsExecutor : ExistsTests
+public class MySqlHasTestsExecutor : HasTests
 {
-    public MySqlExistsTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
+    public MySqlHasTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }
 
 [Collection(nameof(PostgreSqlFixture))]
-public class PostgreSqlExistsTestsExecutor : ExistsTests
+public class PostgreSqlHasTestsExecutor : HasTests
 {
-    public PostgreSqlExistsTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
+    public PostgreSqlHasTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }
     
 [Collection(nameof(SqlServerFixture))]
-public class SqlServerExistsTestsExecutor : ExistsTests
+public class SqlServerHasTestsExecutor : HasTests
 {
-    public SqlServerExistsTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+    public SqlServerHasTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }
     
 [Collection(nameof(FileSystemFixture))]
-public class FileSystemExistsTestsExecutor : ExistsTests
+public class FileSystemHasTestsExecutor : HasTests
 {
-    public FileSystemExistsTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
+    public FileSystemHasTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }
     
 [Collection(nameof(SqliteFixture))]
-public class SqliteExistsTestsExecutor : ExistsTests
+public class SqliteHasTestsExecutor : HasTests
 {
-    public SqliteExistsTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+    public SqliteHasTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }
 
 [Collection(nameof(MongoDbFixture))]
-public class MongoDbExistsTestsExecutor : ExistsTests
+public class MongoDbHasTestsExecutor : HasTests
 {
-    public MongoDbExistsTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    public MongoDbHasTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
     {
     }
 }

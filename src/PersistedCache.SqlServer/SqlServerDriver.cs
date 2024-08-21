@@ -50,7 +50,7 @@ public class SqlServerDriver : ISqlCacheDriver
              VALUES (source.[key], source.[value], source.[expiry]);
          """;
 
-    public string ExistsScript =>
+    public string HasScript =>
         /*lang=TSQL*/
         $"""
          SELECT COUNT(*)

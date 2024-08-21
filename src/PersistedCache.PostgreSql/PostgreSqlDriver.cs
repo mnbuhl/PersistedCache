@@ -48,7 +48,7 @@ public class PostgreSqlDriver : ISqlCacheDriver
          SET "value" = cast(@Value as jsonb), "expiry" = @Expiry;
          """;
 
-    public string ExistsScript =>
+    public string HasScript =>
         /*lang=PostgreSQL*/
         $"""
          SELECT COUNT(*)

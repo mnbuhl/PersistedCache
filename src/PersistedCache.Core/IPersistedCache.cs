@@ -62,19 +62,19 @@
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
         
         /// <summary>
-        /// Determine if a value exists in the cache
+        /// Check if the cache has a value
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
         /// <returns>True if the value exists, false otherwise</returns>
-        bool Exists(string key);
+        bool Has(string key);
         
         /// <summary>
-        /// Determine if a value exists in the cache asynchronously
+        /// Check if the cache has a value asynchronously
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>True if the value exists, false otherwise</returns>
-        Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default);
+        Task<bool> HasAsync(string key, CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Forget a value from the cache

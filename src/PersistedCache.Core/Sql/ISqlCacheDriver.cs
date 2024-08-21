@@ -22,7 +22,7 @@ public interface ISqlCacheDriver : IDriver
     /// <summary>
     /// The script to determine if a value exists in the storage
     /// </summary>
-    string ExistsScript { get; }
+    string HasScript { get; }
         
     /// <summary>
     /// The script to forget a value in the storage

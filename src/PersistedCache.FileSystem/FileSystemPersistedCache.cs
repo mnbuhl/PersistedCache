@@ -132,7 +132,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
-    public bool Exists(string key)
+    public bool Has(string key)
     {
         ValidateKey(key);
         var filePath = GetFilePath(key);
@@ -141,7 +141,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry is { IsExpired: false };
     }
 
-    public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
+    public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         ValidateKey(key);
         var filePath = GetFilePath(key);
