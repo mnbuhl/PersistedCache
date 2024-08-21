@@ -10,6 +10,20 @@
         <RootNamespace>PersistedCache</RootNamespace>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <Authors>Mikkel Buhl</Authors>
+        <Description>Simple persisted cache for .NET and file system</Description>
+        <PackageId>PersistedCache.MongoDb</PackageId>
+        <PackageTags>cache storage mongodb documentdb</PackageTags>
+        <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mnbuhl/PersistedCache</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
     </ItemGroup>

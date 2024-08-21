@@ -1,4 +1,6 @@
-﻿namespace PersistedCache;
+﻿using System.Text.RegularExpressions;
+
+namespace PersistedCache;
 
 internal class PatternValidatorOptions
 {
@@ -27,21 +29,20 @@ internal static class Validators
         }
         
         options ??= new PatternValidatorOptions();
-
-        var startsOrEndsWithWildcard = options.SupportedWildcards.Any(pattern.StartsWith) ||
-                                       options.SupportedWildcards.Any(pattern.EndsWith);
-
-        if (!startsOrEndsWithWildcard)
-        {
-            throw new ArgumentException(
-                "Pattern must start or end with a wildcard character. Supported wildcard characters: " +
-                options.SupportedWildcards
-            );
-        }
         
         if (options.SupportsRegex)
         {
-            throw new NotImplementedException("Regex pattern validation is not implemented.");
+             _ = new Regex(pattern);
+        }
+        else
+        {
+            if (!options.SupportedWildcards.Any(pattern.Contains))
+            {
+                throw new ArgumentException(
+                    "Pattern must start or end with a wildcard character. Supported wildcard characters: " +
+                    options.SupportedWildcards
+                );
+            }
         }
     }
 

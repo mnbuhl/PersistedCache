@@ -111,7 +111,7 @@ public abstract class FlushTests : BaseTest
     public void Flush_WithInvalidPattern_ThrowsException()
     {
         // Act
-        Action act = () => _cache.Flush("hello*test");
+        Action act = () => _cache.Flush("^h((el!lotest");
         
         // Assert
         act.Should().Throw<ArgumentException>();
