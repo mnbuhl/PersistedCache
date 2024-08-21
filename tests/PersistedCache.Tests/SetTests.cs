@@ -116,6 +116,31 @@ public abstract class SetTests : BaseTest
     }
     
     [Fact]
+    public void Set_InParallel_SetsValues()
+    {
+        // Arrange
+        const int count = 100;
+        var keys = new List<string>();
+        var values = new List<string>();
+
+        for (var i = 0; i < count; i++)
+        {
+            keys.Add($"key_{i}");
+            values.Add($"value_{i}");
+        }
+
+        // Act
+        Parallel.For(0, count, i => _cache.Set(keys[i], values[i], Expire.InMinutes(5)));
+
+        // Assert
+        for (var i = 0; i < count; i++)
+        {
+            var result = _cache.Get<string>(keys[i]);
+            result.Should().Be(values[i]);
+        }
+    }
+    
+    [Fact]
     public void Set_WithTooLongKey_ThrowsArgumentException()
     {
         // Arrange
