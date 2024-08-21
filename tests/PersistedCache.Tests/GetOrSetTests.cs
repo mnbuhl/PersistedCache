@@ -75,7 +75,25 @@ public abstract class GetOrSetTests : BaseTest
         var value = _fixture.Create<RandomObject>();
 
         // Act
-        var result = await _cache.GetOrSetAsync(key, () => Task.FromResult(value), Expire.InMinutes(5));
+        var result = await _cache.GetOrSetAsync(key, () => value, Expire.InMinutes(5));
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+    }
+    
+    [Fact]
+    public async Task GetOrSetAsync_WithAsyncValueFactory_ReturnsValue()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        var result = await _cache.GetOrSetAsync(key, async () =>
+        {
+            await Task.Delay(100);
+            return value;
+        }, Expire.InMinutes(5));
 
         // Assert
         result.Should().BeEquivalentTo(value);

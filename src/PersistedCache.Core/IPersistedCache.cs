@@ -59,6 +59,17 @@
         /// <param name="cancellationToken">The cancellation token</param>
         /// <typeparam name="T">The type of the value to get/cache</typeparam>
         /// <returns>The value from the cache or the value created by the factory</returns>
+        Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// Get a value from the cache or set it if it doesn't exist asynchronously
+        /// </summary>
+        /// <param name="key">The key of the cached entry</param>
+        /// <param name="valueFactory">The async factory to create the value if it doesn't exist</param>
+        /// <param name="expiry">The expiry time of the cached entry</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <typeparam name="T">The type of the value to get/cache</typeparam>
+        /// <returns>The value from the cache or the value created by the factory</returns>
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
         
         /// <summary>

@@ -172,6 +172,7 @@ The first cache registered will be the default cache, so you can use the `IPersi
 | `Get<T>(string key)`                                                                                                     | Get a value from the cache                                                      |
 | `GetAsync<T>(string key, CancellationToken cancellationToken = default)`                                                 | Get a value from the cache asynchronously                                       |
 | `GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)`                                                           | Get a value from the cache or set it if it doesn't exist                        |
+| `GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry, CancellationToken cancellationToken = default)`       | Get a value from the cache or set it if it doesn't exist asynchronously         |
 | `GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default)` | Get a value from the cache or set it if it doesn't exist asynchronously         |
 | `Has(string key)`                                                                                                        | Check if a value exists in the cache                                            |
 | `HasAsync(string key, CancellationToken cancellationToken = default)`                                                    | Check if a value exists in the cache asynchronously                             |

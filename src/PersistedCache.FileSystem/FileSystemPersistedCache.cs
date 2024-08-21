@@ -18,7 +18,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         ValidateKey(key);
         Validators.ValidateValue(value);
-        
+
         var filePath = GetFilePath(key);
 
         var cacheEntry = new PersistedCacheEntry<T>
@@ -36,7 +36,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         ValidateKey(key);
         Validators.ValidateValue(value);
-        
+
         var filePath = GetFilePath(key);
 
         var cacheEntry = new PersistedCacheEntry<T>
@@ -113,6 +113,26 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var value = await GetAsync<T>(key, cancellationToken);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        value = valueFactory();
+
+        Validators.ValidateValue(value);
+        await SetAsync(key, value, expiry, cancellationToken);
+
+        return value;
+    }
+
+    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
     {
@@ -137,7 +157,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         ValidateKey(key);
         var filePath = GetFilePath(key);
         var cacheEntry = ReadFromFile<object>(filePath);
-        
+
         return cacheEntry is { IsExpired: false };
     }
 
@@ -146,7 +166,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         ValidateKey(key);
         var filePath = GetFilePath(key);
         var cacheEntry = await ReadFromFileAsync<object>(filePath, cancellationToken: cancellationToken);
-        
+
         return cacheEntry is { IsExpired: false };
     }
 
@@ -174,14 +194,14 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         ValidateKey(key);
         var filePath = GetFilePath(key);
-        
+
         var cacheEntry = ReadFromFile<T>(filePath, deleteOnClose: true);
-        
+
         if (cacheEntry == null || cacheEntry.IsExpired)
         {
             return default;
         }
-        
+
         return cacheEntry.Value;
     }
 
@@ -190,14 +210,14 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     {
         ValidateKey(key);
         var filePath = GetFilePath(key);
-        
+
         var cacheEntry = await ReadFromFileAsync<T>(filePath, deleteOnClose: true, cancellationToken);
-        
+
         if (cacheEntry == null || cacheEntry.IsExpired)
         {
             return default;
         }
-        
+
         return cacheEntry.Value;
     }
 
@@ -205,7 +225,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     public void Flush()
     {
         var directory = new DirectoryInfo(_options.CacheFolderName);
-        
+
         foreach (var file in directory.EnumerateFiles())
         {
             file.Delete();
@@ -223,9 +243,9 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     public void Flush(string pattern)
     {
         Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
-        
+
         var directory = new DirectoryInfo(_options.CacheFolderName);
-        
+
         foreach (var file in directory.EnumerateFiles(pattern))
         {
             file.Delete();
@@ -243,7 +263,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     public void Purge()
     {
         var directory = new DirectoryInfo(_options.CacheFolderName);
-        
+
         foreach (var file in directory.EnumerateFiles())
         {
             var cacheEntry = ReadFromFile<object>(file.FullName);
@@ -294,13 +314,14 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
             return default;
         }
 
-        var fileOptions = deleteOnClose 
-            ? FileOptions.DeleteOnClose | FileOptions.Asynchronous 
+        var fileOptions = deleteOnClose
+            ? FileOptions.DeleteOnClose | FileOptions.Asynchronous
             : FileOptions.Asynchronous;
 
         using var fileStream =
             new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
-        return await JsonSerializer.DeserializeAsync<PersistedCacheEntry<T>>(fileStream, _options.JsonOptions, cancellationToken);
+        return await JsonSerializer.DeserializeAsync<PersistedCacheEntry<T>>(fileStream, _options.JsonOptions,
+            cancellationToken);
     }
 
     private PersistedCacheEntry<T>? ReadFromFile<T>(string filePath, bool deleteOnClose = false)
@@ -309,12 +330,13 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         {
             return default;
         }
-        
-        var fileOptions = deleteOnClose 
-            ? FileOptions.DeleteOnClose | FileOptions.Asynchronous 
+
+        var fileOptions = deleteOnClose
+            ? FileOptions.DeleteOnClose | FileOptions.Asynchronous
             : FileOptions.Asynchronous;
 
-        using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
+        using var fileStream =
+            new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, fileOptions);
         return JsonSerializer.Deserialize<PersistedCacheEntry<T>>(fileStream, _options.JsonOptions);
     }
 

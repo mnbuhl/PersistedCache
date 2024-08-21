@@ -28,7 +28,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     {
         Validators.ValidateKey(key);
         Validators.ValidateValue(value);
-        
+
         var entry = new PersistedCacheEntry
         {
             Key = key,
@@ -42,13 +42,13 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
             options: new FindOneAndReplaceOptions<PersistedCacheEntry> { IsUpsert = true }
         );
     }
-    
+
     /// <inheritdoc />
     public async Task SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)
     {
         Validators.ValidateKey(key);
         Validators.ValidateValue(value);
-        
+
         await Collection.FindOneAndReplaceAsync<PersistedCacheEntry>(
             filter: x => x.Key == key,
             replacement: new PersistedCacheEntry
@@ -66,7 +66,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     public T? Get<T>(string key)
     {
         Validators.ValidateKey(key);
-        
+
         var entry = Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).FirstOrDefault();
 
         if (entry == null)
@@ -81,7 +81,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         Validators.ValidateKey(key);
-        
+
         var entry = await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -107,8 +107,27 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
 
         var value = valueFactory();
         Validators.ValidateValue(value);
-        
+
         Set(key, value, expiry);
+        return value;
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
+        CancellationToken cancellationToken = default)
+    {
+        var entry = await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (entry != null)
+        {
+            return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!;
+        }
+
+        var value = valueFactory();
+        Validators.ValidateValue(value);
+
+        await SetAsync(key, value, expiry, cancellationToken);
         return value;
     }
 
@@ -126,7 +145,7 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
 
         var value = await valueFactory();
         Validators.ValidateValue(value);
-        
+
         await SetAsync(key, value, expiry, cancellationToken);
         return value;
     }
