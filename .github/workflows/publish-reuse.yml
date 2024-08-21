@@ -26,6 +26,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
           
       - name: Bump version and push tag
         id: tag_version
