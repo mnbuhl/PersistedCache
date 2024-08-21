@@ -22,7 +22,16 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <Optimize>true</Optimize>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
+    </ItemGroup>
     
     <ItemGroup>
       <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
@@ -30,10 +39,6 @@
 
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
-    </ItemGroup>
-    
 </Project>

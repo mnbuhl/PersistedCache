@@ -22,6 +22,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -29,14 +30,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Npgsql" Version="6.0.11" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright © 2024 Mikkel Buhl</Copyright>
-        <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
