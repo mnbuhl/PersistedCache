@@ -32,7 +32,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj">
         <PrivateAssets>all</PrivateAssets>
-      </ProjectReference>
+      </PackageReference>
     </ItemGroup>
     
     <ItemGroup>
