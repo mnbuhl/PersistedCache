@@ -30,15 +30,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PersistedCache\PersistedCache.csproj" />
     </ItemGroup>
 </Project>

@@ -281,7 +281,7 @@
           "System.Memory": "4.5.5"
         }
       },
-      "persistedcache.core": {
+      "persistedcache": {
         "type": "Project",
         "dependencies": {
           "Dapper": "[2.1.35, )",

@@ -194,7 +194,7 @@
           "System.Runtime.CompilerServices.Unsafe": "4.5.3"
         }
       },
-      "persistedcache.core": {
+      "persistedcache": {
         "type": "Project",
         "dependencies": {
           "Dapper": "[2.1.35, )",
