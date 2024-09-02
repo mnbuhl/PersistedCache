@@ -34,8 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj">
-        <PrivateAssets>all</PrivateAssets>
-      </PackageReference>
+      <ProjectReference Include="..\PersistedCache.Core\PersistedCache.Core.csproj" />
     </ItemGroup>
 </Project>
