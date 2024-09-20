@@ -1,4 +1,6 @@
-﻿namespace PersistedCache
+﻿using System.Text.Json.Serialization;
+
+namespace PersistedCache
 {
     internal class PersistedCacheEntry : PersistedCacheEntry<string>;
     
@@ -8,6 +10,7 @@
         public required T Value { get; init; }
         public DateTimeOffset Expiry { get; init; }
         
+        [JsonIgnore]
         public bool IsExpired => Expiry < DateTimeOffset.UtcNow;
     }
 }
