@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Dapper;
+using PersistedCache.Helpers;
 
 namespace PersistedCache.Sql;
 
@@ -271,18 +272,23 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
             var values = connection.Query<string>(
                 new CommandDefinition(
                     commandText: _driver.QueryScript,
-                    parameters: new { Pattern = pattern },
+                    parameters: new { Pattern = pattern, Expiry = DateTimeOffset.UtcNow },
                     transaction: transaction
                 )
             );
 
-            return values.Select(value => JsonSerializer.Deserialize<T>(value, _options.JsonOptions));
-        });
+            var deserialized = new List<T>();
+            
+            foreach (var value in values)
+            {
+                if (JsonHelper.TryDeserialize<T?>(value, out var result, _options.JsonOptions))
+                {
+                    deserialized.Add(result!);
+                }
+            }
 
-        if (result == default)
-        {
-            return [];
-        }
+            return deserialized;
+        });
 
         return result!;
     }
@@ -298,19 +304,24 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
             var values = await connection.QueryAsync<string>(
                 new CommandDefinition(
                     commandText: _driver.QueryScript,
-                    parameters: new { Pattern = pattern },
+                    parameters: new { Pattern = pattern, Expiry = DateTimeOffset.UtcNow },
                     transaction: transaction,
                     cancellationToken: cancellationToken
                 )
             );
+            
+            var deserialized = new List<T>();
+            
+            foreach (var value in values)
+            {
+                if (JsonHelper.TryDeserialize<T>(value, out var result, _options.JsonOptions))
+                {
+                    deserialized.Add(result!);
+                }
+            }
 
-            return values.Select(value => JsonSerializer.Deserialize<T>(value, _options.JsonOptions));
+            return deserialized;
         }, cancellationToken);
-        
-        if (result == default)
-        {
-            return [];
-        }
         
         return result!;
     }

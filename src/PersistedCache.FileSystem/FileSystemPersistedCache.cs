@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using PersistedCache.Helpers;
 
 namespace PersistedCache;
 
@@ -161,9 +162,9 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         
         foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
         {
-            var cacheEntry = ReadFromFile<T>(file.FullName);
+            var cacheEntry = ReadFromFile<T?>(file.FullName);
 
-            if (cacheEntry == null || cacheEntry.IsExpired)
+            if (cacheEntry == null || cacheEntry.IsExpired || cacheEntry.Value == null)
             {
                 continue;
             }

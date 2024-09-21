@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace PersistedCache;
+﻿namespace PersistedCache.Helpers;
 
 internal class PatternValidatorOptions
 {

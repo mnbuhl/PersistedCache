@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using PersistedCache.Helpers;
 
 namespace PersistedCache;
 
@@ -156,13 +157,26 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         Validators.ValidatePattern(pattern);
 
         var builder = Builders<PersistedCacheEntry>.Filter;
-        var filter = builder.Regex(entry => entry.Key, pattern) &
-                     builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+        var filter = builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        if (pattern != "*")
+        {
+            filter &= builder.Regex(entry => entry.Key, pattern);
+        }
 
         var entries = Collection.Find(filter).ToList();
 
-        return entries.Where(entry => !string.IsNullOrEmpty(entry.Value)).Select(entry =>
-            JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!);
+        var deserialized = new List<T>();
+        
+        foreach (var entry in entries)
+        {
+            if (JsonHelper.TryDeserialize<T>(entry.Value, out var value, _options.JsonOptions))
+            {
+                deserialized.Add(value!);
+            }
+        }
+
+        return deserialized;
     }
 
     /// <inheritdoc />
@@ -171,13 +185,26 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         Validators.ValidatePattern(pattern);
 
         var builder = Builders<PersistedCacheEntry>.Filter;
-        var filter = builder.Regex(entry => entry.Key, pattern) &
-                     builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+        var filter = builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        if (pattern != "*")
+        {
+            filter &= builder.Regex(entry => entry.Key, pattern);
+        }
 
         var entries = await Collection.Find(filter).ToListAsync(cancellationToken);
 
-        return entries.Where(entry => !string.IsNullOrEmpty(entry.Value)).Select(entry =>
-            JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!);
+        var deserialized = new List<T>();
+        
+        foreach (var entry in entries)
+        {
+            if (JsonHelper.TryDeserialize<T?>(entry.Value, out var value, _options.JsonOptions))
+            {
+                deserialized.Add(value!);
+            }
+        }
+
+        return deserialized;
     }
 
     /// <inheritdoc />
