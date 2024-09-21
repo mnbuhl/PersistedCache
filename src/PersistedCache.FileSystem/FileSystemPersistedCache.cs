@@ -252,7 +252,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
+        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ['*', '?'] });
 
         var directory = new DirectoryInfo(_options.CacheFolderName);
 

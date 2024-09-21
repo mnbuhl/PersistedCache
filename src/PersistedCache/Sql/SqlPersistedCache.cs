@@ -428,8 +428,9 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern);
-        pattern = pattern.Replace('*', _driver.Wildcard);
+        Validators.ValidatePattern(pattern, PatternValidatorOptions);
+        pattern = pattern.Replace('*', _driver.MultipleCharWildcard)
+            .Replace('?', _driver.SingleCharWildcard);
 
         _connectionFactory.RunInTransaction((connection, transaction) =>
         {
@@ -446,8 +447,9 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions());
-        pattern = pattern.Replace('*', _driver.Wildcard);
+        Validators.ValidatePattern(pattern, PatternValidatorOptions);
+        pattern = pattern.Replace('*', _driver.MultipleCharWildcard)
+            .Replace('?', _driver.SingleCharWildcard);
 
         return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
@@ -476,4 +478,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
             );
         });
     }
+
+    private PatternValidatorOptions PatternValidatorOptions => 
+        new PatternValidatorOptions { SupportedWildcards = ['*', '?'] };
 }

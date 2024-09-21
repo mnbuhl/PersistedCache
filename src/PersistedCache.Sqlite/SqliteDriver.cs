@@ -87,8 +87,9 @@ public class SqliteDriver : ISqlCacheDriver
          WHERE "expiry" <= @Expiry;
          """;
 
-    public char Wildcard => '%';
-    
+    public char MultipleCharWildcard => '%';
+    public char SingleCharWildcard => '_';
+
     public DbConnection CreateConnection()
     {
         return new SqliteConnection(_options.ConnectionString);

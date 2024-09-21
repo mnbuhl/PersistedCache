@@ -87,7 +87,8 @@ namespace PersistedCache
              WHERE `expiry` <= @Expiry;
              """;
 
-        public char Wildcard => '%';
+        public char MultipleCharWildcard => '%';
+        public char SingleCharWildcard => '_';
 
         public DbConnection CreateConnection()
         {

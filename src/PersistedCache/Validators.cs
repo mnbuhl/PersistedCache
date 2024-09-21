@@ -4,7 +4,7 @@ namespace PersistedCache;
 
 internal class PatternValidatorOptions
 {
-    public string[] SupportedWildcards { get; init; } = ["*"];
+    public char[] SupportedWildcards { get; init; } = ['*'];
     public bool SupportsRegex { get; init; }
 }
 
