@@ -227,14 +227,14 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportsRegex = true });
+        Validators.ValidatePattern(pattern);
         Collection.DeleteMany(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern));
     }
 
     /// <inheritdoc />
     public async Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportsRegex = true });
+        Validators.ValidatePattern(pattern);
         await Collection.DeleteManyAsync(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern),
             cancellationToken);
     }

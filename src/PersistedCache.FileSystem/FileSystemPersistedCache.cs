@@ -252,11 +252,11 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ['*', '?'] });
+        Validators.ValidatePattern(pattern);
 
         var directory = new DirectoryInfo(_options.CacheFolderName);
 
-        foreach (var file in directory.EnumerateFiles(pattern))
+        foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
         {
             file.Delete();
         }

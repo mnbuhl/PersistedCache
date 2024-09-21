@@ -89,8 +89,10 @@ public abstract class FlushTests : BaseTest
         result.Should().BeEmpty();
     }
     
-    [Fact]
-    public void Flush_WithPattern_RemovesKeysMatchingPattern()
+    [Theory]
+    [InlineData("key*")]
+    [InlineData("key?")]
+    public void Flush_WithPattern_RemovesKeysMatchingPattern(string pattern)
     {
         // Arrange
         var keys = new[] { "key1", "key2", "key3", "4yek" };
@@ -100,7 +102,7 @@ public abstract class FlushTests : BaseTest
         }
             
         // Act
-        _cache.Flush("key*");
+        _cache.Flush(pattern);
         
         // Assert
         var result = _getCacheEntries();
