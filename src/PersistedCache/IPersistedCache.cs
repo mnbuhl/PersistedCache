@@ -180,5 +180,11 @@
         /// Purge the cache of expired entries
         /// </summary>
         void Purge();
+        
+        /// <summary>
+        /// Purge the cache of expired entries asynchronously
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token</param>
+        Task PurgeAsync(CancellationToken cancellationToken = default);
     }
 }

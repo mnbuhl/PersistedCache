@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using PersistedCache.Tests.Common;
@@ -26,12 +27,12 @@ public abstract class PurgeTests : BaseTest
     public void Purge_RemovesExpiredKeys()
     {
         // Arrange
-        _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
-        _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.InSeconds(1));
+        _cache.Set("key1", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
+        _cache.Set("key2", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
         _cache.Set("key3", _fixture.Create<RandomObject>(), Expire.Never);
         _cache.Set("key4", _fixture.Create<RandomObject>(), Expire.Never);
         
-        Thread.Sleep(2000);
+        Thread.Sleep(10);
         
         // Act
         _cache.Purge();
@@ -51,6 +52,25 @@ public abstract class PurgeTests : BaseTest
         // Act
         _cache.Purge();
 
+        // Assert
+        var result = _getCacheEntries();
+        result.Should().HaveCount(2);
+    }
+    
+    [Fact]
+    public async Task PurgeAsync_RemovesExpiredKeys()
+    {
+        // Arrange
+        await _cache.SetAsync("key1", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
+        await _cache.SetAsync("key2", _fixture.Create<RandomObject>(), Expire.InMilliseconds(1));
+        await _cache.SetAsync("key3", _fixture.Create<RandomObject>(), Expire.Never);
+        await _cache.SetAsync("key4", _fixture.Create<RandomObject>(), Expire.Never);
+
+        await Task.Delay(10);
+        
+        // Act
+        await _cache.PurgeAsync();
+        
         // Assert
         var result = _getCacheEntries();
         result.Should().HaveCount(2);

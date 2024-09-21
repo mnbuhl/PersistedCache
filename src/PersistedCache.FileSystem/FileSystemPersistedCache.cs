@@ -174,9 +174,27 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Query<T>(pattern));
+        Validators.ValidatePattern(pattern);
+        
+        var directory = new DirectoryInfo(_options.CacheFolderName);
+        
+        var results = new List<T>();
+        
+        foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
+        {
+            var cacheEntry = await ReadFromFileAsync<T?>(file.FullName, cancellationToken: cancellationToken);
+
+            if (cacheEntry == null || cacheEntry.IsExpired || cacheEntry.Value == null)
+            {
+                continue;
+            }
+            
+            results.Add(cacheEntry.Value);
+        }
+        
+        return results;
     }
 
     /// <inheritdoc />
@@ -296,6 +314,22 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         foreach (var file in directory.EnumerateFiles())
         {
             var cacheEntry = ReadFromFile<object>(file.FullName);
+
+            if (cacheEntry == null || cacheEntry.IsExpired)
+            {
+                file.Delete();
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task PurgeAsync(CancellationToken cancellationToken = default)
+    {
+        var directory = new DirectoryInfo(_options.CacheFolderName);
+        
+        foreach (var file in directory.EnumerateFiles())
+        {
+            var cacheEntry = await ReadFromFileAsync<object>(file.FullName, cancellationToken: cancellationToken);
 
             if (cacheEntry == null || cacheEntry.IsExpired)
             {

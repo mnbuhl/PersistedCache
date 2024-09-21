@@ -7,6 +7,7 @@ namespace PersistedCache.Sql
         private Timer? _timer;
         private readonly IPersistedCache<TDriver> _cache;
         private readonly SqlPersistedCacheOptions _options;
+        private CancellationToken _cancellationToken;
         
         public SqlPurgeCacheBackgroundJob(IPersistedCache<TDriver> cache, SqlPersistedCacheOptions options)
         {
@@ -16,11 +17,12 @@ namespace PersistedCache.Sql
         
         private void PurgeCache(object state)
         {
-            _cache.Purge();
+            _ = _cache.PurgeAsync(_cancellationToken);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _cancellationToken = cancellationToken;
             _timer = new Timer(PurgeCache, null, TimeSpan.Zero, _options.PurgeInterval);
             
             
