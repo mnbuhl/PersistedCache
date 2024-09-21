@@ -12,7 +12,7 @@
 
     <PropertyGroup>
         <Authors>Mikkel Buhl</Authors>
-        <Description>Simple persisted cache for .NET and file system</Description>
+        <Description>Simple persisted cache for .NET and MongoDB</Description>
         <PackageId>PersistedCache.MongoDb</PackageId>
         <PackageTags>cache storage mongodb documentdb</PackageTags>
         <PackageProjectUrl>https://github.com/mnbuhl/PersistedCache</PackageProjectUrl>
