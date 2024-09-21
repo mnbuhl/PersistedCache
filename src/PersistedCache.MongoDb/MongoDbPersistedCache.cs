@@ -294,6 +294,12 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         Collection.DeleteMany(x => x.Expiry < DateTimeOffset.UtcNow);
     }
 
+    /// <inheritdoc />
+    public async Task PurgeAsync(CancellationToken cancellationToken = default)
+    {
+        await Collection.DeleteManyAsync(x => x.Expiry < DateTimeOffset.UtcNow, cancellationToken);
+    }
+
     private void CreateIndexesIfNotExists()
     {
         var expiryIndex = new CreateIndexModel<PersistedCacheEntry>(

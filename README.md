@@ -192,6 +192,7 @@ The first cache registered will be the default cache, so you can use the `IPersi
 | `Flush(string pattern)`                                                                                                  | Flush values from the cache by pattern                                              |
 | `FlushAsync(string pattern, CancellationToken cancellationToken = default)`                                              | Flush values from the cache by pattern asynchronously                               |
 | `Purge()`                                                                                                                | Purge the cache of expired entries                                                  |
+| `PurgeAsync(CancellationToken cancellationToken = default)`                                                              | Purge the cache of expired entries asynchronously                                   |
 
 
 ### Want to contribute?

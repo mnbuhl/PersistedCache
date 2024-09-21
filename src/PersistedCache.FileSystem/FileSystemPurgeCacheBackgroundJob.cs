@@ -7,6 +7,7 @@ internal class FileSystemPurgeCacheBackgroundJob : IHostedService, IDisposable
     private Timer? _timer;
     private readonly IPersistedCache _cache;
     private readonly FileSystemPersistedCacheOptions _options;
+    private CancellationToken _cancellationToken;
         
     public FileSystemPurgeCacheBackgroundJob(IPersistedCache cache, FileSystemPersistedCacheOptions options)
     {
@@ -16,13 +17,13 @@ internal class FileSystemPurgeCacheBackgroundJob : IHostedService, IDisposable
     
     private void PurgeCache(object state)
     {
-        _cache.Purge();
+        _ = _cache.PurgeAsync(_cancellationToken);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        _cancellationToken = cancellationToken;
         _timer = new Timer(PurgeCache, null, TimeSpan.Zero, _options.PurgeInterval);
-            
             
         return Task.CompletedTask;
     }

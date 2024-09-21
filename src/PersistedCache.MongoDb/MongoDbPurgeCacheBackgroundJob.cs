@@ -7,6 +7,7 @@ internal class MongoDbPurgeCacheBackgroundJob : IHostedService, IDisposable
     private Timer? _timer;
     private readonly IPersistedCache _cache;
     private readonly MongoDbPersistedCacheOptions _options;
+    private CancellationToken _cancellationToken;
         
     public MongoDbPurgeCacheBackgroundJob(IPersistedCache cache, MongoDbPersistedCacheOptions options)
     {
@@ -14,9 +15,16 @@ internal class MongoDbPurgeCacheBackgroundJob : IHostedService, IDisposable
         _options = options;
     }
     
+    private void PurgeCache(object state)
+    {
+        _ = _cache.PurgeAsync(_cancellationToken);
+    }
+    
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(_ => _cache.Purge(), null, TimeSpan.Zero, _options.PurgeInterval);
+        _cancellationToken = cancellationToken;
+        _timer = new Timer(PurgeCache, null, TimeSpan.Zero, _options.PurgeInterval);
+        
         return Task.CompletedTask;
     }
 

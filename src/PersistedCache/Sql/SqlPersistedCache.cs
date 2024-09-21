@@ -534,7 +534,23 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
             );
         });
     }
-    
+
+    /// <inheritdoc />
+    public async Task PurgeAsync(CancellationToken cancellationToken = default)
+    {
+        await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            await connection.ExecuteAsync(
+                new CommandDefinition(
+                    commandText: _driver.PurgeScript,
+                    parameters: new { Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+        }, cancellationToken);
+    }
+
     private string FormatPattern(string pattern)
     {
         return pattern.Replace('*', _driver.MultipleCharWildcard)

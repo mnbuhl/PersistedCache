@@ -63,6 +63,21 @@ public abstract class QueryTests : BaseTest
         // Assert
         result.Should().HaveCount(3);
     }
+    
+    [Fact]
+    public async Task QueryAsync_WithValidPattern_ReturnsExpectedValues()
+    {
+        // Arrange
+        await _cache.SetAsync("key1", _fixture.Create<RandomObject>(), Expire.Never);
+        await _cache.SetAsync("key2", _fixture.Create<RandomObject>(), Expire.Never);
+        await _cache.SetAsync("key3-abadaba", _fixture.Create<RandomObject>(), Expire.Never);
+
+        // Act
+        var result = await _cache.QueryAsync<RandomObject>("key*");
+
+        // Assert
+        result.Should().HaveCount(3);
+    }
 
     [Fact]
     public async Task Query_WhenExpiredValues_ReturnsOnlyNonExpiredValues()
