@@ -78,6 +78,12 @@ public class MyService(IPersistedCache cache)
         var value = cache.GetOrSet("my-key", () => new RandomObject(), Expire.InMinutes(5));
     }
     
+    // Query values from the cache using a pattern
+    public IEnumerable<RandomObject> QuerySomething()
+    {
+        return cache.Query<RandomObject>("my-*");
+    }
+    
     // Check if a value exists in the cache
     public bool HasSomething()
     {
@@ -164,26 +170,28 @@ The first cache registered will be the default cache, so you can use the `IPersi
 
 ### Methods
 
-| Method                                                                                                                   | Description                                                                     |
-|--------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| `Set<T>(string key, T value, Expire expiry)`                                                                             | Set a value in the cache with an expiry time                                    |
-| `SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)`                         | Set a value in the cache with an expiry time asynchronously                     |
-| `Get<T>(string key)`                                                                                                     | Get a value from the cache                                                      |
-| `GetAsync<T>(string key, CancellationToken cancellationToken = default)`                                                 | Get a value from the cache asynchronously                                       |
-| `GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)`                                                           | Get a value from the cache or set it if it doesn't exist                        |
-| `GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry, CancellationToken cancellationToken = default)`       | Get a value from the cache or set it if it doesn't exist asynchronously         |
-| `GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default)` | Get a value from the cache or set it if it doesn't exist asynchronously         |
-| `Has(string key)`                                                                                                        | Check if a value exists in the cache                                            |
-| `HasAsync(string key, CancellationToken cancellationToken = default)`                                                    | Check if a value exists in the cache asynchronously                             |
-| `Forget(string key)`                                                                                                     | Forget a value from the cache                                                   |
-| `ForgetAsync(string key, CancellationToken cancellationToken = default)`                                                 | Forget a value from the cache asynchronously                                    |
-| `Pull<T>(string key)`                                                                                                    | Get a value from the cache and remove it                                        |
-| `PullAsync<T>(string key, CancellationToken cancellationToken = default)`                                                | Get a value from the cache and remove it asynchronously                         |
-| `Flush()`                                                                                                                | Flush all values from the cache                                                 |
-| `FlushAsync(CancellationToken cancellationToken = default)`                                                              | Flush all values from the cache asynchronously                                  |
-| `Flush(string pattern)`                                                                                                  | Flush values from the cache by pattern                                          |
-| `FlushAsync(string pattern, CancellationToken cancellationToken = default)`                                              | Flush values from the cache by pattern asynchronously                           |
-| `Purge()`                                                                                                                | Purge the cache of expired entries                                              |
+| Method                                                                                                                   | Description                                                                         |
+|--------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| `Set<T>(string key, T value, Expire expiry)`                                                                             | Set a value in the cache with an expiry time                                        |
+| `SetAsync<T>(string key, T value, Expire expiry, CancellationToken cancellationToken = default)`                         | Set a value in the cache with an expiry time asynchronously                         |
+| `Get<T>(string key)`                                                                                                     | Get a value from the cache                                                          |
+| `GetAsync<T>(string key, CancellationToken cancellationToken = default)`                                                 | Get a value from the cache asynchronously                                           |
+| `GetOrSet<T>(string key, Func<T> valueFactory, Expire expiry)`                                                           | Get a value from the cache or set it if it doesn't exist                            |
+| `GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry, CancellationToken cancellationToken = default)`       | Get a value from the cache or set it if it doesn't exist asynchronously             |
+| `GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default)` | Get a value from the cache or set it if it doesn't exist asynchronously             |
+| `Query<T>(string pattern)`                                                                                               | Query values from the cache by pattern (* and ? wildcards supported)                |
+| `QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)`                                           | Query values from the cache by pattern asynchronously (* and ? wildcards supported) |
+| `Has(string key)`                                                                                                        | Check if a value exists in the cache                                                |
+| `HasAsync(string key, CancellationToken cancellationToken = default)`                                                    | Check if a value exists in the cache asynchronously                                 |
+| `Forget(string key)`                                                                                                     | Forget a value from the cache                                                       |
+| `ForgetAsync(string key, CancellationToken cancellationToken = default)`                                                 | Forget a value from the cache asynchronously                                        |
+| `Pull<T>(string key)`                                                                                                    | Get a value from the cache and remove it                                            |
+| `PullAsync<T>(string key, CancellationToken cancellationToken = default)`                                                | Get a value from the cache and remove it asynchronously                             |
+| `Flush()`                                                                                                                | Flush all values from the cache                                                     |
+| `FlushAsync(CancellationToken cancellationToken = default)`                                                              | Flush all values from the cache asynchronously                                      |
+| `Flush(string pattern)`                                                                                                  | Flush values from the cache by pattern                                              |
+| `FlushAsync(string pattern, CancellationToken cancellationToken = default)`                                              | Flush values from the cache by pattern asynchronously                               |
+| `Purge()`                                                                                                                | Purge the cache of expired entries                                                  |
 
 
 ### Want to contribute?

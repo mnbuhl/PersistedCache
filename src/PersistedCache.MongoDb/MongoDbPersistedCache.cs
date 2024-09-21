@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using PersistedCache.Helpers;
 
 namespace PersistedCache;
 
@@ -150,11 +151,69 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return value;
     }
 
+    /// <inheritdoc />
+    public IEnumerable<T> Query<T>(string pattern)
+    {
+        Validators.ValidatePattern(pattern);
+
+        var builder = Builders<PersistedCacheEntry>.Filter;
+        var filter = builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        if (pattern != "*")
+        {
+            filter &= builder.Regex(entry => entry.Key, pattern);
+        }
+
+        var entries = Collection.Find(filter).ToList();
+
+        var deserialized = new List<T>();
+        
+        foreach (var entry in entries)
+        {
+            if (JsonHelper.TryDeserialize<T>(entry.Value, out var value, _options.JsonOptions))
+            {
+                deserialized.Add(value!);
+            }
+        }
+
+        return deserialized;
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidatePattern(pattern);
+
+        var builder = Builders<PersistedCacheEntry>.Filter;
+        var filter = builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        if (pattern != "*")
+        {
+            filter &= builder.Regex(entry => entry.Key, pattern);
+        }
+
+        var entries = await Collection.Find(filter).ToListAsync(cancellationToken);
+
+        var deserialized = new List<T>();
+        
+        foreach (var entry in entries)
+        {
+            if (JsonHelper.TryDeserialize<T?>(entry.Value, out var value, _options.JsonOptions))
+            {
+                deserialized.Add(value!);
+            }
+        }
+
+        return deserialized;
+    }
+
+    /// <inheritdoc />
     public bool Has(string key)
     {
         return Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).Any();
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         return await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).AnyAsync(cancellationToken);
@@ -217,14 +276,14 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportsRegex = true });
+        Validators.ValidatePattern(pattern);
         Collection.DeleteMany(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern));
     }
 
     /// <inheritdoc />
     public async Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportsRegex = true });
+        Validators.ValidatePattern(pattern);
         await Collection.DeleteManyAsync(Builders<PersistedCacheEntry>.Filter.Regex(entry => entry.Key, pattern),
             cancellationToken);
     }

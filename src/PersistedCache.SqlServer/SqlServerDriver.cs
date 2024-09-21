@@ -50,6 +50,15 @@ public class SqlServerDriver : ISqlCacheDriver
              VALUES (source.[key], source.[value], source.[expiry]);
          """;
 
+    public string QueryScript =>
+        /*lang=TSQL*/
+        $"""
+         SELECT [value]
+         FROM [{_options.Schema}].[{_options.TableName}]
+         WHERE [key] LIKE @Pattern ESCAPE '\'
+           AND [expiry] > @Expiry; 
+         """;
+
     public string HasScript =>
         /*lang=TSQL*/
         $"""
@@ -84,8 +93,9 @@ public class SqlServerDriver : ISqlCacheDriver
          WHERE [expiry] <= @Expiry;
          """;
     
-    public char Wildcard => '%';
-    
+    public char MultipleCharWildcard => '%';
+    public char SingleCharWildcard => '_';
+
     public DbConnection CreateConnection()
     {
         return new SqlConnection(_options.ConnectionString);

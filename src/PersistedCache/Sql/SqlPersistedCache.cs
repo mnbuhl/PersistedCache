@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Dapper;
+using PersistedCache.Helpers;
 
 namespace PersistedCache.Sql;
 
@@ -260,6 +261,72 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         return result!;
     }
 
+    /// <inheritdoc />
+    public IEnumerable<T> Query<T>(string pattern)
+    {
+        Validators.ValidatePattern(pattern);
+        pattern = FormatPattern(pattern);
+
+        var result = _connectionFactory.RunInTransaction((connection, transaction) =>
+        {
+            var values = connection.Query<string>(
+                new CommandDefinition(
+                    commandText: _driver.QueryScript,
+                    parameters: new { Pattern = pattern, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction
+                )
+            );
+
+            var deserialized = new List<T>();
+            
+            foreach (var value in values)
+            {
+                if (JsonHelper.TryDeserialize<T?>(value, out var result, _options.JsonOptions))
+                {
+                    deserialized.Add(result!);
+                }
+            }
+
+            return deserialized;
+        });
+
+        return result!;
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidatePattern(pattern);
+        pattern = FormatPattern(pattern);
+
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var values = await connection.QueryAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.QueryScript,
+                    parameters: new { Pattern = pattern, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+            
+            var deserialized = new List<T>();
+            
+            foreach (var value in values)
+            {
+                if (JsonHelper.TryDeserialize<T>(value, out var result, _options.JsonOptions))
+                {
+                    deserialized.Add(result!);
+                }
+            }
+
+            return deserialized;
+        }, cancellationToken);
+        
+        return result!;
+    }
+
+    /// <inheritdoc />
     public bool Has(string key)
     {
         Validators.ValidateKey(key);
@@ -277,6 +344,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         });
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         Validators.ValidateKey(key);
@@ -419,7 +487,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     public void Flush(string pattern)
     {
         Validators.ValidatePattern(pattern);
-        pattern = pattern.Replace('*', _driver.Wildcard);
+        pattern = FormatPattern(pattern);
 
         _connectionFactory.RunInTransaction((connection, transaction) =>
         {
@@ -436,8 +504,8 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     /// <inheritdoc />
     public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions());
-        pattern = pattern.Replace('*', _driver.Wildcard);
+        Validators.ValidatePattern(pattern);
+        pattern = FormatPattern(pattern);
 
         return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
@@ -465,5 +533,11 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
                 )
             );
         });
+    }
+    
+    private string FormatPattern(string pattern)
+    {
+        return pattern.Replace('*', _driver.MultipleCharWildcard)
+            .Replace('?', _driver.SingleCharWildcard);
     }
 }

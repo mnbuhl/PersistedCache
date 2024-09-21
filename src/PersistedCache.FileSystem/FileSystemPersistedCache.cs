@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using PersistedCache.Helpers;
 
 namespace PersistedCache;
 
@@ -152,6 +153,33 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    /// <inheritdoc />
+    public IEnumerable<T> Query<T>(string pattern)
+    {
+        Validators.ValidatePattern(pattern);
+        
+        var directory = new DirectoryInfo(_options.CacheFolderName);
+        
+        foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
+        {
+            var cacheEntry = ReadFromFile<T?>(file.FullName);
+
+            if (cacheEntry == null || cacheEntry.IsExpired || cacheEntry.Value == null)
+            {
+                continue;
+            }
+
+            yield return cacheEntry.Value;
+        }
+    }
+
+    /// <inheritdoc />
+    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Query<T>(pattern));
+    }
+
+    /// <inheritdoc />
     public bool Has(string key)
     {
         ValidateKey(key);
@@ -161,6 +189,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry is { IsExpired: false };
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         ValidateKey(key);
@@ -242,11 +271,11 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     /// <inheritdoc />
     public void Flush(string pattern)
     {
-        Validators.ValidatePattern(pattern, new PatternValidatorOptions { SupportedWildcards = ["*", "?"] });
+        Validators.ValidatePattern(pattern);
 
         var directory = new DirectoryInfo(_options.CacheFolderName);
 
-        foreach (var file in directory.EnumerateFiles(pattern))
+        foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
         {
             file.Delete();
         }

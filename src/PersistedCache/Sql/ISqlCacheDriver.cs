@@ -20,6 +20,11 @@ public interface ISqlCacheDriver : IDriver
     string SetScript { get; }
     
     /// <summary>
+    /// The script to query the storage
+    /// </summary>
+    string QueryScript { get; }
+    
+    /// <summary>
     /// The script to determine if a value exists in the storage
     /// </summary>
     string HasScript { get; }
@@ -45,9 +50,14 @@ public interface ISqlCacheDriver : IDriver
     string PurgeScript { get; }
         
     /// <summary>
-    /// The wildcard character for the storage
+    /// The multiple character wildcard character for the storage
     /// </summary>
-    char Wildcard { get; }
+    char MultipleCharWildcard { get; }
+    
+    /// <summary>
+    /// The single character wildcard for the storage
+    /// </summary>
+    char SingleCharWildcard { get; }
         
     /// <summary>
     /// Create a connection to the storage

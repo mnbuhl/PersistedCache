@@ -73,6 +73,31 @@
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry, CancellationToken cancellationToken = default);
         
         /// <summary>
+        /// Get values from the cache matching a pattern
+        /// </summary>
+        /// <param name="pattern">The pattern to match keys</param>
+        /// <remarks>
+        /// Pattern supports wildcards * for multiple characters and ? for a single character.
+        /// See driver specific documentation for additional supported wildcards
+        /// </remarks>
+        /// <typeparam name="T">The type of the value to get</typeparam>
+        /// <returns>The values from the cache</returns>
+        IEnumerable<T> Query<T>(string pattern);
+        
+        /// <summary>
+        /// Get values from the cache matching a pattern asynchronously
+        /// </summary>
+        /// <param name="pattern">The pattern to match keys</param>
+        /// <remarks>
+        /// Pattern supports wildcards * for multiple characters and ? for a single character.
+        /// See driver specific documentation for additional supported wildcards
+        /// </remarks>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <typeparam name="T">The type of the value to get</typeparam>
+        /// <returns>The values from the cache</returns>
+        Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default);
+        
+        /// <summary>
         /// Check if the cache has a value
         /// </summary>
         /// <param name="key">The key of the cached entry</param>
@@ -132,7 +157,11 @@
         /// Flush values from the cache by pattern
         /// </summary>
         /// <param name="pattern">The pattern to match keys</param>
-        /// <example>Flush("users.*)</example>
+        /// <remarks>
+        /// Pattern supports wildcards * for multiple characters and ? for a single character.
+        /// See driver specific documentation for additional supported wildcards
+        /// </remarks>
+        /// <example>Flush("?sers.*)</example>
         void Flush(string pattern);
         
         /// <summary>
@@ -140,7 +169,11 @@
         /// </summary>
         /// <param name="pattern">The pattern to match keys</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <example>await FlushAsync("users.*")</example>
+        /// <remarks>
+        /// Pattern supports wildcards * for multiple characters and ? for a single character.
+        /// See driver specific documentation for additional supported wildcards
+        /// </remarks>
+        /// <example>await FlushAsync("?sers.*")</example>
         Task FlushAsync(string pattern, CancellationToken cancellationToken = default);
         
         /// <summary>

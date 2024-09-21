@@ -1,11 +1,8 @@
-﻿using System.Text.RegularExpressions;
-
-namespace PersistedCache;
+﻿namespace PersistedCache.Helpers;
 
 internal class PatternValidatorOptions
 {
-    public string[] SupportedWildcards { get; init; } = ["*"];
-    public bool SupportsRegex { get; init; }
+    public char[] SupportedWildcards { get; init; } = ['*', '?'];
 }
 
 internal class KeyValidatorOptions
@@ -30,19 +27,12 @@ internal static class Validators
         
         options ??= new PatternValidatorOptions();
         
-        if (options.SupportsRegex)
+        if (!options.SupportedWildcards.Any(pattern.Contains))
         {
-             _ = new Regex(pattern);
-        }
-        else
-        {
-            if (!options.SupportedWildcards.Any(pattern.Contains))
-            {
-                throw new ArgumentException(
-                    "Pattern must start or end with a wildcard character. Supported wildcard characters: " +
-                    options.SupportedWildcards
-                );
-            }
+            throw new ArgumentException(
+                "Pattern contain at least one wildcard character. Supported wildcard characters: " +
+                options.SupportedWildcards
+            );
         }
     }
 
