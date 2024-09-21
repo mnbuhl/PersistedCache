@@ -5,6 +5,7 @@
         <ImplicitUsings>false</ImplicitUsings>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

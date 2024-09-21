@@ -9,13 +9,13 @@ namespace PersistedCache.Tests.Fixtures;
 [CollectionDefinition(nameof(PostgreSqlFixture))]
 public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlDriver>, ICollectionFixture<PostgreSqlFixture>
 {
-    public PostgreSqlFixture()
-    {
-        Container = new PostgreSqlBuilder()
+    public PostgreSqlFixture() : base(
+        new PostgreSqlBuilder()
             .WithDatabase("PersistedCache")
             .WithUsername("postgres")
             .WithPassword("postgres")
-            .Build();
+            .Build())
+    {
     }
         
     public override IEnumerable<CacheEntry> GetCacheEntries()
@@ -24,7 +24,7 @@ public class PostgreSqlFixture : BaseDatabaseFixture<PostgreSqlDriver>, ICollect
         return connection.Query<CacheEntry>($"SELECT * FROM {TestConstants.TableName}");
     }
 
-    public override CacheEntry GetCacheEntry(string key)
+    public override CacheEntry? GetCacheEntry(string key)
     {
         using var connection = Driver.CreateConnection();
         return connection.QueryFirstOrDefault<CacheEntry>($@"SELECT * FROM ""{TestConstants.TableName}"" WHERE ""key"" = @Key", new { Key = key });

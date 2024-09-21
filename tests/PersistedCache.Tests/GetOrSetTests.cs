@@ -41,7 +41,7 @@ public abstract class GetOrSetTests : BaseTest
         var oldValue = _fixture.Create<RandomObject>();
         Arrange(key, oldValue);
         
-        var newValue = _fixture.Create<RandomObject>();;
+        var newValue = _fixture.Create<RandomObject>();
 
         // Act
         var result = _cache.GetOrSet(key, () => newValue, Expire.InMinutes(5));

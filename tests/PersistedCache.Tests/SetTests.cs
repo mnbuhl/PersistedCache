@@ -105,11 +105,11 @@ public abstract class SetTests : BaseTest
     public void Set_WithInvalidKey_ThrowsArgumentException()
     {
         // Arrange
-        const string key = null;
+        const string key = null!;
         const string value = "value";
 
         // Act
-        var act = new Action(() => _cache.Set(key, value, Expire.InMinutes(5)));
+        var act = new Action(() => _cache.Set(key!, value, Expire.InMinutes(5)));
 
         // Assert
         act.Should().Throw<ArgumentException>();

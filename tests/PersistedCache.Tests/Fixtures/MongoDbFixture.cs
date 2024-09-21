@@ -18,9 +18,9 @@ public class MongoDbFixture : BaseFixture, IAsyncLifetime, ICollectionFixture<Mo
         .WithPassword("secret")
         .Build();
     
-    private IMongoCollection<PersistedCacheEntry> _collection;
+    private IMongoCollection<PersistedCacheEntry> _collection = null!;
     
-    public override IPersistedCache PersistedCache { get; protected set; }
+    public override IPersistedCache PersistedCache { get; protected set; } = null!;
     public override IEnumerable<CacheEntry> GetCacheEntries()
     {
         var entries = _collection.Find(FilterDefinition<PersistedCacheEntry>.Empty).ToList();
@@ -33,7 +33,7 @@ public class MongoDbFixture : BaseFixture, IAsyncLifetime, ICollectionFixture<Mo
         });
     }
 
-    public override CacheEntry GetCacheEntry(string key)
+    public override CacheEntry? GetCacheEntry(string key)
     {
         var entry = _collection.Find(entry => entry.Key == key).FirstOrDefault();
         

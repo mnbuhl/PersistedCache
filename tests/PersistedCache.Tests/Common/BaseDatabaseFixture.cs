@@ -10,24 +10,29 @@ namespace PersistedCache.Tests.Common;
 public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
     where TDriver : class, ISqlCacheDriver, IDriver
 {
-    public override IPersistedCache PersistedCache { get; protected set; }
+    public override IPersistedCache PersistedCache { get; protected set; } = null!;
 
-    protected DockerContainer Container;
-    protected ISqlCacheDriver Driver => _driver;
-    protected string ConnectionString;
+    private readonly DockerContainer? _container;
+    protected ISqlCacheDriver Driver => _driver!;
+    protected string ConnectionString = string.Empty;
 
-    private ISqlCacheDriver _driver;
+    private ISqlCacheDriver? _driver;
+
+    protected BaseDatabaseFixture(DockerContainer? container)
+    {
+        _container = container;
+    }
 
     public async Task InitializeAsync()
     {
-        if (Container != null)
+        if (_container != null)
         {
-            await Container.StartAsync();
-            ConnectionString = (Container as IDatabaseContainer).GetConnectionString();
+            await _container.StartAsync();
+            ConnectionString = (_container as IDatabaseContainer)!.GetConnectionString();
         }
             
         var options = GetOptions(ConnectionString);
-        var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options);
+        var driver = (TDriver)Activator.CreateInstance(typeof(TDriver), options)!;
 
         SetupStorage(driver);
 
@@ -37,9 +42,9 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        if (Container != null)
+        if (_container != null)
         {
-            await Container.DisposeAsync();
+            await _container.DisposeAsync();
         }
     }
 

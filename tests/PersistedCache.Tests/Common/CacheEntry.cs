@@ -2,7 +2,7 @@
 
 public class CacheEntry
 {
-    public string Key { get; set; }
-    public object Value { get; set; }
-    public string Expiry { get; set; }
+    public string Key { get; set; } = string.Empty;
+    public object Value { get; set; } = string.Empty;
+    public string Expiry { get; set; } = string.Empty;
 }

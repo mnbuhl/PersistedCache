@@ -10,13 +10,13 @@ namespace PersistedCache.Tests.Fixtures;
 [CollectionDefinition(nameof(MySqlFixture))]
 public class MySqlFixture : BaseDatabaseFixture<MySqlDriver>, ICollectionFixture<MySqlFixture>
 {
-    public MySqlFixture()
-    {
-        Container = new MySqlBuilder()
+    public MySqlFixture() : base(
+        new MySqlBuilder()
             .WithDatabase("PersistedCache")
             .WithUsername("root")
             .WithPassword("root")
-            .Build();
+            .Build())
+    {
     }
         
     public override IEnumerable<CacheEntry> GetCacheEntries()
@@ -25,7 +25,7 @@ public class MySqlFixture : BaseDatabaseFixture<MySqlDriver>, ICollectionFixture
         return connection.Query<CacheEntry>($"SELECT * FROM `{TestConstants.TableName}`");
     }
 
-    public override CacheEntry GetCacheEntry(string key)
+    public override CacheEntry? GetCacheEntry(string key)
     {
         using var connection = Driver.CreateConnection();
         return connection.QueryFirstOrDefault<CacheEntry>($"SELECT * FROM `{TestConstants.TableName}` WHERE `key` = @Key", new { Key = key });

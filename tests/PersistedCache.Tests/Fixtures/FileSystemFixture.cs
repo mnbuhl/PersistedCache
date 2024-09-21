@@ -26,11 +26,11 @@ public class FileSystemFixture : BaseFixture, ICollectionFixture<FileSystemFixtu
         foreach (var file in dirInfo.GetFiles())
         {
             var fileText = File.ReadAllText(file.FullName);
-            yield return JsonSerializer.Deserialize<CacheEntry>(fileText);
+            yield return JsonSerializer.Deserialize<CacheEntry>(fileText)!;
         }
     }
 
-    public override CacheEntry GetCacheEntry(string key)
+    public override CacheEntry? GetCacheEntry(string key)
     {
         var filePath = Path.Combine(_path, key);
             

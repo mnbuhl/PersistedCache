@@ -8,5 +8,5 @@ public abstract class BaseFixture
         
     public abstract IEnumerable<CacheEntry> GetCacheEntries();
 
-    public abstract CacheEntry GetCacheEntry(string key);
+    public abstract CacheEntry? GetCacheEntry(string key);
 }
