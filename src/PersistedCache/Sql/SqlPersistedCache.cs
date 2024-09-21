@@ -260,16 +260,62 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         return result!;
     }
 
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
-        throw new NotImplementedException();
+        Validators.ValidatePattern(pattern);
+        pattern = FormatPattern(pattern);
+
+        var result = _connectionFactory.RunInTransaction((connection, transaction) =>
+        {
+            var values = connection.Query<string>(
+                new CommandDefinition(
+                    commandText: _driver.QueryScript,
+                    parameters: new { Pattern = pattern },
+                    transaction: transaction
+                )
+            );
+
+            return values.Select(value => JsonSerializer.Deserialize<T>(value, _options.JsonOptions));
+        });
+
+        if (result == default)
+        {
+            return [];
+        }
+
+        return result!;
     }
 
-    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Validators.ValidatePattern(pattern);
+        pattern = FormatPattern(pattern);
+
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var values = await connection.QueryAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.QueryScript,
+                    parameters: new { Pattern = pattern },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return values.Select(value => JsonSerializer.Deserialize<T>(value, _options.JsonOptions));
+        }, cancellationToken);
+        
+        if (result == default)
+        {
+            return [];
+        }
+        
+        return result!;
     }
 
+    /// <inheritdoc />
     public bool Has(string key)
     {
         Validators.ValidateKey(key);
@@ -287,6 +333,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         });
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         Validators.ValidateKey(key);
@@ -429,8 +476,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     public void Flush(string pattern)
     {
         Validators.ValidatePattern(pattern);
-        pattern = pattern.Replace('*', _driver.MultipleCharWildcard)
-            .Replace('?', _driver.SingleCharWildcard);
+        pattern = FormatPattern(pattern);
 
         _connectionFactory.RunInTransaction((connection, transaction) =>
         {
@@ -448,8 +494,7 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     public Task FlushAsync(string pattern, CancellationToken cancellationToken = default)
     {
         Validators.ValidatePattern(pattern);
-        pattern = pattern.Replace('*', _driver.MultipleCharWildcard)
-            .Replace('?', _driver.SingleCharWildcard);
+        pattern = FormatPattern(pattern);
 
         return _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
         {
@@ -477,5 +522,11 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
                 )
             );
         });
+    }
+    
+    private string FormatPattern(string pattern)
+    {
+        return pattern.Replace('*', _driver.MultipleCharWildcard)
+            .Replace('?', _driver.SingleCharWildcard);
     }
 }

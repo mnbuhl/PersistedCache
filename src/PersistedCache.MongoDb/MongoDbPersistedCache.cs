@@ -150,21 +150,43 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return value;
     }
 
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
-        throw new NotImplementedException();
+        Validators.ValidatePattern(pattern);
+
+        var builder = Builders<PersistedCacheEntry>.Filter;
+        var filter = builder.Regex(entry => entry.Key, pattern) &
+                     builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        var entries = Collection.Find(filter).ToList();
+
+        return entries.Where(entry => !string.IsNullOrEmpty(entry.Value)).Select(entry =>
+            JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!);
     }
 
-    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Validators.ValidatePattern(pattern);
+
+        var builder = Builders<PersistedCacheEntry>.Filter;
+        var filter = builder.Regex(entry => entry.Key, pattern) &
+                     builder.Gt(entry => entry.Expiry, DateTimeOffset.UtcNow);
+
+        var entries = await Collection.Find(filter).ToListAsync(cancellationToken);
+
+        return entries.Where(entry => !string.IsNullOrEmpty(entry.Value)).Select(entry =>
+            JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!);
     }
 
+    /// <inheritdoc />
     public bool Has(string key)
     {
         return Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).Any();
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         return await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).AnyAsync(cancellationToken);

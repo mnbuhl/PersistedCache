@@ -152,16 +152,33 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
-        throw new NotImplementedException();
+        Validators.ValidatePattern(pattern);
+        
+        var directory = new DirectoryInfo(_options.CacheFolderName);
+        
+        foreach (var file in directory.EnumerateFiles($"{pattern}.json"))
+        {
+            var cacheEntry = ReadFromFile<T>(file.FullName);
+
+            if (cacheEntry == null || cacheEntry.IsExpired)
+            {
+                continue;
+            }
+
+            yield return cacheEntry.Value;
+        }
     }
 
+    /// <inheritdoc />
     public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Query<T>(pattern));
     }
 
+    /// <inheritdoc />
     public bool Has(string key)
     {
         ValidateKey(key);
@@ -171,6 +188,7 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return cacheEntry is { IsExpired: false };
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasAsync(string key, CancellationToken cancellationToken = default)
     {
         ValidateKey(key);
