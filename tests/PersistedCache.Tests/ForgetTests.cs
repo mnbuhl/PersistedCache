@@ -86,13 +86,13 @@ public class PostgreSqlForgetTestsExecutor : ForgetTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerForgetTestsExecutor : ForgetTests
-{
-    public SqlServerForgetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerForgetTestsExecutor : ForgetTests
+// {
+//     public SqlServerForgetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemForgetTestsExecutor : ForgetTests

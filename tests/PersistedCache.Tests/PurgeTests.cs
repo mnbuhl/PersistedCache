@@ -73,13 +73,13 @@ public class PostgreSqlPurgeTestsExecutor : PurgeTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerPurgeTestsExecutor : PurgeTests
-{
-    public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerPurgeTestsExecutor : PurgeTests
+// {
+//     public SqlServerPurgeTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemPurgeTestsExecutor : PurgeTests

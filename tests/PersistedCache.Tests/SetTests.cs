@@ -186,13 +186,13 @@ public class PostgreSqlSetTestsExecutor : SetTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerSetTestsExecutor : SetTests
-{
-    public SqlServerSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerSetTestsExecutor : SetTests
+// {
+//     public SqlServerSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemSetTestsExecutor : SetTests

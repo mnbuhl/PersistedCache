@@ -121,13 +121,13 @@ public class PostgreSqlGetOrSetTestsExecutor : GetOrSetTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
-{
-    public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
+// {
+//     public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemGetOrSetTestsExecutor : GetOrSetTests

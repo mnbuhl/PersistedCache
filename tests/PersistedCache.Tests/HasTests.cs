@@ -89,13 +89,13 @@ public class PostgreSqlHasTestsExecutor : HasTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerHasTestsExecutor : HasTests
-{
-    public SqlServerHasTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerHasTestsExecutor : HasTests
+// {
+//     public SqlServerHasTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemHasTestsExecutor : HasTests

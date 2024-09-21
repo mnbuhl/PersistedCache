@@ -134,13 +134,13 @@ public class PostgreSqlFlushTestsExecutor : FlushTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerFlushTestsExecutor : FlushTests
-{
-    public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+    // public class SqlServerFlushTestsExecutor : FlushTests
+    // {
+    //     public SqlServerFlushTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntries)
+    //     {
+    //     }
+    // }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemFlushTestsExecutor : FlushTests

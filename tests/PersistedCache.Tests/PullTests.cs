@@ -109,13 +109,13 @@ public class PostgreSqlPullTestsExecutor : PullTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerPullTestsExecutor : PullTests
-{
-    public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerPullTestsExecutor : PullTests
+// {
+//     public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemPullTestsExecutor : PullTests

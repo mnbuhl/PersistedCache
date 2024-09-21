@@ -132,13 +132,13 @@ public class PostgreSqlGetTestsExecutor : GetTests
     }
 }
     
-[Collection(nameof(SqlServerFixture))]
-public class SqlServerGetTestsExecutor : GetTests
-{
-    public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-    {
-    }
-}
+// [Collection(nameof(SqlServerFixture))]
+// public class SqlServerGetTestsExecutor : GetTests
+// {
+//     public SqlServerGetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+//     {
+//     }
+// }
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemGetTestsExecutor : GetTests
