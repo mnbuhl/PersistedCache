@@ -150,6 +150,16 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return value;
     }
 
+    public IEnumerable<T> Query<T>(string pattern)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Has(string key)
     {
         return Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).Any();

@@ -42,6 +42,15 @@ public class SqliteDriver : ISqlCacheDriver
          VALUES (@Key, @Value, @Expiry);
          """;
 
+    public string QueryScript =>
+        /*lang=SQLite*/
+        $"""
+         SELECT "value"
+         FROM "{_options.TableName}"
+         WHERE "key" LIKE @Pattern ESCAPE '\'
+           AND "expiry" > @Expiry;
+         """;
+
     public string HasScript =>
         /*lang=SQLite*/
         $"""

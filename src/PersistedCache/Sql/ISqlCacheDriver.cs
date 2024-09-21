@@ -20,6 +20,11 @@ public interface ISqlCacheDriver : IDriver
     string SetScript { get; }
     
     /// <summary>
+    /// The script to query the storage
+    /// </summary>
+    string QueryScript { get; }
+    
+    /// <summary>
     /// The script to determine if a value exists in the storage
     /// </summary>
     string HasScript { get; }

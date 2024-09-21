@@ -44,6 +44,15 @@ namespace PersistedCache
             ON DUPLICATE KEY UPDATE `value` = @value, `expiry` = @expiry;
             """;
 
+        public string QueryScript =>
+            /*lang=MySQL*/
+            $"""
+            SELECT `value`
+            FROM `{_options.TableName}`
+            WHERE `key` LIKE @Pattern
+              AND `expiry` > @Expiry;
+            """;
+
         public string HasScript =>
             /*lang=MySQL*/
             $"""

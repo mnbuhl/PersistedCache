@@ -152,6 +152,16 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    public IEnumerable<T> Query<T>(string pattern)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<T>> QueryAsync<T>(string pattern, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Has(string key)
     {
         ValidateKey(key);
