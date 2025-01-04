@@ -112,13 +112,13 @@ public class PostgreSqlQueryTestsExecutor : QueryTests
     }
 }
 
-// [Collection(nameof(SqlServerFixture))]
-// public class SqlServerQueryTestsExecutor : QueryTests
-// {
-//     public SqlServerQueryTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-//     {
-//     }
-// }
+[Collection(nameof(SqlServerFixture))]
+public class SqlServerQueryTestsExecutor : QueryTests
+{
+    public SqlServerQueryTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
 
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemQueryTestsExecutor : QueryTests
