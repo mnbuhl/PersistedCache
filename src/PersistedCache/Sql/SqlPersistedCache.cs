@@ -262,6 +262,53 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> valueFactory, Expire expiry, 
+        CancellationToken cancellationToken = default)
+    {
+        Validators.ValidateKey(key);
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var value = await connection.QueryFirstOrDefaultAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var result = await valueFactory(cancellationToken);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = expiry
+            };
+
+            await connection.ExecuteAsync(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return result;
+        }, cancellationToken);
+
+        return result!;
+    }
+
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
         Validators.ValidatePattern(pattern);

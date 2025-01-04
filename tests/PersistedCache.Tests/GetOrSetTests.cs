@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -94,6 +95,24 @@ public abstract class GetOrSetTests : BaseTest
             await Task.Delay(100);
             return value;
         }, Expire.InMinutes(5));
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+    }
+    
+    [Fact]
+    public async Task GetOrSetAsync_WithAsyncValueFactoryAndCancellationToken_ReturnsValue()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        var result = await _cache.GetOrSetAsync(key, async ct =>
+        {
+            await Task.Delay(100, ct);
+            return value;
+        }, Expire.InMinutes(5), CancellationToken.None);
 
         // Assert
         result.Should().BeEquivalentTo(value);
