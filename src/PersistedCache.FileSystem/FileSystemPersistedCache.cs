@@ -154,6 +154,26 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> valueFactory, Expire expiry, 
+        CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var value = await GetAsync<T>(key, cancellationToken);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        value = await valueFactory(cancellationToken);
+
+        Validators.ValidateValue(value);
+        await SetAsync(key, value, expiry, cancellationToken);
+
+        return value;
+    }
+
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
         Validators.ValidatePattern(pattern);

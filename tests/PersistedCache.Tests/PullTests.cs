@@ -96,7 +96,7 @@ public abstract class PullTests : BaseTest
 [Collection(nameof(MySqlFixture))]
 public class MySqlPullTestsExecutor : PullTests
 {
-    public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    public MySqlPullTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -104,23 +104,23 @@ public class MySqlPullTestsExecutor : PullTests
 [Collection(nameof(PostgreSqlFixture))]
 public class PostgreSqlPullTestsExecutor : PullTests
 {
-    public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    public PostgreSqlPullTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
     
-// [Collection(nameof(SqlServerFixture))]
-// public class SqlServerPullTestsExecutor : PullTests
-// {
-//     public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
-//     {
-//     }
-// }
+[Collection(nameof(SqlServerFixture))]
+public class SqlServerPullTestsExecutor : PullTests
+{
+    public SqlServerPullTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
+    {
+    }
+}
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemPullTestsExecutor : PullTests
 {
-    public FileSystemPullTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    public FileSystemPullTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -128,7 +128,7 @@ public class FileSystemPullTestsExecutor : PullTests
 [Collection(nameof(SqliteFixture))]
 public class SqlitePullTestsExecutor : PullTests
 {
-    public SqlitePullTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    public SqlitePullTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -136,7 +136,7 @@ public class SqlitePullTestsExecutor : PullTests
 [Collection(nameof(MongoDbFixture))]
 public class MongoDbPullTestsExecutor : PullTests
 {
-    public MongoDbPullTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry)
+    public MongoDbPullTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }

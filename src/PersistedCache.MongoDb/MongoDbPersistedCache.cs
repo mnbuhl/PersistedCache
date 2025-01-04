@@ -152,6 +152,25 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> valueFactory, Expire expiry, 
+        CancellationToken cancellationToken = default)
+    {
+        var entry = await Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (entry != null)
+        {
+            return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!;
+        }
+
+        var value = await valueFactory(cancellationToken);
+        Validators.ValidateValue(value);
+
+        await SetAsync(key, value, expiry, cancellationToken);
+        return value;
+    }
+
+    /// <inheritdoc />
     public IEnumerable<T> Query<T>(string pattern)
     {
         Validators.ValidatePattern(pattern);

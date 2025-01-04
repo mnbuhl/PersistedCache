@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -98,6 +99,24 @@ public abstract class GetOrSetTests : BaseTest
         // Assert
         result.Should().BeEquivalentTo(value);
     }
+    
+    [Fact]
+    public async Task GetOrSetAsync_WithAsyncValueFactoryAndCancellationToken_ReturnsValue()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        var result = await _cache.GetOrSetAsync(key, async ct =>
+        {
+            await Task.Delay(100, ct);
+            return value;
+        }, Expire.InMinutes(5), CancellationToken.None);
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+    }
 
     private void Arrange<T>(string key, T value, Expire? expire = null)
     {
@@ -121,13 +140,13 @@ public class PostgreSqlGetOrSetTestsExecutor : GetOrSetTests
     }
 }
     
-// [Collection(nameof(SqlServerFixture))]
-// public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
-// {
-//     public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
-//     {
-//     }
-// }
+[Collection(nameof(SqlServerFixture))]
+public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
+{
+    public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+    {
+    }
+}
     
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemGetOrSetTestsExecutor : GetOrSetTests
