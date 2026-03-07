@@ -118,6 +118,94 @@ public abstract class GetOrSetTests : BaseTest
         result.Should().BeEquivalentTo(value);
     }
 
+    [Fact]
+    public void GetOrSet_WithOptionsAndExpiryOverwritten_StoresValueWithCustomExpiry()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        var result = _cache.GetOrSet(key, options =>
+        {
+            options.Expiry = Expire.InMinutes(10);
+            return value;
+        });
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+        
+        // Verify value is stored
+        var cachedValue = _cache.Get<RandomObject>(key);
+        cachedValue.Should().BeEquivalentTo(value);
+    }
+
+    [Fact]
+    public void GetOrSet_WithOptionsAndExpiryNotOverwritten_StoresValueWithDefaultExpiry()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+
+        // Act
+        var result = _cache.GetOrSet(key, _ => value);
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+        
+        // Verify value is stored
+        var cachedValue = _cache.Get<RandomObject>(key);
+        cachedValue.Should().BeEquivalentTo(value);
+    }
+
+    [Fact]
+    public void GetOrSet_WithOptionsWhenValueExists_ReturnsExistingValueWithoutCallingFactory()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var oldValue = _fixture.Create<RandomObject>();
+        Arrange(key, oldValue);
+        
+        var newValue = _fixture.Create<RandomObject>();
+        var factoryCalled = false;
+
+        // Act
+        var result = _cache.GetOrSet(key, options =>
+        {
+            factoryCalled = true;
+            options.Expiry = Expire.InMinutes(10);
+            return newValue;
+        });
+
+        // Assert
+        result.Should().BeEquivalentTo(oldValue);
+        factoryCalled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void GetOrSet_WithOptionsWhenKeyDoesNotExist_CallsFactoryAndStoresValue()
+    {
+        // Arrange
+        string key = Guid.NewGuid().ToString();
+        var value = _fixture.Create<RandomObject>();
+        var factoryCalled = false;
+
+        // Act
+        var result = _cache.GetOrSet(key, options =>
+        {
+            factoryCalled = true;
+            options.Expiry = Expire.InHours(2);
+            return value;
+        });
+
+        // Assert
+        result.Should().BeEquivalentTo(value);
+        factoryCalled.Should().BeTrue();
+        
+        var cachedValue = _cache.Get<RandomObject>(key);
+        cachedValue.Should().BeEquivalentTo(value);
+    }
+
     private void Arrange<T>(string key, T value, Expire? expire = null)
     {
         _cache.Set(key, value, expire ?? Expire.InMinutes(5));

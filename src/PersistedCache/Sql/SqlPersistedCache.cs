@@ -167,6 +167,49 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         })!;
     }
 
+    public T GetOrSet<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory)
+    {
+        Validators.ValidateKey(key);
+        return _connectionFactory.RunInTransaction((connection, transaction) =>
+        {
+            var value = connection.QueryFirstOrDefault<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var options = new PersistedCacheEntryOptions();
+
+            var result = valueFactory(options);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = options.Expiry
+            };
+
+            connection.Execute(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction
+                )
+            );
+
+            return result;
+        })!;
+    }
+
     /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)

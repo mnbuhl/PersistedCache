@@ -113,6 +113,25 @@ internal class MongoDbPersistedCache : IPersistedCache<MongoDbDriver>
         return value;
     }
 
+    public T GetOrSet<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory)
+    {
+        Validators.ValidateKey(key);
+
+        var entry = Collection.Find(x => x.Key == key && x.Expiry > DateTimeOffset.UtcNow).FirstOrDefault();
+
+        if (entry != null)
+        {
+            return JsonSerializer.Deserialize<T>(entry.Value, _options.JsonOptions)!;
+        }
+
+        var options = new PersistedCacheEntryOptions();
+        var value = valueFactory(options);
+        Validators.ValidateValue(value);
+
+        Set(key, value, options.Expiry);
+        return value;
+    }
+
     /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)

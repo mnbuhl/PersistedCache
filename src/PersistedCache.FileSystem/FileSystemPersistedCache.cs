@@ -113,6 +113,26 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    public T GetOrSet<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory)
+    {
+        ValidateKey(key);
+        var value = Get<T>(key);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        var options = new PersistedCacheEntryOptions();
+
+        value = valueFactory(options);
+
+        Validators.ValidateValue(value);
+        Set(key, value, options.Expiry);
+
+        return value;
+    }
+
     /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
