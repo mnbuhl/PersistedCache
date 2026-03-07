@@ -3,12 +3,41 @@
 Persisted Cache is a simple caching library that allows you to turn any stateful resource into a key-value store. 
 It is designed to be simple and easy to use, meanwhile it spares you the hassle and costs of managing a separate cache server.
 
-### Why would you use this?
+### Why should you use PersistedCache?
 
-* Your team doesn't want to manage a separate cache server.
-* You need a distributed cache that can be shared across multiple instances of your application.
-* You need a cache that can be persisted to disk.
-* You need a cache that can be shared across multiple applications.
+Caching improves performance, but running and maintaining a dedicated cache infrastructure (like Redis) is often unnecessary for many applications. PersistedCache provides a simple alternative: a distributed cache backed by resources you already have.
+
+Use PersistedCache when:
+
+1. **You don't want to run a dedicated cache server** — Many systems introduce Redis purely for caching. PersistedCache allows you to reuse existing infrastructure like MySQL, PostgreSQL, SQLite, or the filesystem instead.
+
+2. **Your application runs on multiple instances** — The cache can be shared across application instances, allowing horizontally scaled services to benefit from the same cached values.
+
+3. **You want cache data to survive restarts** — Unlike in-memory caches, persisted entries remain available across application restarts or deployments.
+
+4. **Your team prefers operational simplicity** — No additional infrastructure, monitoring, or scaling considerations. Just install a package and use the backing store you already operate.
+
+5. **You need caching close to your data** — PersistedCache works well when your application already depends on a database and you want caching without introducing another system.
+
+#### In short, PersistedCache is ideal when you want:
+
+⚡ Faster responses through caching
+
+🧩 No additional infrastructure like Redis
+
+🔁 Shared cache across multiple instances
+
+💾 Cache persistence across restarts
+
+🛠 Pluggable storage backends (SQL, filesystem, etc.)
+
+### When NOT to use PersistedCache
+
+PersistedCache may not be the right solution if:
+
+- **You need extremely low latency caching (<1ms)** — Database-backed caching involves network I/O and will be slower than in-memory solutions like Redis or Memcached.
+- **You already operate Redis or Memcached** — If you have dedicated cache infrastructure already running, there's no reason to introduce another layer.
+- **You expect very high cache throughput** — Heavy cache traffic benefits from specialized cache systems designed for performance at scale.
 
 ### How to use it?
 
