@@ -153,6 +153,26 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
         return value;
     }
 
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory, CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var value = await GetAsync<T>(key, cancellationToken);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        var options = new PersistedCacheEntryOptions();
+
+        value = valueFactory(options);
+
+        Validators.ValidateValue(value);
+        await SetAsync(key, value, options.Expiry, cancellationToken);
+
+        return value;
+    }
+
     /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
@@ -174,6 +194,27 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, Task<T>> valueFactory, CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var value = await GetAsync<T>(key, cancellationToken);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        var options = new PersistedCacheEntryOptions();
+
+        value = await valueFactory(options);
+
+        Validators.ValidateValue(value);
+        await SetAsync(key, value, options.Expiry, cancellationToken);
+
+        return value;
+    }
+
+    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> valueFactory, Expire expiry, 
         CancellationToken cancellationToken = default)
     {
@@ -189,6 +230,27 @@ internal class FileSystemPersistedCache : IPersistedCache<FileSystemDriver>
 
         Validators.ValidateValue(value);
         await SetAsync(key, value, expiry, cancellationToken);
+
+        return value;
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, CancellationToken, Task<T>> valueFactory, CancellationToken cancellationToken = default)
+    {
+        ValidateKey(key);
+        var value = await GetAsync<T>(key, cancellationToken);
+
+        if (value != null)
+        {
+            return value;
+        }
+
+        var options = new PersistedCacheEntryOptions();
+
+        value = await valueFactory(options, cancellationToken);
+
+        Validators.ValidateValue(value);
+        await SetAsync(key, value, options.Expiry, cancellationToken);
 
         return value;
     }
