@@ -36,4 +36,13 @@ jobs:
         run: dotnet build --no-restore
         
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --logger "trx" --results-directory ./TestResults
+        
+      - name: Test results report
+        uses: dorny/test-reporter@v2
+        if: ${{ !cancelled() }}
+        with:
+          name: Test Results
+          path: ./TestResults/**/*.trx
+          reporter: dotnet-trx
+        

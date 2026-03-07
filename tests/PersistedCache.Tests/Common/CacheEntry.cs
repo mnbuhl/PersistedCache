@@ -15,6 +15,7 @@ public class CacheEntry
                 "MM/dd/yyyy HH:mm:ss zzz",
                 "yyyy-MM-dd HH:mm:ss",
                 "yyyy-MM-dd HH:mm:ss.fffffffzzz",
+                "yyyy-MM-ddTHH:mm:ss.FFFFFFFzzz",
                 "dd/MM/yyyy HH.mm.ss",
                 "dd/MM/yyyy HH.mm.ss zzz",
                 "yyyy-MM-ddTHH:mm:ssK",
