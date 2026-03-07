@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using Dapper;
 using PersistedCache.Tests.Common;
 using Xunit;

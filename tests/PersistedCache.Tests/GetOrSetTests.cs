@@ -14,10 +14,12 @@ public abstract class GetOrSetTests : BaseTest
 {
     private readonly IPersistedCache _cache;    
     private readonly Fixture _fixture = new Fixture();
+    private readonly Func<string, CacheEntry> _getCacheEntry;
     
-    protected GetOrSetTests(IPersistedCache cache) : base(cache)
+    protected GetOrSetTests(IPersistedCache cache, Func<string, CacheEntry> getCacheEntry) : base(cache)
     {
         _cache = cache;
+        _getCacheEntry = getCacheEntry;
     }
 
     [Fact]
@@ -124,11 +126,12 @@ public abstract class GetOrSetTests : BaseTest
         // Arrange
         string key = Guid.NewGuid().ToString();
         var value = _fixture.Create<RandomObject>();
+        var expectedExpiry = Expire.InMinutes(10);
 
         // Act
         var result = _cache.GetOrSet(key, options =>
         {
-            options.Expiry = Expire.InMinutes(10);
+            options.Expiry = expectedExpiry;
             return value;
         });
 
@@ -138,6 +141,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry is correct
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(expectedExpiry, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -156,6 +164,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry defaults to Never (MaxValue)
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(DateTimeOffset.MaxValue, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -212,11 +225,12 @@ public abstract class GetOrSetTests : BaseTest
         // Arrange
         string key = Guid.NewGuid().ToString();
         var value = _fixture.Create<RandomObject>();
+        var expectedExpiry = Expire.InMinutes(10);
 
         // Act
         var result = await _cache.GetOrSetAsync(key, options =>
         {
-            options.Expiry = Expire.InMinutes(10);
+            options.Expiry = expectedExpiry;
             return value;
         });
 
@@ -226,6 +240,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry is correct
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(expectedExpiry, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -244,6 +263,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry defaults to Never (MaxValue)
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(DateTimeOffset.MaxValue, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -276,12 +300,13 @@ public abstract class GetOrSetTests : BaseTest
         // Arrange
         string key = Guid.NewGuid().ToString();
         var value = _fixture.Create<RandomObject>();
+        var expectedExpiry = Expire.InMinutes(15);
 
         // Act
         var result = await _cache.GetOrSetAsync(key, async options =>
         {
             await Task.Delay(100);
-            options.Expiry = Expire.InMinutes(15);
+            options.Expiry = expectedExpiry;
             return value;
         });
 
@@ -291,6 +316,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry is correct
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(expectedExpiry, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -313,6 +343,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry defaults to Never (MaxValue)
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(DateTimeOffset.MaxValue, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -346,12 +381,13 @@ public abstract class GetOrSetTests : BaseTest
         // Arrange
         string key = Guid.NewGuid().ToString();
         var value = _fixture.Create<RandomObject>();
+        var expectedExpiry = Expire.InMinutes(20);
 
         // Act
         var result = await _cache.GetOrSetAsync(key, async (options, ct) =>
         {
             await Task.Delay(100, ct);
-            options.Expiry = Expire.InMinutes(20);
+            options.Expiry = expectedExpiry;
             return value;
         });
 
@@ -361,6 +397,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry is correct
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(expectedExpiry, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -383,6 +424,11 @@ public abstract class GetOrSetTests : BaseTest
         // Verify value is stored
         var cachedValue = _cache.Get<RandomObject>(key);
         cachedValue.Should().BeEquivalentTo(value);
+        
+        // Verify expiry defaults to Never (MaxValue)
+        var cacheEntry = _getCacheEntry(key);
+        cacheEntry.Should().NotBeNull();
+        cacheEntry.ExpiryDate.Should().BeCloseTo(DateTimeOffset.MaxValue, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -438,7 +484,7 @@ public abstract class GetOrSetTests : BaseTest
 [Collection(nameof(MySqlFixture))]
 public class MySqlGetOrSetTestsExecutor : GetOrSetTests
 {
-    public MySqlGetOrSetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache)
+    public MySqlGetOrSetTestsExecutor(MySqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -446,7 +492,7 @@ public class MySqlGetOrSetTestsExecutor : GetOrSetTests
 [Collection(nameof(PostgreSqlFixture))]
 public class PostgreSqlGetOrSetTestsExecutor : GetOrSetTests
 {
-    public PostgreSqlGetOrSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache)
+    public PostgreSqlGetOrSetTestsExecutor(PostgreSqlFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -454,7 +500,7 @@ public class PostgreSqlGetOrSetTestsExecutor : GetOrSetTests
 [Collection(nameof(SqlServerFixture))]
 public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
 {
-    public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache)
+    public SqlServerGetOrSetTestsExecutor(SqlServerFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -462,7 +508,7 @@ public class SqlServerGetOrSetTestsExecutor : GetOrSetTests
 [Collection(nameof(FileSystemFixture))]
 public class FileSystemGetOrSetTestsExecutor : GetOrSetTests
 {
-    public FileSystemGetOrSetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache)
+    public FileSystemGetOrSetTestsExecutor(FileSystemFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -470,7 +516,7 @@ public class FileSystemGetOrSetTestsExecutor : GetOrSetTests
 [Collection(nameof(SqliteFixture))]
 public class SqliteGetOrSetTestsExecutor : GetOrSetTests
 {
-    public SqliteGetOrSetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache)
+    public SqliteGetOrSetTestsExecutor(SqliteFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }
@@ -478,7 +524,7 @@ public class SqliteGetOrSetTestsExecutor : GetOrSetTests
 [Collection(nameof(MongoDbFixture))]
 public class MongoDbGetOrSetTestsExecutor : GetOrSetTests
 {
-    public MongoDbGetOrSetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache)
+    public MongoDbGetOrSetTestsExecutor(MongoDbFixture fixture) : base(fixture.PersistedCache, fixture.GetCacheEntry!)
     {
     }
 }

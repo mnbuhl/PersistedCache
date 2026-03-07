@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using DotNet.Testcontainers.Containers;
@@ -20,6 +21,7 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
 
     protected BaseDatabaseFixture(DockerContainer? container)
     {
+        SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
         _container = container;
     }
 
@@ -84,5 +86,19 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         options.CreateTableIfNotExists = false;
 
         return options;
+    }
+}
+
+public class DateTimeOffsetHandler : SqlMapper.TypeHandler<DateTimeOffset>
+{
+    public override void SetValue(IDbDataParameter parameter, DateTimeOffset value)
+    {
+        parameter.Value = value;
+        parameter.DbType = DbType.DateTime2;
+    }
+
+    public override DateTimeOffset Parse(object value)
+    {
+        return DateTime.SpecifyKind((DateTime)value, DateTimeKind.Utc);
     }
 }
