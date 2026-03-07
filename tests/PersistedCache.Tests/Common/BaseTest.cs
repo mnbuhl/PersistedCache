@@ -12,12 +12,12 @@ public class BaseTest : IAsyncLifetime
         _cache = cache;
     }
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _cache.FlushAsync();
     }

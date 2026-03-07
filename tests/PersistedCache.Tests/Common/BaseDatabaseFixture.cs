@@ -23,7 +23,7 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         _container = container;
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (_container != null)
         {
@@ -40,7 +40,7 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         PersistedCache = new SqlPersistedCache<TDriver>(driver, options);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_container != null)
         {
