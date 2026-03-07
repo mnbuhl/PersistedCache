@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using DotNet.Testcontainers.Containers;
@@ -20,10 +21,11 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
 
     protected BaseDatabaseFixture(DockerContainer? container)
     {
+        SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
         _container = container;
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (_container != null)
         {
@@ -40,7 +42,7 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         PersistedCache = new SqlPersistedCache<TDriver>(driver, options);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_container != null)
         {
@@ -84,5 +86,19 @@ public abstract class BaseDatabaseFixture<TDriver> : BaseFixture, IAsyncLifetime
         options.CreateTableIfNotExists = false;
 
         return options;
+    }
+}
+
+public class DateTimeOffsetHandler : SqlMapper.TypeHandler<DateTimeOffset>
+{
+    public override void SetValue(IDbDataParameter parameter, DateTimeOffset value)
+    {
+        parameter.Value = value;
+        parameter.DbType = DbType.DateTime2;
+    }
+
+    public override DateTimeOffset Parse(object value)
+    {
+        return DateTime.SpecifyKind((DateTime)value, DateTimeKind.Utc);
     }
 }

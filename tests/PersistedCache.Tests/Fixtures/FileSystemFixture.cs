@@ -32,7 +32,7 @@ public class FileSystemFixture : BaseFixture, ICollectionFixture<FileSystemFixtu
 
     public override CacheEntry? GetCacheEntry(string key)
     {
-        var filePath = Path.Combine(_path, key);
+        var filePath = Path.Combine(_path, key + ".json");
             
         if (!File.Exists(filePath))
         {

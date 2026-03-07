@@ -45,7 +45,7 @@ public class MongoDbFixture : BaseFixture, IAsyncLifetime, ICollectionFixture<Mo
         };
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
         var connectionString = _container.GetConnectionString();
@@ -57,7 +57,7 @@ public class MongoDbFixture : BaseFixture, IAsyncLifetime, ICollectionFixture<Mo
             .GetCollection<PersistedCacheEntry>(options.CollectionName);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _container.DisposeAsync();
     }

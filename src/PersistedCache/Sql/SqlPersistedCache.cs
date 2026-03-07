@@ -167,6 +167,49 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
         })!;
     }
 
+    public T GetOrSet<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory)
+    {
+        Validators.ValidateKey(key);
+        return _connectionFactory.RunInTransaction((connection, transaction) =>
+        {
+            var value = connection.QueryFirstOrDefault<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var options = new PersistedCacheEntryOptions();
+
+            var result = valueFactory(options);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = options.Expiry
+            };
+
+            connection.Execute(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction
+                )
+            );
+
+            return result;
+        })!;
+    }
+
     /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<T> valueFactory, Expire expiry,
         CancellationToken cancellationToken = default)
@@ -197,6 +240,54 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
                 Key = key,
                 Value = JsonSerializer.Serialize(result, _options.JsonOptions),
                 Expiry = expiry
+            };
+
+            await connection.ExecuteAsync(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return result;
+        }, cancellationToken);
+
+        return result!;
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, T> valueFactory, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidateKey(key);
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var value = await connection.QueryFirstOrDefaultAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var options = new PersistedCacheEntryOptions();
+
+            var result = valueFactory(options);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = options.Expiry
             };
 
             await connection.ExecuteAsync(
@@ -262,6 +353,54 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
     }
 
     /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, Task<T>> valueFactory, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidateKey(key);
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var value = await connection.QueryFirstOrDefaultAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var options = new PersistedCacheEntryOptions();
+
+            var result = await valueFactory(options);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = options.Expiry
+            };
+
+            await connection.ExecuteAsync(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return result;
+        }, cancellationToken);
+
+        return result!;
+    }
+
+    /// <inheritdoc />
     public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> valueFactory, Expire expiry, 
         CancellationToken cancellationToken = default)
     {
@@ -291,6 +430,54 @@ public class SqlPersistedCache<TDriver> : IPersistedCache<TDriver> where TDriver
                 Key = key,
                 Value = JsonSerializer.Serialize(result, _options.JsonOptions),
                 Expiry = expiry
+            };
+
+            await connection.ExecuteAsync(
+                new CommandDefinition(
+                    commandText: _driver.SetScript,
+                    parameters: entry,
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return result;
+        }, cancellationToken);
+
+        return result!;
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetOrSetAsync<T>(string key, Func<PersistedCacheEntryOptions, CancellationToken, Task<T>> valueFactory, CancellationToken cancellationToken = default)
+    {
+        Validators.ValidateKey(key);
+        var result = await _connectionFactory.RunInTransactionAsync(async (connection, transaction) =>
+        {
+            var value = await connection.QueryFirstOrDefaultAsync<string>(
+                new CommandDefinition(
+                    commandText: _driver.GetScript,
+                    parameters: new { Key = key, Expiry = DateTimeOffset.UtcNow },
+                    transaction: transaction,
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return JsonSerializer.Deserialize<T>(value!, _options.JsonOptions);
+            }
+
+            var options = new PersistedCacheEntryOptions();
+
+            var result = await valueFactory(options, cancellationToken);
+
+            Validators.ValidateValue(result);
+
+            var entry = new PersistedCacheEntry
+            {
+                Key = key,
+                Value = JsonSerializer.Serialize(result, _options.JsonOptions),
+                Expiry = options.Expiry
             };
 
             await connection.ExecuteAsync(
